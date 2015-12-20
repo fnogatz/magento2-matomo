@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2015 Henrik Hedelund
+ *
+ * This file is part of Henhed_Piwik.
+ *
+ * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Henhed_Piwik is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="piwik"
+                 translate="label"
+                 type="text"
+                 sortOrder="360"
+                 showInDefault="1"
+                 showInWebsite="1"
+                 showInStore="1">
+            <label>Piwik API</label>
+            <tab>sales</tab>
+            <resource>Henhed_Piwik::piwik</resource>
+            <group id="tracking"
+                   translate="label"
+                   type="text"
+                   sortOrder="10"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1">
+                <label>Tracking API</label>
+                <field id="enabled"
+                       translate="label"
+                       type="select"
+                       sortOrder="10"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable Tracking</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="base_url"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="20"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Base URL</label>
+                    <comment>Fully qualified Piwik URL including trailing '/' (slash) e.g. http://piwik.example.com/</comment>
+                    <depends>
+                        <field id="*/*/enabled">1</field>
+                    </depends>
+                    <frontend_class>required-entry</frontend_class>
+                </field>
+                <field id="site_id"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="30"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Site ID</label>
+                    <comment>Listed under Settings/Website in your Piwik administration panel</comment>
+                    <depends>
+                        <field id="*/*/enabled">1</field>
+                    </depends>
+                    <frontend_class>required-entry validate-digits</frontend_class>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
