@@ -18,15 +18,13 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model\Tracker\Action;
-
-use Henhed\Piwik\Model\Tracker;
+namespace Henhed\Piwik\Model;
 
 /**
- * Piwik tracker action queue
+ * Piwik tracker model
  *
  */
-class Queue implements \IteratorAggregate
+class Tracker implements \IteratorAggregate
 {
 
     /**
@@ -37,10 +35,10 @@ class Queue implements \IteratorAggregate
     protected $_actions = [];
 
     /**
-     * Push a tracker action to this queue
+     * Push an action to this tracker
      *
      * @param \Henhed\Piwik\Model\Tracker\Action $action
-     * @return \Henhed\Piwik\Model\Tracker\Action\Queue
+     * @return \Henhed\Piwik\Model\Tracker
      */
     public function push(Tracker\Action $action)
     {
@@ -63,7 +61,7 @@ class Queue implements \IteratorAggregate
      *
      * @param string $name
      * @param array $arguments
-     * @return \Henhed\Piwik\Model\Tracker\Action\Queue
+     * @return \Henhed\Piwik\Model\Tracker
      */
     public function __call($name, $arguments)
     {

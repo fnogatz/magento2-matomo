@@ -25,7 +25,7 @@
 //<![CDATA[
 (function (w, d) {
     w._paq = w._paq || [];
-    <?php foreach ($block->getTrackerActionQueue() as $action): ?>
+    <?php foreach ($block->getTracker() as $action): ?>
     w._paq.push(<?php echo $action->serialize(array($block, 'jsonEncode')); ?>);
     <?php endforeach; ?>
     (function() {

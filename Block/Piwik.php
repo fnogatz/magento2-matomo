@@ -35,11 +35,11 @@ class Piwik extends \Magento\Framework\View\Element\Template
     protected $_jsonEncoder;
 
     /**
-     * Piwik tracker action queue
+     * Piwik tracker model
      *
-     * @var \Henhed\Piwik\Model\Tracker\Action\Queue $_actionQueue
+     * @var \Henhed\Piwik\Model\Tracker $_tracker
      */
-    protected $_actionQueue;
+    protected $_tracker;
 
     /**
      * Piwik data helper
@@ -53,19 +53,19 @@ class Piwik extends \Magento\Framework\View\Element\Template
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
-     * @param \Henhed\Piwik\Model\Tracker\Action\Queue $actionQueue
+     * @param \Henhed\Piwik\Model\Tracker $tracker
      * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
-        \Henhed\Piwik\Model\Tracker\Action\Queue $actionQueue,
+        \Henhed\Piwik\Model\Tracker $tracker,
         \Henhed\Piwik\Helper\Data $dataHelper,
         array $data = []
     ) {
         $this->_jsonEncoder = $jsonEncoder;
-        $this->_actionQueue = $actionQueue;
+        $this->_tracker = $tracker;
         $this->_dataHelper = $dataHelper;
         parent::__construct($context, $data);
     }
@@ -73,21 +73,21 @@ class Piwik extends \Magento\Framework\View\Element\Template
     /**
      * Get Piwik tracker actions
      *
-     * @return array
+     * @return \Henhed\Piwik\Model\Tracker
      */
-    public function getTrackerActionQueue()
+    public function getTracker()
     {
-        return $this->_actionQueue;
+        return $this->_tracker;
     }
 
     /**
-     * Populate tracker action queue before rendering
+     * Populate tracker with actions before rendering
      *
      * @return void
      */
-    protected function _prepareTrackerActionQueue()
+    protected function _prepareTracker()
     {
-        $this->getTrackerActionQueue()
+        $this->getTracker()
             ->setTrackerUrl($this->getTrackerUrl())
             ->setSiteId($this->_dataHelper->getSiteId())
             ->trackPageView();
@@ -147,7 +147,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     protected function _toHtml()
     {
         if ($this->_dataHelper->isTrackingEnabled()) {
-            $this->_prepareTrackerActionQueue();
+            $this->_prepareTracker();
             return parent::_toHtml();
         }
         return '';
