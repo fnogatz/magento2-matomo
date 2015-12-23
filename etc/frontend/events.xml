@@ -29,4 +29,8 @@
         <observer name="piwik_observer"
                   instance="Henhed\Piwik\Observer\CategoryViewObserver" />
     </event>
+    <event name="controller_action_predispatch_checkout_cart_index">
+        <observer name="piwik_observer"
+                  instance="Henhed\Piwik\Observer\CartViewObserver" />
+    </event>
 </config>
