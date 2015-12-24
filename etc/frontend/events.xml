@@ -33,4 +33,12 @@
         <observer name="piwik_observer"
                   instance="Henhed\Piwik\Observer\CartViewObserver" />
     </event>
+    <event name="checkout_onepage_controller_success_action">
+        <observer name="piwik_observer"
+                  instance="Henhed\Piwik\Observer\CheckoutSuccessObserver" />
+    </event>
+    <event name="multishipping_checkout_controller_success_action">
+        <observer name="piwik_observer"
+                  instance="Henhed\Piwik\Observer\CheckoutSuccessObserver" />
+    </event>
 </config>
