@@ -87,10 +87,22 @@ class Piwik extends \Magento\Framework\View\Element\Template
      */
     protected function _prepareTracker()
     {
-        $this->getTracker()
-            ->setTrackerUrl($this->getTrackerUrl())
-            ->setSiteId($this->_dataHelper->getSiteId())
-            ->trackPageView();
+        $this->getTracker()->trackPageView();
+    }
+
+    /**
+     * Get javascript tracker options
+     *
+     * @return array
+     */
+    public function getJsOptions()
+    {
+        return [
+            'scriptUrl'  => $this->getScriptUrl(),
+            'trackerUrl' => $this->getTrackerUrl(),
+            'siteId'     => $this->getSiteId(),
+            'actions'    => $this->getTracker()->toArray()
+        ];
     }
 
     /**
@@ -114,6 +126,16 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get Piwik site ID
+     *
+     * @return int
+     */
+    public function getSiteId()
+    {
+        return $this->_dataHelper->getSiteId();
+    }
+
+    /**
      * Get tracking pixel URL
      *
      * @return string
@@ -121,7 +143,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     public function getTrackingPixelUrl()
     {
         $params = array(
-            'idsite' => $this->_dataHelper->getSiteId(),
+            'idsite' => $this->getSiteId(),
             'rec'    => 1,
             'url'    => $this->_urlBuilder->getCurrentUrl()
         );

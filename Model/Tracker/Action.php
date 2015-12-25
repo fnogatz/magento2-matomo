@@ -74,17 +74,14 @@ class Action
     }
 
     /**
-     * Serialize this action
+     * Get an array representation of this action
      *
-     * @param callable|null $serializer
-     * @return string
+     * @return array
      */
-    public function serialize($serializer = null)
+    public function toArray()
     {
-        $data = $this->getArgs();
-        array_unshift($data, $this->getName());
-        return is_callable($serializer)
-            ? $serializer($data)
-            : serialize($data);
+        $array = $this->getArgs();
+        array_unshift($array, $this->getName());
+        return $array;
     }
 }

@@ -20,25 +20,12 @@
 
 ?>
 <?php /* @var $block \Henhed\Piwik\Block\Piwik */ ?>
-<!-- Piwik Tracking Code -->
-<script type="text/javascript">
-//<![CDATA[
-(function (w, d) {
-    w._paq = w._paq || [];
-    <?php foreach ($block->getTracker() as $action): ?>
-    w._paq.push(<?php echo $action->serialize(array($block, 'jsonEncode')); ?>);
-    <?php endforeach; ?>
-    (function() {
-        var g = d.createElement('script'),
-            s = d.getElementsByTagName('script')[0];
-        g.type = 'text/javascript';
-        g.async = true;
-        g.defer = true;
-        g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
-        s.parentNode.insertBefore(g, s);
-    })();
-})(window, document);
-//]]>
+<script type="text/x-magento-init">
+<?php echo $block->jsonEncode([
+    '*' => [
+        'Henhed_Piwik/js/tracker' => $block->getJsOptions()
+    ]
+]); ?>
 </script>
 <noscript>
     <p>
@@ -47,4 +34,3 @@
              alt="" />
     </p>
 </noscript>
-<!-- End Piwik Tracking Code -->

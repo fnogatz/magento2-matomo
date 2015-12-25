@@ -251,7 +251,7 @@ namespace Henhed\Piwik\Model;
  *
  * @link http://developer.piwik.org/api-reference/tracking-javascript
  */
-class Tracker implements \IteratorAggregate
+class Tracker
 {
 
     /**
@@ -292,13 +292,27 @@ class Tracker implements \IteratorAggregate
     }
 
     /**
-     * Implementation of \IteratorAggregate
+     * Get all actions in this tracker
      *
-     * @return \ArrayIterator
+     * @return \Henhed\Piwik\Model\Tracker\Action[]
      */
-    public function getIterator()
+    public function getActions()
     {
-        return new \ArrayIterator($this->_actions);
+        return $this->_actions;
+    }
+
+    /**
+     * Get an array representation of this tracker
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $array = [];
+        foreach ($this->getActions() as $action) {
+            $array[] = $action->toArray();
+        }
+        return $array;
     }
 
     /**
