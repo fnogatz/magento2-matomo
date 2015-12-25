@@ -262,6 +262,24 @@ class Tracker implements \IteratorAggregate
     protected $_actions = [];
 
     /**
+     * Tracker action factory instance
+     *
+     * @var \Henhed\Piwik\Model\Tracker\ActionFactory $_actionFactory
+     */
+    protected $_actionFactory;
+
+    /**
+     * Constructor
+     *
+     * @param \Henhed\Piwik\Model\Tracker\ActionFactory $actionFactory
+     */
+    public function __construct(
+        \Henhed\Piwik\Model\Tracker\ActionFactory $actionFactory
+    ) {
+        $this->_actionFactory = $actionFactory;
+    }
+
+    /**
      * Push an action to this tracker
      *
      * @param \Henhed\Piwik\Model\Tracker\Action $action
@@ -292,6 +310,9 @@ class Tracker implements \IteratorAggregate
      */
     public function __call($name, $arguments)
     {
-        return $this->push(new Tracker\Action($name, $arguments));
+        return $this->push($this->_actionFactory->create([
+            'name' => $name,
+            'args' => $arguments
+        ]));
     }
 }
