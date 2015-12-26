@@ -20,12 +20,10 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Henhed_Piwik" setup_version="0.1.0">
-        <sequence>
-            <module name="Magento_Store" />
-            <module name="Magento_Customer" />
-            <module name="Magento_Checkout" />
-        </sequence>
-    </module>
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Checkout\CustomerData\Cart">
+        <plugin name="piwik"
+                type="Henhed\Piwik\CustomerData\Checkout\CartPlugin"
+                sortOrder="10" />
+    </type>
 </config>

@@ -19,8 +19,9 @@
 
 define([
     'jquery',
-    'underscore'
-], function ($, _) {
+    'underscore',
+    'Magento_Customer/js/customer-data'
+], function ($, _, customerData) {
     'use strict';
 
     var exports = window;
@@ -39,6 +40,7 @@ define([
                 .push(['setTrackerUrl', options.trackerUrl])
                 .push(['setSiteId', options.siteId]);
             _.each(options.actions, this.push, this);
+            customerData.get('cart').subscribe(this._cartUpdated, this);
         },
 
         /**
@@ -55,6 +57,18 @@ define([
                 .attr('src', scriptUrl)
                 .appendTo('head');
             return this;
+        },
+
+        /**
+         * Callback for cart customer data subscriber
+         *
+         * @param Object cart
+         * @see \Henhed\Piwik\CustomerData\Checkout\CartPlugin
+         */
+        _cartUpdated: function (cart) {
+            if (_.has(cart, 'piwikActions')) {
+                _.each(cart.piwikActions, this.push, this);
+            }
         },
 
         /**
