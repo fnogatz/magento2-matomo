@@ -60,7 +60,7 @@
                     <label>Base URL</label>
                     <comment>Fully qualified Piwik URL including trailing '/' (slash) e.g. http://piwik.example.com/</comment>
                     <depends>
-                        <field id="*/*/enabled">1</field>
+                        <field id="enabled">1</field>
                     </depends>
                     <frontend_class>required-entry</frontend_class>
                 </field>
@@ -74,9 +74,38 @@
                     <label>Site ID</label>
                     <comment>Listed under Settings/Website in your Piwik administration panel</comment>
                     <depends>
-                        <field id="*/*/enabled">1</field>
+                        <field id="enabled">1</field>
                     </depends>
-                    <frontend_class>required-entry validate-digits</frontend_class>
+                    <frontend_class>required-entry validate-digits validate-zero-or-greater</frontend_class>
+                </field>
+                <field id="link_enabled"
+                       translate="label comment"
+                       type="select"
+                       sortOrder="40"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable Link Tracking</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable tracking of outlinks and downloads</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="link_delay"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="50"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Link Tracking Timer</label>
+                    <comment>Delay for link tracking in milliseconds</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="link_enabled">1</field>
+                    </depends>
+                    <frontend_class>validate-digits validate-zero-or-greater</frontend_class>
                 </field>
             </group>
         </section>

@@ -21,6 +21,10 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="piwik_track_page_view_before">
+        <observer name="piwik_observer"
+                  instance="Henhed\Piwik\Observer\BeforeTrackPageViewObserver" />
+    </event>
     <event name="catalog_controller_product_view">
         <observer name="piwik_observer"
                   instance="Henhed\Piwik\Observer\ProductViewObserver" />

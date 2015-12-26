@@ -70,7 +70,7 @@ namespace Henhed\Piwik\Model;
  * Log all found content blocks within a page to the console. This is useful to
  * debug / test content tracking.
  *
- * @method Tracker enableLinkTracking(bool enable = null)
+ * @method Tracker enableLinkTracking(bool $enable = null)
  * Install link tracking on all applicable link elements. Set the enable
  * parameter to true to use pseudo click-handler (treat middle click and open
  * contextmenu as left click). A right click (or any click that opens the

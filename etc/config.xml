@@ -27,6 +27,8 @@
                 <enabled>0</enabled>
                 <base_url></base_url>
                 <site_id>1</site_id>
+                <link_enabled>1</link_enabled>
+                <link_delay>500</link_delay>
             </tracking>
         </piwik>
     </default>

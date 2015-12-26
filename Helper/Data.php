@@ -34,6 +34,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_ENABLED = 'piwik/tracking/enabled';
     const XML_PATH_BASE_URL = 'piwik/tracking/base_url';
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
+    const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
+    const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
 
     /**
      * Check if Piwik is enabled
@@ -77,6 +79,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return (int) $this->scopeConfig->getValue(
             self::XML_PATH_SITE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Check if Piwik link tracking is enabled
+     *
+     * @param null|string|bool|int|Store $store
+     * @return bool
+     */
+    public function isLinkTrackingEnabled($store = null)
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_LINK_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ) && $this->isTrackingEnabled($store);
+    }
+
+    /**
+     * Retrieve Piwik link tracking delay in milliseconds
+     *
+     * @param null|string|bool|int|Store $store
+     * @return int
+     */
+    public function getLinkTrackingDelay($store = null)
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_LINK_DELAY,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
