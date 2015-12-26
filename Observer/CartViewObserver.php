@@ -37,6 +37,13 @@ class CartViewObserver implements ObserverInterface
     protected $_piwikTracker;
 
     /**
+     * Tracker helper
+     *
+     * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
+     */
+    protected $_trackerHelper;
+
+    /**
      * Checkout session instance
      *
      * @var \Magento\Checkout\Model\Session $_checkoutSession
@@ -47,13 +54,16 @@ class CartViewObserver implements ObserverInterface
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
+     * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
      * @param \Magento\Checkout\Model\Session $checkoutSession
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
+        \Henhed\Piwik\Helper\Tracker $trackerHelper,
         \Magento\Checkout\Model\Session $checkoutSession
     ) {
         $this->_piwikTracker = $piwikTracker;
+        $this->_trackerHelper = $trackerHelper;
         $this->_checkoutSession = $checkoutSession;
     }
 
@@ -65,22 +75,10 @@ class CartViewObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $quote = $this->_checkoutSession->getQuote();
-        foreach ($quote->getAllVisibleItems() as $item) {
-            /* @var $item \Magento\Quote\Model\Quote\Item */
-            $this->_piwikTracker->addEcommerceItem(
-                $item->getSku(),
-                $item->getName(),
-                false,
-                (float) $item->getPrice(),
-                (float) $item->getQty()
-            );
-        }
-
-        $this->_piwikTracker->trackEcommerceCartUpdate(
-            (float) $quote->getBaseGrandTotal()
+        $this->_trackerHelper->addQuote(
+            $this->_checkoutSession->getQuote(),
+            $this->_piwikTracker
         );
-
         return $this;
     }
 }

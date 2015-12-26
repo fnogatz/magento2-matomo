@@ -35,14 +35,34 @@ class CartPlugin
     protected $_checkoutSession;
 
     /**
+     * Tracker helper
+     *
+     * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
+     */
+    protected $_trackerHelper;
+
+    /**
+     * Tracker factory
+     *
+     * @var \Henhed\Piwik\Model\TrackerFactory $_trackerFactory
+     */
+    protected $_trackerFactory;
+
+    /**
      * Constructor
      *
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
+     * @param \Henhed\Piwik\Model\TrackerFactory $trackerFactory
      */
     public function __construct(
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Henhed\Piwik\Helper\Tracker $trackerHelper,
+        \Henhed\Piwik\Model\TrackerFactory $trackerFactory
     ) {
         $this->_checkoutSession = $checkoutSession;
+        $this->_trackerHelper = $trackerHelper;
+        $this->_trackerFactory = $trackerFactory;
     }
 
     /**
@@ -56,26 +76,10 @@ class CartPlugin
         \Magento\Checkout\CustomerData\Cart $subject,
         $result
     ) {
-        $result['piwikActions'] = [];
+        $tracker = $this->_trackerFactory->create();
         $quote = $this->_checkoutSession->getQuote();
-
-        foreach ($quote->getAllVisibleItems() as $item) {
-            /* @var $item \Magento\Quote\Model\Quote\Item */
-            $result['piwikActions'][] = [
-                'addEcommerceItem',
-                $item->getSku(),
-                $item->getName(),
-                false,
-                (float) $item->getPrice(),
-                (float) $item->getQty()
-            ];
-        }
-
-        $result['piwikActions'][] = [
-            'trackEcommerceCartUpdate',
-            (float) $quote->getBaseGrandTotal()
-        ];
-
+        $this->_trackerHelper->addQuote($quote, $tracker);
+        $result['piwikActions'] = $tracker->toArray();
         return $result;
     }
 }
