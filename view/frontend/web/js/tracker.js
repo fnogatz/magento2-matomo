@@ -36,10 +36,27 @@ define([
          * @param Object options
          */
         'Henhed_Piwik/js/tracker': function(options) {
+
+            // Store options as config
+            this._config = options;
+
+            // Initialize Piwik singleton
+            this._piwik = null;
+            exports.piwikAsyncInit = (function () {
+                this._piwik = exports.Piwik;
+            }).bind(this);
+
+            // Inject Piwik script and configure async tracker
             this._injectScript(options.scriptUrl)
                 .push(['setTrackerUrl', options.trackerUrl])
                 .push(['setSiteId', options.siteId]);
-            _.each(options.actions, this.push, this);
+
+            // Push given actions to async tracker
+            _.each(options.actions, function (action) {
+                this.push(action);
+            }, this);
+
+            // Subscribe to cart updates
             customerData.get('cart').subscribe(this._cartUpdated, this);
         },
 
@@ -67,18 +84,74 @@ define([
          */
         _cartUpdated: function (cart) {
             if (_.has(cart, 'piwikActions')) {
-                _.each(cart.piwikActions, this.push, this);
+                // We need to create a new tracker instance for asynchronous
+                // ecommerce updates since previous ecommerce items are stored
+                // in the tracker.
+                this.createTracker().then((function (tracker) {
+                    _.each(cart.piwikActions, function (action) {
+                        this.push(action, tracker);
+                    }, this);
+                }).bind(this));
             }
         },
 
         /**
-         * Push an action to the tracker
+         * Get Piwik singleton/namespace promise
+         *
+         * @returns Promise
+         */
+        getPiwik: function () {
+            var deferred = $.Deferred();
+            if (this._piwik === null) {
+                var intervalId = window.setInterval((function () {
+                    if (this._piwik !== null) {
+                        window.clearInterval(intervalId);
+                        deferred.resolve(this._piwik);
+                    }
+                }).bind(this), 100);
+            } else {
+                deferred.resolve(this._piwik);
+            }
+            return deferred.promise();
+        },
+
+        /**
+         * Create a new Piwik tracker returned as a promise
+         *
+         * @param String|undefined trackerUrl
+         * @param Number|undefined siteId
+         * @returns Promise
+         */
+        createTracker: function (trackerUrl, siteId) {
+            var deferred = $.Deferred();
+            this.getPiwik().then((function (piwik) {
+                deferred.resolve(piwik.getTracker(
+                    trackerUrl || this._config.trackerUrl,
+                    siteId || this._config.siteId
+                ));
+            }).bind(this));
+            return deferred.promise();
+        },
+
+        /**
+         * Push an action to the given tracker. If the tracker argument is
+         * omitted the action will be picked up by the async tracker.
          *
          * @param Array action
+         * @param Tracker|undefined tracker
          * @returns Object
          */
-        push: function (action) {
-            exports._paq.push(action);
+        push: function (action, tracker) {
+            if (typeof tracker === 'object') {
+                var actionName = action.shift();
+                if (typeof tracker[actionName] === 'function') {
+                    tracker[actionName].apply(tracker, action);
+                } else {
+                    console.error('Undefined tracker function: ' + actionName);
+                }
+            } else {
+                exports._paq.push(action);
+            }
             return this;
         }
     };
