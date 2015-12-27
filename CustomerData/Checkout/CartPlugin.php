@@ -76,10 +76,12 @@ class CartPlugin
         \Magento\Checkout\CustomerData\Cart $subject,
         $result
     ) {
-        $tracker = $this->_trackerFactory->create();
         $quote = $this->_checkoutSession->getQuote();
-        $this->_trackerHelper->addQuote($quote, $tracker);
-        $result['piwikActions'] = $tracker->toArray();
+        if ($quote->getId()) {
+            $tracker = $this->_trackerFactory->create();
+            $this->_trackerHelper->addQuote($quote, $tracker);
+            $result['piwikActions'] = $tracker->toArray();
+        }
         return $result;
     }
 }
