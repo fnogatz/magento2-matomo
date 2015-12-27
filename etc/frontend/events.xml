@@ -45,4 +45,8 @@
         <observer name="piwik_observer"
                   instance="Henhed\Piwik\Observer\CheckoutSuccessObserver" />
     </event>
+    <event name="controller_action_layout_render_before_catalogsearch_result_index">
+        <observer name="piwik_observer"
+                  instance="Henhed\Piwik\Observer\SearchResultObserver" />
+    </event>
 </config>

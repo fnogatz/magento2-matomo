@@ -24,8 +24,8 @@
     <body>
         <referenceContainer name="after.body.start">
             <block class="Henhed\Piwik\Block\Piwik"
-                   name="piwik_tracking"
-                   as="piwik_tracking"
+                   name="piwik.tracker"
+                   as="piwik.tracker"
                    template="piwik.phtml" />
         </referenceContainer>
     </body>

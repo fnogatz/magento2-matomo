@@ -88,11 +88,16 @@ class Piwik extends \Magento\Framework\View\Element\Template
     protected function _prepareTracker()
     {
         $tracker = $this->getTracker();
+
         $this->_eventManager->dispatch(
             'piwik_track_page_view_before',
             ['block' => $this, 'tracker' => $tracker]
         );
-        $tracker->trackPageView();
+
+        if (!$this->getSkipTrackPageView()) {
+            $tracker->trackPageView();
+        }
+
         $this->_eventManager->dispatch(
             'piwik_track_page_view_after',
             ['block' => $this, 'tracker' => $tracker]
