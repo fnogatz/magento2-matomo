@@ -89,7 +89,7 @@ class CheckoutSuccessObserver implements ObserverInterface
 
                 $sku   = $item->getSku();
                 $name  = $item->getName();
-                $price = (float) $item->getBasePrice();
+                $price = (float) $item->getBasePriceInclTax();
                 $qty   = (float) $item->getQtyOrdered();
 
                 if (!isset($piwikItems[$sku])) {
@@ -106,7 +106,7 @@ class CheckoutSuccessObserver implements ObserverInterface
             $grandTotal = (float) $order->getBaseGrandTotal();
             $subTotal   = (float) $order->getBaseSubtotalInclTax();
             $tax        = (float) $order->getBaseTaxAmount();
-            $shipping   = (float) $order->getBaseShippingAmount();
+            $shipping   = (float) $order->getBaseShippingInclTax();
             $discount   = abs((float) $order->getBaseDiscountAmount());
 
             if (empty($piwikOrder)) {

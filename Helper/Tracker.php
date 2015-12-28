@@ -46,7 +46,7 @@ class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
             false,
             $item->hasCustomPrice()
                 ? (float) $item->getCustomPrice()
-                : (float) $item->getPrice(),
+                : (float) $item->getPriceInclTax(),
             (float) $item->getQty()
         );
         return $this;
