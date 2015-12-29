@@ -28,11 +28,12 @@ use Magento\Store\Model\Store;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+
     /**
      * System config XML paths
      */
     const XML_PATH_ENABLED = 'piwik/tracking/enabled';
-    const XML_PATH_BASE_URL = 'piwik/tracking/base_url';
+    const XML_PATH_HOSTNAME = 'piwik/tracking/hostname';
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
     const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
     const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
@@ -45,10 +46,25 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isTrackingEnabled($store = null)
     {
-        $baseUrl = $this->getBaseUrl($store);
+        $hostname = $this->getHostname($store);
         $siteId = $this->getSiteId($store);
-        return $baseUrl && $siteId && $this->scopeConfig->isSetFlag(
+        return $hostname && $siteId && $this->scopeConfig->isSetFlag(
             self::XML_PATH_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Retrieve Piwik hostname
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getHostname($store = null)
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_HOSTNAME,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -58,15 +74,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Retrieve Piwik base URL
      *
      * @param null|string|bool|int|Store $store
+     * @param null|bool $secure
      * @return string
      */
-    public function getBaseUrl($store = null)
+    public function getBaseUrl($store = null, $secure = null)
     {
-        return $this->scopeConfig->getValue(
-            self::XML_PATH_BASE_URL,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        if (is_null($secure)) {
+            $secure = $this->_request->isSecure();
+        }
+        $host = rtrim($this->getHostname($store), '/');
+        return ($secure ? 'https://' : 'http://') . $host . '/';
     }
 
     /**

@@ -50,15 +50,15 @@
                     <label>Enable Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="base_url"
+                <field id="hostname"
                        translate="label comment"
                        type="text"
                        sortOrder="20"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
-                    <label>Base URL</label>
-                    <comment>Fully qualified Piwik URL including trailing '/' (slash) e.g. http://piwik.example.com/</comment>
+                    <label>Hostname</label>
+                    <comment>Piwik hostname, optionally including a path e.g. piwik.example.com or example.com/piwik</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>

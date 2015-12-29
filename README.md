@@ -40,7 +40,7 @@ Configuration
 Once intsalled, configuration options can be found in the Magento 2
 administration panel under *Stores/Configuration/Sales/Piwik API*.
 To start tracking, set *Enable Tracking* to *Yes*, enter the
-*Base URL* to your Piwik installation and click *Save Config*.  If you
+*Hostname* of your Piwik installation and click *Save Config*.  If you
 have multiple websites in the same Piwik installation, make sure the
 *Site ID* configured in Magento is correct.
 
