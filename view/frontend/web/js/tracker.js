@@ -31,6 +31,13 @@ define([
     var tracker = {
 
         /**
+         * Piwik singleton/namespace
+         *
+         * @var Object
+         */
+        _piwik: null,
+
+        /**
          * Constructor
          *
          * @param Object options
@@ -41,7 +48,6 @@ define([
             this._config = options;
 
             // Initialize Piwik singleton
-            this._piwik = null;
             exports.piwikAsyncInit = (function () {
                 this._piwik = exports.Piwik;
             }).bind(this);
