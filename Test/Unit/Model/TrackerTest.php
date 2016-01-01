@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 Henrik Hedelund
+ * Copyright 2016 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
