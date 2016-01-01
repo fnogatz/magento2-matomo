@@ -18,7 +18,7 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Model;
+namespace Henhed\Piwik\Test\Unit\Model;
 
 use \Henhed\Piwik\Model\Tracker;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
