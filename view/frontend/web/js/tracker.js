@@ -20,11 +20,13 @@
 define([
     'jquery',
     'underscore',
-    'Magento_Customer/js/customer-data'
+    'Magento_Customer/js/customer-data',
+    'jquery/jquery-storageapi'
 ], function ($, _, customerData) {
     'use strict';
 
     var exports = window;
+    var storage = $.initNamespaceStorage('henhed-piwik').localStorage;
 
     exports._paq = exports._paq || [];
 
@@ -89,6 +91,16 @@ define([
          * @see \Henhed\Piwik\CustomerData\Checkout\CartPlugin
          */
         _cartUpdated: function (cart) {
+
+            // Check in storage if we have registered this cart already
+            if (_.has(cart, 'data_id')) {
+                if (storage.get('cart-data-id') === cart.data_id) {
+                    return;
+                } else {
+                    storage.set('cart-data-id', cart.data_id);
+                }
+            }
+
             if (_.has(cart, 'piwikActions')) {
                 // We need to create a new tracker instance for asynchronous
                 // ecommerce updates since previous ecommerce items are stored
