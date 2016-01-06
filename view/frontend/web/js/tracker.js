@@ -25,154 +25,226 @@ define([
 ], function ($, _, customerData) {
     'use strict';
 
+    /**
+     * Object holding globally accessible properties
+     *
+     * @type {Object}
+     */
     var exports = window;
+
+    /**
+     * Default Piwik website ID
+     *
+     * @type {number}
+     */
+    var defaultSiteId;
+
+    /**
+     * Default Piwik tracker endpoint
+     *
+     * @type {String}
+     */
+    var defaultTrackerUrl;
+
+    /**
+     * Reference to global `piwikAsyncInit' in case we overwrite something
+     *
+     * @type {Function|undefined}
+     */
+    var origPiwikAsyncInit = exports.piwikAsyncInit;
+
+    /**
+     * Piwik singleton/namespace
+     *
+     * @type {Object}
+     */
+    var piwik = null;
+
+    /**
+     * Collection of piwik promises
+     *
+     * @type {Array.<Deferred>}
+     */
+    var piwikPromises = [];
+
+    /**
+     * Client side cache/storage
+     *
+     * @type {Object}
+     */
     var storage = $.initNamespaceStorage('henhed-piwik').localStorage;
 
-    exports._paq = exports._paq || [];
+    /**
+     * Append Piwik tracker script URL to head
+     *
+     * @param {String} scriptUrl
+     */
+    function injectScript(scriptUrl) {
+        $('<script>')
+            .attr('type', 'text/javascript')
+            .attr('async', true)
+            .attr('defer', true)
+            .attr('src', scriptUrl)
+            .appendTo('head');
+    }
 
-    var tracker = {
-
-        /**
-         * Piwik singleton/namespace
-         *
-         * @var Object
-         */
-        _piwik: null,
-
-        /**
-         * Constructor
-         *
-         * @param Object options
-         */
-        'Henhed_Piwik/js/tracker': function(options) {
-
-            // Store options as config
-            this._config = options;
-
-            // Initialize Piwik singleton
-            exports.piwikAsyncInit = (function () {
-                this._piwik = exports.Piwik;
-            }).bind(this);
-
-            // Inject Piwik script and configure async tracker
-            this._injectScript(options.scriptUrl)
-                .push(['setTrackerUrl', options.trackerUrl])
-                .push(['setSiteId', options.siteId]);
-
-            // Push given actions to async tracker
-            _.each(options.actions, function (action) {
-                this.push(action);
-            }, this);
-
-            // Subscribe to cart updates
-            customerData.get('cart').subscribe(this._cartUpdated, this);
-        },
-
-        /**
-         * Append Piwik tracker script url to head
-         *
-         * @param String scriptUrl
-         * @returns Object
-         */
-        _injectScript: function (scriptUrl) {
-            $('<script>')
-                .attr('type', 'text/javascript')
-                .attr('async', true)
-                .attr('defer', true)
-                .attr('src', scriptUrl)
-                .appendTo('head');
-            return this;
-        },
-
-        /**
-         * Callback for cart customer data subscriber
-         *
-         * @param Object cart
-         * @see \Henhed\Piwik\CustomerData\Checkout\CartPlugin
-         */
-        _cartUpdated: function (cart) {
-
-            // Check in storage if we have registered this cart already
-            if (_.has(cart, 'data_id')) {
-                if (storage.get('cart-data-id') === cart.data_id) {
-                    return;
-                } else {
-                    storage.set('cart-data-id', cart.data_id);
-                }
-            }
-
-            if (_.has(cart, 'piwikActions')) {
-                // We need to create a new tracker instance for asynchronous
-                // ecommerce updates since previous ecommerce items are stored
-                // in the tracker.
-                this.createTracker().then((function (tracker) {
-                    _.each(cart.piwikActions, function (action) {
-                        this.push(action, tracker);
-                    }, this);
-                }).bind(this));
-            }
-        },
-
-        /**
-         * Get Piwik singleton/namespace promise
-         *
-         * @returns Promise
-         */
-        getPiwik: function () {
-            var deferred = $.Deferred();
-            if (this._piwik === null) {
-                var intervalId = window.setInterval((function () {
-                    if (this._piwik !== null) {
-                        window.clearInterval(intervalId);
-                        deferred.resolve(this._piwik);
-                    }
-                }).bind(this), 100);
-            } else {
-                deferred.resolve(this._piwik);
-            }
-            return deferred.promise();
-        },
-
-        /**
-         * Create a new Piwik tracker returned as a promise
-         *
-         * @param String|undefined trackerUrl
-         * @param Number|undefined siteId
-         * @returns Promise
-         */
-        createTracker: function (trackerUrl, siteId) {
-            var deferred = $.Deferred();
-            this.getPiwik().then((function (piwik) {
-                deferred.resolve(piwik.getTracker(
-                    trackerUrl || this._config.trackerUrl,
-                    siteId || this._config.siteId
-                ));
-            }).bind(this));
-            return deferred.promise();
-        },
-
-        /**
-         * Push an action to the given tracker. If the tracker argument is
-         * omitted the action will be picked up by the async tracker.
-         *
-         * @param Array action
-         * @param Tracker|undefined tracker
-         * @returns Object
-         */
-        push: function (action, tracker) {
-            if (typeof tracker === 'object') {
-                var actionName = action.shift();
-                if (typeof tracker[actionName] === 'function') {
-                    tracker[actionName].apply(tracker, action);
-                } else {
-                    console.error('Undefined tracker function: ' + actionName);
-                }
-            } else {
-                exports._paq.push(action);
-            }
-            return this;
+    /**
+     * Callback for when the injected Piwik script is ready
+     */
+    function onPiwikLoaded() {
+        if (_.isFunction(origPiwikAsyncInit)) {
+            origPiwikAsyncInit();
         }
-    };
+        if (_.isObject(exports.Piwik)) {
+            piwik = exports.Piwik;
+            _.each(piwikPromises, function (deferred) {
+                deferred.resolve(piwik);
+            });
+        } else {
+            piwik = false;
+            _.each(piwikPromises, function (deferred) {
+                deferred.reject();
+            });
+        }
+    }
 
-    return tracker;
+    /**
+     * Get Piwik singleton/namespace promise
+     *
+     * @returns {Promise}
+     */
+    function getPiwikPromise() {
+        var deferred = $.Deferred();
+        if (piwik === null) {
+            piwikPromises.push(deferred);
+        } else if (piwik === false) {
+            deferred.reject();
+        } else {
+            deferred.resolve(piwik);
+        }
+        return deferred.promise();
+    }
+
+    /**
+     * Get asynchronous Piwik tracker promise
+     *
+     * @returns {Promise}
+     */
+    function getAsyncTrackerPromise()
+    {
+        var deferred = $.Deferred();
+        getPiwikPromise()
+            .done(function (piwik) {
+                deferred.resolve(piwik.getAsyncTracker());
+            })
+            .fail(function () {
+                deferred.reject();
+            });
+        return deferred.promise();
+    }
+
+    /**
+     * Create a new Piwik tracker promise
+     *
+     * @param {String|undefined} trackerUrl
+     * @param {number|undefined} siteId
+     * @returns {Promise}
+     */
+    function getTrackerPromise(trackerUrl, siteId) {
+        var deferred = $.Deferred();
+        getPiwikPromise()
+            .done(function (piwik) {
+                deferred.resolve(piwik.getTracker(
+                    trackerUrl || defaultTrackerUrl,
+                    siteId || defaultSiteId
+                ));
+            })
+            .fail(function () {
+                deferred.reject();
+            });
+        return deferred.promise();
+    }
+
+    /**
+     * Push an action to the given tracker. If the tracker argument is
+     * omitted the action will be picked up by the async tracker.
+     *
+     * @param {Array} action
+     * @param {Tracker|undefined} tracker
+     */
+    function pushAction(action, tracker) {
+        if (!_.isArray(action) || _.isEmpty(action)) {
+            return;
+        } else if (_.isArray(_.first(action))) {
+            _.each(action, function (subAction) {
+                pushAction(subAction, tracker);
+            });
+        } else if (_.isObject(tracker)) {
+            var actionName = action.shift();
+            if (_.isFunction(tracker[actionName])) {
+                tracker[actionName].apply(tracker, action);
+            }
+        } else {
+            exports._paq.push(action);
+        }
+    }
+
+    /**
+     * Callback for cart customer data subscriber
+     *
+     * @param {Object} cart
+     * @see \Henhed\Piwik\CustomerData\Checkout\CartPlugin
+     */
+    function cartUpdated(cart) {
+
+        // Check in storage if we have registered this cart already
+        if (_.has(cart, 'data_id')) {
+            if (storage.get('cart-data-id') === cart.data_id) {
+                return;
+            } else {
+                storage.set('cart-data-id', cart.data_id);
+            }
+        }
+
+        if (_.has(cart, 'piwikActions')) {
+            // We need to create a new tracker instance for asynchronous
+            // ecommerce updates since previous ecommerce items are stored
+            // in the tracker.
+            getTrackerPromise().done(function (tracker) {
+                pushAction(cart.piwikActions, tracker);
+            });
+        }
+    }
+
+    /**
+     * Initialzie this component with given options
+     *
+     * @param {Object} options
+     */
+    function initialize(options) {
+        pushAction([
+            ['setSiteId', defaultSiteId = options.siteId],
+            ['setTrackerUrl', defaultTrackerUrl = options.trackerUrl]
+        ]);
+        pushAction(options.actions);
+        injectScript(options.scriptUrl);
+    }
+
+    // Make sure the Piwik asynchronous tracker queue is defined
+    exports._paq = exports._paq || [];
+    // Listen for when the Piwik asynchronous tracker is ready
+    exports.piwikAsyncInit = onPiwikLoaded;
+    // Subscribe to cart updates
+    customerData.get('cart').subscribe(cartUpdated);
+
+    return {
+        // Public component API
+        createTracker: getTrackerPromise,
+        getPiwik: getPiwikPromise,
+        getTracker: getAsyncTrackerPromise,
+        push: pushAction,
+        // Entrypoint called with options from piwik.phtml
+        // @see /lib/web/mage/apply/main.js:init
+        'Henhed_Piwik/js/tracker': initialize
+    };
 });
