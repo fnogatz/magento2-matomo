@@ -44,6 +44,13 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
     protected $_tracker;
 
     /**
+     * Piwik data helper mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
+     */
+    protected $_dataHelperMock;
+
+    /**
      * Order collection mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_orderCollectionMock
@@ -92,6 +99,7 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
         $arguments = $objectMgr->getConstructArguments($className);
         $arguments['piwikTracker'] = $this->_tracker;
         $this->_testSubject = $objectMgr->getObject($className, $arguments);
+        $this->_dataHelperMock = $arguments['dataHelper'];
 
         // Create event observer mock objects
         $this->_orderCollectionMock = $this->getMock(
@@ -252,14 +260,15 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute
+     * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute where
+     * tracking is enabled.
      *
      * @param array $ordersData
      * @param array $expectedResult
      * @return void
      * @dataProvider executeDataProvider
      */
-    public function testExecute($ordersData, $expectedResult)
+    public function testExecuteWithTrackingEnabled($ordersData, $expectedResult)
     {
         $orderIds = [];
         $orders = [];
@@ -272,6 +281,11 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
                                              $discount, $itemsData);
         }
 
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         $this->_eventMock
             ->expects($this->atLeastOnce())
             ->method('getOrderIds')
@@ -282,7 +296,40 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
             ->method('getIterator')
             ->willReturn(new \ArrayIterator($orders));
 
-        $this->_testSubject->execute($this->_eventObserverMock);
+        $this->assertSame(
+            $this->_testSubject,
+            $this->_testSubject->execute($this->_eventObserverMock)
+        );
         $this->assertEquals($expectedResult, $this->_tracker->toArray());
+    }
+
+    /**
+     * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute where
+     * tracking is disabled.
+     *
+     * @return void
+     */
+    public function testExecuteWithTrackingDisabled()
+    {
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(false);
+
+        $this->_eventMock
+            ->expects($this->any())
+            ->method('getOrderIds')
+            ->willReturn([1]);
+
+        $this->_orderCollectionMock
+            ->expects($this->never())
+            ->method('getIterator');
+
+        $this->assertSame(
+            $this->_testSubject,
+            $this->_testSubject->execute($this->_eventObserverMock)
+        );
+
+        $this->assertEquals([], $this->_tracker->toArray());
     }
 }

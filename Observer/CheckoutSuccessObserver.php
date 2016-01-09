@@ -38,6 +38,13 @@ class CheckoutSuccessObserver implements ObserverInterface
     protected $_piwikTracker;
 
     /**
+     * Piwik data helper
+     *
+     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     */
+    protected $_dataHelper;
+
+    /**
      * Sales order collection factory
      *
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $_orderCollectionFactory
@@ -48,13 +55,16 @@ class CheckoutSuccessObserver implements ObserverInterface
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
+     * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
+        \Henhed\Piwik\Helper\Data $dataHelper,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
         $this->_piwikTracker = $piwikTracker;
+        $this->_dataHelper = $dataHelper;
         $this->_orderCollectionFactory = $orderCollectionFactory;
     }
 
@@ -67,7 +77,9 @@ class CheckoutSuccessObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $orderIds = $observer->getEvent()->getOrderIds();
-        if (empty($orderIds) || !is_array($orderIds)) {
+        if (!$this->_dataHelper->isTrackingEnabled()
+            || empty($orderIds) || !is_array($orderIds)
+        ) {
             return $this;
         }
 
