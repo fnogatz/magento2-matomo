@@ -51,6 +51,13 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
     protected $_quoteMock;
 
     /**
+     * Piwik data helper mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
+     */
+    protected $_dataHelperMock;
+
+    /**
      * Tracker model mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_trackerMock
@@ -84,6 +91,7 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
             ->method('getQuote')
             ->willReturn($this->_quoteMock);
 
+        $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_trackerMock = $this->getMock(
             'Henhed\Piwik\Model\Tracker', [], [], '', false
         );
@@ -108,6 +116,12 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
     public function testafterGetSectionData()
     {
         $expectedResult = ['piwikActions' => ['someKey' => 'someValue']];
+
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
 
         // Give ID to quote mock
         $this->_quoteMock
@@ -143,6 +157,48 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
      */
     public function testafterGetSectionDataWithEmptyQuote()
     {
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
+        // Make sure tracker methods are never called
+        $this->_trackerHelperMock
+            ->expects($this->never())
+            ->method('addQuote');
+        $this->_trackerMock
+            ->expects($this->never())
+            ->method('toArray');
+
+        // Assert that result of plugin is same as input
+        $result = ['someKey' => 'someValue'];
+        $this->assertEquals(
+            $result,
+            $this->_cartPlugin->afterGetSectionData($this->_cartMock, $result)
+        );
+    }
+
+    /**
+     * Test \Henhed\Piwik\CustomerData\Checkout\CartPlugin::afterGetSectionData
+     * with tracking disabled.
+     *
+     * @return void
+     */
+    public function testafterGetSectionDataWithTrackingDisabled()
+    {
+        // Disable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(false);
+
+        // Give ID to quote mock
+        $this->_quoteMock
+            ->expects($this->any())
+            ->method('getId')
+            ->willReturn(1);
+
         // Make sure tracker methods are never called
         $this->_trackerHelperMock
             ->expects($this->never())

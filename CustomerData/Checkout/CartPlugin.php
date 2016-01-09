@@ -35,6 +35,13 @@ class CartPlugin
     protected $_checkoutSession;
 
     /**
+     * Piwik data helper
+     *
+     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     */
+    protected $_dataHelper;
+
+    /**
      * Tracker helper
      *
      * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
@@ -52,15 +59,18 @@ class CartPlugin
      * Constructor
      *
      * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
      * @param \Henhed\Piwik\Model\TrackerFactory $trackerFactory
      */
     public function __construct(
         \Magento\Checkout\Model\Session $checkoutSession,
+        \Henhed\Piwik\Helper\Data $dataHelper,
         \Henhed\Piwik\Helper\Tracker $trackerHelper,
         \Henhed\Piwik\Model\TrackerFactory $trackerFactory
     ) {
         $this->_checkoutSession = $checkoutSession;
+        $this->_dataHelper = $dataHelper;
         $this->_trackerHelper = $trackerHelper;
         $this->_trackerFactory = $trackerFactory;
     }
@@ -76,11 +86,13 @@ class CartPlugin
         \Magento\Checkout\CustomerData\Cart $subject,
         $result
     ) {
-        $quote = $this->_checkoutSession->getQuote();
-        if ($quote->getId()) {
-            $tracker = $this->_trackerFactory->create();
-            $this->_trackerHelper->addQuote($quote, $tracker);
-            $result['piwikActions'] = $tracker->toArray();
+        if ($this->_dataHelper->isTrackingEnabled()) {
+            $quote = $this->_checkoutSession->getQuote();
+            if ($quote->getId()) {
+                $tracker = $this->_trackerFactory->create();
+                $this->_trackerHelper->addQuote($quote, $tracker);
+                $result['piwikActions'] = $tracker->toArray();
+            }
         }
         return $result;
     }
