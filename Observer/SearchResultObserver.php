@@ -38,6 +38,13 @@ class SearchResultObserver implements ObserverInterface
     protected $_piwikTracker;
 
     /**
+     * Piwik data helper
+     *
+     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     */
+    protected $_dataHelper;
+
+    /**
      * Search query factory
      *
      * @var \Magento\Search\Model\QueryFactory $_queryFactory
@@ -55,15 +62,18 @@ class SearchResultObserver implements ObserverInterface
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
+     * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Magento\Search\Model\QueryFactory $queryFactory
      * @param \Magento\Framework\App\ViewInterface $view
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
+        \Henhed\Piwik\Helper\Data $dataHelper,
         \Magento\Search\Model\QueryFactory $queryFactory,
         \Magento\Framework\App\ViewInterface $view
     ) {
         $this->_piwikTracker = $piwikTracker;
+        $this->_dataHelper = $dataHelper;
         $this->_queryFactory = $queryFactory;
         $this->_view = $view;
     }
@@ -76,6 +86,10 @@ class SearchResultObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        if (!$this->_dataHelper->isTrackingEnabled()) {
+            return $this;
+        }
+
         $query = $this->_queryFactory->get();
         $piwikBlock = $this->_view->getLayout()->getBlock('piwik.tracker');
         /* @var $query \Magento\Search\Model\Query */

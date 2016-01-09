@@ -44,6 +44,13 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
     protected $_trackerMock;
 
     /**
+     * Piwik data helper mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
+     */
+    protected $_dataHelperMock;
+
+    /**
      * Layout mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_layoutMock
@@ -93,6 +100,7 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
             'Henhed\Piwik\Model\Tracker', ['trackSiteSearch'], [], '', false
         );
         $arguments['piwikTracker'] = $this->_trackerMock;
+        $this->_dataHelperMock = $arguments['dataHelper'];
 
         $this->_layoutMock = $this->getMock(
             'Magento\Framework\View\Layout', [], [], '', false
@@ -175,6 +183,12 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
         $queryText = 'Some query text';
         $resultsCount = 5;
 
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         $this->_prepareQueryMock($queryText, null);
         $this->_prepareLayoutMock([
             'search.result' => $this->_searchResultBlockMock
@@ -211,6 +225,12 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
     {
         $queryText = 'Some query text';
 
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         $this->_prepareQueryMock($queryText, null);
         $this->_prepareLayoutMock(['search.result' => false]);
 
@@ -239,6 +259,12 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
         $queryText = 'Some query text';
         $resultsCount = 5;
 
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         $this->_prepareQueryMock($queryText, $resultsCount);
         $this->_prepareLayoutMock([
             'search.result' => $this->_searchResultBlockMock
@@ -256,6 +282,32 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
             ->method('trackSiteSearch')
             ->with($queryText, false, $resultsCount)
             ->willReturn($this->_trackerMock);
+
+        // Assert that `execute' returns $this
+        $this->assertSame(
+            $this->_observer,
+            $this->_observer->execute($this->_eventObserverMock)
+        );
+    }
+
+    /**
+     * Test for \Henhed\Piwik\Observer\SearchResultObserver::execute where
+     * tracking is disabled.
+     *
+     * @return void
+     */
+    public function testExecuteWithTrackingDisabled()
+    {
+        // Disable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(false);
+
+        // Make sure the trackers' `trackSiteSearch' is never called
+        $this->_trackerMock
+            ->expects($this->never())
+            ->method('trackSiteSearch');
 
         // Assert that `execute' returns $this
         $this->assertSame(
