@@ -44,6 +44,13 @@ class CartViewObserver implements ObserverInterface
     protected $_trackerHelper;
 
     /**
+     * Piwik data helper
+     *
+     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     */
+    protected $_dataHelper;
+
+    /**
      * Checkout session instance
      *
      * @var \Magento\Checkout\Model\Session $_checkoutSession
@@ -55,15 +62,18 @@ class CartViewObserver implements ObserverInterface
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
      * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
+     * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Magento\Checkout\Model\Session $checkoutSession
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
         \Henhed\Piwik\Helper\Tracker $trackerHelper,
+        \Henhed\Piwik\Helper\Data $dataHelper,
         \Magento\Checkout\Model\Session $checkoutSession
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_trackerHelper = $trackerHelper;
+        $this->_dataHelper = $dataHelper;
         $this->_checkoutSession = $checkoutSession;
     }
 
@@ -75,10 +85,12 @@ class CartViewObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $this->_trackerHelper->addQuote(
-            $this->_checkoutSession->getQuote(),
-            $this->_piwikTracker
-        );
+        if ($this->_dataHelper->isTrackingEnabled()) {
+            $this->_trackerHelper->addQuote(
+                $this->_checkoutSession->getQuote(),
+                $this->_piwikTracker
+            );
+        }
         return $this;
     }
 }

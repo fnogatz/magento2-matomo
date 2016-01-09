@@ -58,6 +58,13 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
     protected $_trackerHelperMock;
 
     /**
+     * Piwik data helper mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
+     */
+    protected $_dataHelperMock;
+
+    /**
      * Checkout session mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_eventObserverMock
@@ -84,6 +91,7 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_trackerMock = $arguments['piwikTracker'];
         $this->_trackerHelperMock = $arguments['trackerHelper'];
+        $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_checkoutSessionMock = $arguments['checkoutSession'];
         $this->_eventObserverMock = $this->getMock(
             'Magento\Framework\Event\Observer', [], [], '', false
@@ -94,12 +102,19 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CartViewObserver::execute
+     * Test for \Henhed\Piwik\Observer\CartViewObserver::execute where
+     * tracking is enabled.
      *
      * @return void
      */
-    public function testExecute()
+    public function testExecuteWithTrackingEnabled()
     {
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         // Provide quote mock access from checkout session mock
         $this->_checkoutSessionMock
             ->expects($this->any())
@@ -114,6 +129,38 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
             ->method('addQuote')
             ->with($this->_quoteMock, $this->_trackerMock)
             ->willReturn($this->_trackerHelperMock);
+
+        // Assert that `execute' returns $this
+        $this->assertSame(
+            $this->_observer,
+            $this->_observer->execute($this->_eventObserverMock)
+        );
+    }
+
+    /**
+     * Test for \Henhed\Piwik\Observer\CartViewObserver::execute where
+     * tracking is disabled.
+     *
+     * @return void
+     */
+    public function testExecuteWithTrackingDisabled()
+    {
+        // Disable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(false);
+
+        // Provide quote mock access from checkout session mock
+        $this->_checkoutSessionMock
+            ->expects($this->any())
+            ->method('getQuote')
+            ->willReturn($this->_quoteMock);
+
+        // Make sure the tracker helpers `addQuote' is never called
+        $this->_trackerHelperMock
+            ->expects($this->never())
+            ->method('addQuote');
 
         // Assert that `execute' returns $this
         $this->assertSame(
