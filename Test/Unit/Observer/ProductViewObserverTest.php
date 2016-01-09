@@ -44,6 +44,13 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
     protected $_trackerMock;
 
     /**
+     * Piwik data helper mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
+     */
+    protected $_dataHelperMock;
+
+    /**
      * Event mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_eventMock
@@ -86,6 +93,7 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
         );
         $arguments['piwikTracker'] = $this->_trackerMock;
         $this->_observer = $objectManager->getObject($className, $arguments);
+        $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_eventMock = $this->getMock(
             'Magento\Framework\Event', ['getProduct'], [], '', false
         );
@@ -116,7 +124,8 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\ProductViewObserver::execute
+     * Test for \Henhed\Piwik\Observer\ProductViewObserver::execute where
+     * tracking is enabled.
      *
      * @param string $sku
      * @param string $name
@@ -125,8 +134,15 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
      * @return void
      * @dataProvider executeDataProvider
      */
-    public function testExecute($sku, $name, $price, $category = null)
-    {
+    public function testExecuteWithTrackingEnabled($sku, $name, $price,
+        $category = null
+    ) {
+        // Enable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(true);
+
         // Prepare event observer mock
         $this->_eventObserverMock
             ->expects($this->once())
@@ -174,6 +190,43 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
                 (float) $price
             )
             ->willReturn($this->_trackerMock);
+
+        // Assert that `execute' returns $this
+        $this->assertSame(
+            $this->_observer,
+            $this->_observer->execute($this->_eventObserverMock)
+        );
+    }
+
+    /**
+     * Test for \Henhed\Piwik\Observer\ProductViewObserver::execute where
+     * tracking is disabled.
+     *
+     * @return void
+     */
+    public function testExecuteWithTrackingDisabled()
+    {
+        // Disable tracking
+        $this->_dataHelperMock
+            ->expects($this->once())
+            ->method('isTrackingEnabled')
+            ->willReturn(false);
+
+        // Provide access to event and product though they should preferably
+        // never be touched when tracking is disabled.
+        $this->_eventObserverMock
+            ->expects($this->any())
+            ->method('getEvent')
+            ->willReturn($this->_eventMock);
+        $this->_eventMock
+            ->expects($this->any())
+            ->method('getProduct')
+            ->willReturn($this->_productMock);
+
+        // Make sure trackers' `setEcommerceView' is never called.
+        $this->_trackerMock
+            ->expects($this->never())
+            ->method('setEcommerceView');
 
         // Assert that `execute' returns $this
         $this->assertSame(

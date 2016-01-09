@@ -37,13 +37,24 @@ class ProductViewObserver implements ObserverInterface
     protected $_piwikTracker;
 
     /**
+     * Piwik data helper
+     *
+     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     */
+    protected $_dataHelper;
+
+    /**
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
+     * @param \Henhed\Piwik\Helper\Data $dataHelper
      */
-    public function __construct(\Henhed\Piwik\Model\Tracker $piwikTracker)
-    {
+    public function __construct(
+        \Henhed\Piwik\Model\Tracker $piwikTracker,
+        \Henhed\Piwik\Helper\Data $dataHelper
+    ) {
         $this->_piwikTracker = $piwikTracker;
+        $this->_dataHelper = $dataHelper;
     }
 
     /**
@@ -54,6 +65,10 @@ class ProductViewObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        if (!$this->_dataHelper->isTrackingEnabled()) {
+            return $this;
+        }
+
         $product = $observer->getEvent()->getProduct();
         /* @var $product \Magento\Catalog\Model\Product */
 
