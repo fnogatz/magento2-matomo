@@ -58,7 +58,7 @@ define([
      *
      * @type {Object}
      */
-    var piwik = null;
+    var piwik = exports.Piwik || null;
 
     /**
      * Collection of piwik promises
@@ -78,14 +78,35 @@ define([
      * Append Piwik tracker script URL to head
      *
      * @param {String} scriptUrl
+     * @return bool Wheter the script was injected
      */
     function injectScript(scriptUrl) {
-        $('<script>')
-            .attr('type', 'text/javascript')
-            .attr('async', true)
-            .attr('defer', true)
-            .attr('src', scriptUrl)
-            .appendTo('head');
+        if (piwik === null) {
+            $('<script>')
+                .attr('type', 'text/javascript')
+                .attr('async', true)
+                .attr('defer', true)
+                .attr('src', scriptUrl)
+                .appendTo('head');
+            return true;
+        }
+        return false; // Script is already included
+    }
+
+    /**
+     * Resolve (or reject) requests for the Piwik singleton
+     */
+    function resolvePiwikPromises()
+    {
+        if (piwik) {
+            _.each(piwikPromises, function (deferred) {
+                deferred.resolve(piwik);
+            });
+        } else {
+            _.each(piwikPromises, function (deferred) {
+                deferred.reject();
+            });
+        }
     }
 
     /**
@@ -95,16 +116,9 @@ define([
         if (_.isFunction(origPiwikAsyncInit)) {
             origPiwikAsyncInit();
         }
-        if (_.isObject(exports.Piwik)) {
-            piwik = exports.Piwik;
-            _.each(piwikPromises, function (deferred) {
-                deferred.resolve(piwik);
-            });
-        } else {
-            piwik = false;
-            _.each(piwikPromises, function (deferred) {
-                deferred.reject();
-            });
+        piwik = _.isObject(exports.Piwik) ? exports.Piwik : false;
+        if (defaultSiteId && defaultTrackerUrl) {
+            resolvePiwikPromises();
         }
     }
 
@@ -115,7 +129,7 @@ define([
      */
     function getPiwikPromise() {
         var deferred = $.Deferred();
-        if (piwik === null) {
+        if (piwik === null || !defaultSiteId || !defaultTrackerUrl) {
             piwikPromises.push(deferred);
         } else if (piwik === false) {
             deferred.reject();
@@ -227,7 +241,11 @@ define([
             ['setTrackerUrl', defaultTrackerUrl = options.trackerUrl]
         ]);
         pushAction(options.actions);
-        injectScript(options.scriptUrl);
+        if (!injectScript(options.scriptUrl)) {
+            // If the tracker script was not injected we already have the Piwik
+            // object and can resolve promises immediately.
+            resolvePiwikPromises();
+        }
     }
 
     // Make sure the Piwik asynchronous tracker queue is defined

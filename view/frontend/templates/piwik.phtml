@@ -27,6 +27,23 @@
     ]
 ]); ?>
 </script>
+<?php
+// The following script can be omitted in which case the
+// `Henhed_Piwik/js/tracker' component will inject the tracker script instead.
+// However that might cause the tracker script to miss the `DOMContentLoaded'
+// event which breaks the link tracking feature.
+?>
+<script type="text/javascript">
+(function (d) {
+    var g = d.createElement('script'),
+        s = d.getElementsByTagName('script')[0];
+    g.type = 'text/javascript';
+    g.async = true;
+    g.defer = true;
+    g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
+    s.parentNode.insertBefore(g, s);
+})(document);
+</script>
 <noscript>
     <p>
         <img src="<?php echo $block->getTrackingPixelUrl(); ?>"
