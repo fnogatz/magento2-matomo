@@ -28,10 +28,17 @@ Alternatively, you can clone the Henhed_Piwik Git repository into
 git clone https://github.com/henkelund/magento2-henhed-piwik.git app/code/Henhed/Piwik
 ```
 
+Or, if you prefer, install it using [Composer][composer].
+
+```sh
+composer config repositories.henhedpiwik git https://github.com/henkelund/magento2-henhed-piwik.git
+composer require henhed/module-piwik:dev-master
+```
+
 Finally, enable the module with the Magento CLI tool.
 
 ```sh
-php bin/magento module:enable Henhed_Piwik
+php bin/magento module:enable Henhed_Piwik --clear-static-content
 ```
 
 Configuration
@@ -56,6 +63,8 @@ Affero General Public License][agpl] for more details.
     "Free Web Analytics Software"
 [magento]: https://magento.com/
     "eCommerce Software & eCommerce Platform Solutions"
+[composer]: https://getcomposer.org/
+    "Dependency Manager for PHP"
 [agpl]: http://www.gnu.org/licenses/agpl.html
     "GNU Affero General Public License"
 [download]: https://github.com/henkelund/magento2-henhed-piwik/archive/master.zip
