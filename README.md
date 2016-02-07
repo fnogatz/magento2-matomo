@@ -84,7 +84,7 @@ public function __construct(\Henhed\Piwik\Model\Tracker $piwikTracker)
 ```
 
 Beware of tracking user specific information on the server side as it will most
-likely cause caching problems. Instead, use Javascript to retrive the user data
+likely cause caching problems. Instead, use Javascript to retrieve the user data
 from a cookie, localStorage or some Ajax request and then push the data to Piwik
 using either the Henhed_Piwik JS component ..
 
