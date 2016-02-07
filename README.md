@@ -41,6 +41,7 @@ Finally, enable the module with the Magento CLI tool.
 php bin/magento module:enable Henhed_Piwik --clear-static-content
 ```
 
+
 Configuration
 -------------
 
@@ -51,6 +52,62 @@ To start tracking, set *Enable Tracking* to *Yes*, enter the
 have multiple websites in the same Piwik installation, make sure the
 *Site ID* configured in Magento is correct.
 
+
+Customization
+-------------
+
+If you need to send some custom information to your Piwik server, Henhed_Piwik
+lets you do so using event observers.
+
+To set custom data on each page, use the `piwik_track_page_view_before` event.
+A tracker instance will be passed along with the event object to your observer's
+`execute` method.
+
+```php
+public function execute(\Magento\Framework\Event\Observer $observer)
+{
+    $tracker = $observer->getEvent()->getTracker();
+    /* @var $tracker \Henhed\Piwik\Model\Tracker */
+    $tracker->setDocumentTitle('My Custom Title');
+}
+```
+
+If you only want to add data under some specific circumstance, find a suitable
+event and request the tracker singleton in your observer's constructor. Store
+the tracker in a class member variable for later use in the `execute` method.
+
+```php
+public function __construct(\Henhed\Piwik\Model\Tracker $piwikTracker)
+{
+    $this->_piwikTracker = $piwikTracker;
+}
+```
+
+Beware of tracking user specific information on the server side as it will most
+likely cause caching problems. Instead, use Javascript to retrive the user data
+from a cookie, localStorage or some Ajax request and then push the data to Piwik
+using either the Henhed_Piwik JS component ..
+
+```js
+require(['Henhed_Piwik/js/tracker'], function (trackerComponent) {
+    trackerComponent.getTracker().done(function (tracker) {
+        // Do something with tracker
+    });
+});
+```
+
+.. or the vanilla Piwik approach.
+
+```js
+var _paq = _paq || [];
+_paq.push(['setDocumentTitle', 'My Custom Title']);
+```
+
+See the [Piwik Developer Docs][piwik-tracking-api] or the
+[\Henhed\Piwik\Model\Tracker][henhed-piwik-tracker] source code for a list of
+all methods available in the Tracking API.
+
+
 Disclaimer
 ----------
 
@@ -59,13 +116,17 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU
 Affero General Public License][agpl] for more details.
 
-[piwik]: http://piwik.org/
-    "Free Web Analytics Software"
-[magento]: https://magento.com/
-    "eCommerce Software & eCommerce Platform Solutions"
-[composer]: https://getcomposer.org/
-    "Dependency Manager for PHP"
 [agpl]: http://www.gnu.org/licenses/agpl.html
     "GNU Affero General Public License"
+[composer]: https://getcomposer.org/
+    "Dependency Manager for PHP"
 [download]: https://github.com/henkelund/magento2-henhed-piwik/archive/master.zip
     "magento2-henhed-piwik-master"
+[henhed-piwik-tracker]: https://github.com/henkelund/magento2-henhed-piwik/blob/master/Model/Tracker.php
+    "Model/Tracker.php at master"
+[magento]: https://magento.com/
+    "eCommerce Software & eCommerce Platform Solutions"
+[piwik]: http://piwik.org/
+    "Free Web Analytics Software"
+[piwik-tracking-api]: http://developer.piwik.org/api-reference/tracking-javascript
+    "JavaScript Tracking Client"
