@@ -20,7 +20,7 @@
 
 namespace Henhed\Piwik\Helper;
 
-use Henhed\Piwik\Model\Tracker;
+use Henhed\Piwik\Model\Tracker as TrackerModel;
 use Magento\Quote\Model\Quote;
 
 /**
@@ -38,7 +38,7 @@ class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Henhed\Piwik\Model\Tracker $tracker
      * @return \Henhed\Piwik\Helper\Tracker
      */
-    public function addQuoteItem(Quote\Item $item, Tracker $tracker)
+    public function addQuoteItem(Quote\Item $item, TrackerModel $tracker)
     {
         $tracker->addEcommerceItem(
             $item->getSku(),
@@ -59,7 +59,7 @@ class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Henhed\Piwik\Model\Tracker $tracker
      * @return \Henhed\Piwik\Helper\Tracker
      */
-    public function addQuoteTotal(Quote $quote, Tracker $tracker)
+    public function addQuoteTotal(Quote $quote, TrackerModel $tracker)
     {
         $tracker->trackEcommerceCartUpdate((float) $quote->getBaseGrandTotal());
         return $this;
@@ -72,7 +72,7 @@ class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Henhed\Piwik\Model\Tracker $tracker
      * @return \Henhed\Piwik\Helper\Tracker
      */
-    public function addQuote(Quote $quote, Tracker $tracker)
+    public function addQuote(Quote $quote, TrackerModel $tracker)
     {
         foreach ($quote->getAllVisibleItems() as $item) {
             $this->addQuoteItem($item, $tracker);

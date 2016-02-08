@@ -2,7 +2,6 @@
     "name": "henhed/module-piwik",
     "description": "Piwik analytics module for Magento 2",
     "type": "magento2-module",
-    "version": "dev-master",
     "license": [
         "AGPL-3.0+"
     ],
