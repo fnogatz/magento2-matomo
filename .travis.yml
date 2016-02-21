@@ -1,0 +1,11 @@
+language: php
+php:
+  - 7.0
+env:
+  - M2_VERSION=2.0.2
+cache:
+  directories:
+    - $HOME/.composer/cache
+script:
+  - dev/ci/build.sh
+

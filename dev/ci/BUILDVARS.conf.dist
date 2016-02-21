@@ -1,0 +1,2 @@
+MODULE_NAME='Henhed_Piwik'
+MODULE_SRC_DIR="$(cd "$(dirname "$0")"/../.. && pwd)"
