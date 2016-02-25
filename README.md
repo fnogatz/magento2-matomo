@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/henkelund/magento2-henhed-piwik.svg?branch=master)](https://travis-ci.org/henkelund/magento2-henhed-piwik)
+
 Henhed_Piwik
 ============
 
