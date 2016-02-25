@@ -82,7 +82,12 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
 
         // Create tracker
         $trackerClass = 'Henhed\Piwik\Model\Tracker';
-        $trackerArgs = $objectMgr->getConstructArguments($trackerClass);
+        $trackerArgs = $objectMgr->getConstructArguments($trackerClass, [
+            'actionFactory' => $this->getMock(
+                'Henhed\Piwik\Model\Tracker\ActionFactory',
+                ['create'], [], '', false
+            )
+        ]);
         $trackerArgs['actionFactory']
             ->expects($this->any())
             ->method('create')
@@ -96,7 +101,12 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
 
         // Create test subject
         $className = 'Henhed\Piwik\Observer\CheckoutSuccessObserver';
-        $arguments = $objectMgr->getConstructArguments($className);
+        $arguments = $objectMgr->getConstructArguments($className, [
+            'orderCollectionFactory' => $this->getMock(
+                'Magento\Sales\Model\ResourceModel\Order\CollectionFactory',
+                ['create'], [], '', false
+            )
+        ]);
         $arguments['piwikTracker'] = $this->_tracker;
         $this->_testSubject = $objectMgr->getObject($className, $arguments);
         $this->_dataHelperMock = $arguments['dataHelper'];

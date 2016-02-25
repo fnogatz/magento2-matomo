@@ -53,7 +53,12 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
     {
         $className = '\Henhed\Piwik\Model\Tracker';
         $objectManager = new ObjectManager($this);
-        $arguments = $objectManager->getConstructArguments($className);
+        $arguments = $objectManager->getConstructArguments($className, [
+            'actionFactory' => $this->getMock(
+                'Henhed\Piwik\Model\Tracker\ActionFactory',
+                ['create'], [], '', false
+            )
+        ]);
         $this->_tracker = $objectManager->getObject($className, $arguments);
         $this->_actionFactory = $arguments['actionFactory'];
     }

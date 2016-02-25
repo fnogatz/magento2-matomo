@@ -80,7 +80,12 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
     {
         $className = 'Henhed\Piwik\CustomerData\Checkout\CartPlugin';
         $objectManager = new ObjectManager($this);
-        $arguments = $objectManager->getConstructArguments($className);
+        $arguments = $objectManager->getConstructArguments($className, [
+            'trackerFactory' => $this->getMock(
+                'Henhed\Piwik\Model\TrackerFactory',
+                ['create'], [], '', false
+            )
+        ]);
         $this->_cartPlugin = $objectManager->getObject($className, $arguments);
 
         $this->_quoteMock = $this->getMock(
