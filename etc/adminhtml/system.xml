@@ -64,10 +64,38 @@
                     </depends>
                     <frontend_class>required-entry</frontend_class>
                 </field>
-                <field id="site_id"
+                <field id="js_script_path"
                        translate="label comment"
                        type="text"
                        sortOrder="30"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Javascript Path</label>
+                    <comment>Path to the Piwik tracker Javascript. Usually &quot;piwik.js&quot;.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                    <frontend_class>required-entry</frontend_class>
+                </field>
+                <field id="php_script_path"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="40"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>PHP Script Path</label>
+                    <comment>Path to the Piwik tracker PHP script. Usually &quot;piwik.php&quot;.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                    <frontend_class>required-entry</frontend_class>
+                </field>
+                <field id="site_id"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="50"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
@@ -81,7 +109,7 @@
                 <field id="link_enabled"
                        translate="label comment"
                        type="select"
-                       sortOrder="40"
+                       sortOrder="60"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
@@ -95,7 +123,7 @@
                 <field id="link_delay"
                        translate="label comment"
                        type="text"
-                       sortOrder="50"
+                       sortOrder="70"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
