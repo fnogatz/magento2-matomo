@@ -33,8 +33,7 @@ git clone https://github.com/henkelund/magento2-henhed-piwik.git app/code/Henhed
 Or, if you prefer, install it using [Composer][composer].
 
 ```sh
-composer config repositories.henhedpiwik git https://github.com/henkelund/magento2-henhed-piwik.git
-composer require henhed/module-piwik:dev-master
+composer require henhed/module-piwik
 ```
 
 Finally, enable the module with the Magento CLI tool.
