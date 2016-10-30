@@ -64,38 +64,10 @@
                     </depends>
                     <frontend_class>required-entry</frontend_class>
                 </field>
-                <field id="js_script_path"
-                       translate="label comment"
-                       type="text"
-                       sortOrder="30"
-                       showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1">
-                    <label>Javascript Path</label>
-                    <comment>Path to the Piwik tracker Javascript. Usually &quot;piwik.js&quot;.</comment>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
-                    <frontend_class>required-entry</frontend_class>
-                </field>
-                <field id="php_script_path"
-                       translate="label comment"
-                       type="text"
-                       sortOrder="40"
-                       showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1">
-                    <label>PHP Script Path</label>
-                    <comment>Path to the Piwik tracker PHP script. Usually &quot;piwik.php&quot;.</comment>
-                    <depends>
-                        <field id="enabled">1</field>
-                    </depends>
-                    <frontend_class>required-entry</frontend_class>
-                </field>
                 <field id="site_id"
                        translate="label comment"
                        type="text"
-                       sortOrder="50"
+                       sortOrder="30"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
@@ -109,7 +81,7 @@
                 <field id="link_enabled"
                        translate="label comment"
                        type="select"
-                       sortOrder="60"
+                       sortOrder="40"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
@@ -123,7 +95,7 @@
                 <field id="link_delay"
                        translate="label comment"
                        type="text"
-                       sortOrder="70"
+                       sortOrder="50"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
@@ -135,6 +107,53 @@
                     </depends>
                     <frontend_class>validate-digits validate-zero-or-greater</frontend_class>
                 </field>
+                <group id="advanced"
+                       translate="label"
+                       type="text"
+                       sortOrder="60"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Advanced Options</label>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                    <field id="php_script_path"
+                           translate="label comment"
+                           type="text"
+                           sortOrder="10"
+                           showInDefault="1"
+                           showInWebsite="1"
+                           showInStore="1">
+                        <label>PHP Script Path</label>
+                        <config_path>piwik/tracking/php_script_path</config_path>
+                        <comment>Path to the Piwik tracker PHP script. Usually &quot;piwik.php&quot;.</comment>
+                        <frontend_class>required-entry</frontend_class>
+                    </field>
+                    <field id="js_script_path"
+                           translate="label comment"
+                           type="text"
+                           sortOrder="20"
+                           showInDefault="1"
+                           showInWebsite="1"
+                           showInStore="1">
+                        <label>Javascript Path</label>
+                        <config_path>piwik/tracking/js_script_path</config_path>
+                        <comment>Path to the Piwik tracker Javascript. Usually &quot;piwik.js&quot;.</comment>
+                        <frontend_class>required-entry</frontend_class>
+                    </field>
+                    <field id="cdn_hostname"
+                           translate="label comment"
+                           type="text"
+                           sortOrder="30"
+                           showInDefault="1"
+                           showInWebsite="1"
+                           showInStore="1">
+                        <label>CDN Hostname</label>
+                        <config_path>piwik/tracking/cdn_hostname</config_path>
+                        <comment>Hostname for serving the Piwik tracker Javascript. May be left empty in which case the regular hostname will be used.</comment>
+                    </field>
+                </group>
             </group>
         </section>
     </system>
