@@ -34,6 +34,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     const XML_PATH_ENABLED = 'piwik/tracking/enabled';
     const XML_PATH_HOSTNAME = 'piwik/tracking/hostname';
+    const XML_PATH_CDN_HOSTNAME = 'piwik/tracking/cdn_hostname';
+    const XML_PATH_JS_SCRIPT_PATH = 'piwik/tracking/js_script_path';
+    const XML_PATH_PHP_SCRIPT_PATH = 'piwik/tracking/php_script_path';
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
     const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
     const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
@@ -63,11 +66,44 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getHostname($store = null)
     {
-        return $this->scopeConfig->getValue(
+        return trim($this->scopeConfig->getValue(
             self::XML_PATH_HOSTNAME,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        );
+        ));
+    }
+
+    /**
+     * Retrieve Piwik CDN hostname
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getCdnHostname($store = null)
+    {
+        return trim($this->scopeConfig->getValue(
+            self::XML_PATH_CDN_HOSTNAME,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ));
+    }
+
+    /**
+     * Retrieve base URL for given hostname
+     *
+     * @param string $host
+     * @param null|bool $secure
+     * @return string
+     */
+    protected function _getBaseUrl($host, $secure = null)
+    {
+        if (is_null($secure)) {
+            $secure = $this->_getRequest()->isSecure();
+        }
+        if (false !== ($scheme = strpos($host, '://'))) {
+            $host = substr($host, $scheme + 3);
+        }
+        return ($secure ? 'https://' : 'http://') . rtrim($host, '/') . '/';
     }
 
     /**
@@ -79,11 +115,78 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getBaseUrl($store = null, $secure = null)
     {
-        if (is_null($secure)) {
-            $secure = $this->_request->isSecure();
-        }
-        $host = rtrim($this->getHostname($store), '/');
-        return ($secure ? 'https://' : 'http://') . $host . '/';
+        return $this->_getBaseUrl($this->getHostname($store), $secure);
+    }
+
+    /**
+     * Retrieve Piwik CDN URL
+     *
+     * @param null|string|bool|int|Store $store
+     * @param null|bool $secure
+     * @return string
+     */
+    public function getCdnBaseUrl($store = null, $secure = null)
+    {
+        $host = $this->getCdnHostname($store);
+        return ('' !== $host)
+            ? $this->_getBaseUrl($host, $secure)
+            : $this->getBaseUrl($store, $secure);
+    }
+
+    /**
+     * Retrieve Piwik tracker JS script path
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getJsScriptPath($store = null)
+    {
+        return trim($this->scopeConfig->getValue(
+            self::XML_PATH_JS_SCRIPT_PATH,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ), ' /') ?: 'piwik.js';
+    }
+
+    /**
+     * Retrieve Piwik tracker JS script URL
+     *
+     * @param null|string|bool|int|Store $store
+     * @param null|bool $secure
+     * @return string
+     */
+    public function getJsScriptUrl($store = null, $secure = null)
+    {
+        return $this->getCdnBaseUrl($store, $secure)
+             . $this->getJsScriptPath($store);
+    }
+
+    /**
+     * Retrieve Piwik tracker PHP script path
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getPhpScriptPath($store = null)
+    {
+        return trim($this->scopeConfig->getValue(
+            self::XML_PATH_PHP_SCRIPT_PATH,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ), ' /') ?: 'piwik.php';
+    }
+
+    /**
+     * Retrieve Piwik tracker PHP script URL
+     *
+     * @param null|string|bool|int|Store $store
+     * @param null|bool $secure
+     * @return string
+     */
+    public function getPhpScriptUrl($store = null, $secure = null)
+    {
+        return $this->getBaseUrl($store, $secure)
+             . $this->getPhpScriptPath($store);
     }
 
     /**

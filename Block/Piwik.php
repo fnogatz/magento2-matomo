@@ -126,7 +126,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
      */
     public function getScriptUrl()
     {
-        return $this->_dataHelper->getBaseUrl() . 'piwik.js';
+        return $this->_dataHelper->getJsScriptUrl();
     }
 
     /**
@@ -136,7 +136,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
      */
     public function getTrackerUrl()
     {
-        return $this->_dataHelper->getBaseUrl() . 'piwik.php';
+        return $this->_dataHelper->getPhpScriptUrl();
     }
 
     /**

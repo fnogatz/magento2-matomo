@@ -77,12 +77,16 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @param string $siteId
      * @param string $linkEnabled
      * @param string $linkDelay
+     * @param string $phpScriptPath
+     * @param string $jsScriptPath
+     * @param string $cdnHostname
      * @param string $scope
      * @param null|string|bool|int|Store $store
      */
     protected function _prepareScopeConfigMock($enabled = null,
         $hostname = null, $siteId = null, $linkEnabled = null,
-        $linkDelay = null, $scope = ScopeInterface::SCOPE_STORE, $store = null
+        $linkDelay = null, $phpScriptPath = null, $jsScriptPath = null,
+        $cdnHostname = null, $scope = ScopeInterface::SCOPE_STORE, $store = null
     ) {
         $this->_scopeConfigMock
             ->expects($this->any())
@@ -113,6 +117,18 @@ class DataTest extends \PHPUnit_Framework_TestCase
                 [
                     \Henhed\Piwik\Helper\Data::XML_PATH_LINK_DELAY,
                     $scope, $store, $linkDelay
+                ],
+                [
+                    \Henhed\Piwik\Helper\Data::XML_PATH_PHP_SCRIPT_PATH,
+                    $scope, $store, $phpScriptPath
+                ],
+                [
+                    \Henhed\Piwik\Helper\Data::XML_PATH_JS_SCRIPT_PATH,
+                    $scope, $store, $jsScriptPath
+                ],
+                [
+                    \Henhed\Piwik\Helper\Data::XML_PATH_CDN_HOSTNAME,
+                    $scope, $store, $cdnHostname
                 ]
             ]));
     }
@@ -127,6 +143,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
         return [
             [true,  'piwik.example.org', 1, true],
             [true,  '',                  1, false],
+            [true,  ' ',                 1, false],
             [true,  'example.org/piwik', 0, false],
             [false, 'piwik.org',         1, false]
         ];
@@ -152,38 +169,60 @@ class DataTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for `testGetBaseUrl'
+     * Data provider for `testGetPhpScriptUrl'
      *
      * @return array
      */
-    public function baseUrlDataProvider()
+    public function phpScriptUrlDataProvider()
     {
         return [
-            ['piwik.org',          false, 'http://piwik.org/'],
-            ['piwik.org',          true,  'https://piwik.org/'],
-            ['example.org/piwik',  false, 'http://example.org/piwik/'],
-            ['example.org/piwik/', true,  'https://example.org/piwik/']
+            [
+                'piwik.org',
+                false, // should prepend `http://'
+                null, // should fall back on `piwik.php'
+                // Expected result
+                'http://piwik.org/piwik.php'
+            ],
+            [
+                'example.com/piwik',
+                true, // should prepend `https://'
+                'tracker.php', // should override `piwik.php'
+                // Expected result
+                'https://example.com/piwik/tracker.php'
+            ],
+            [
+                ' https://example.com/ ', // should be trimmed
+                false, // should replace `https://' with `http://'
+                ' /piwik/tracker.php ', // should be trimmed
+                // Expected result
+                'http://example.com/piwik/tracker.php'
+            ]
         ];
     }
 
     /**
-     * Test \Henhed\Piwik\Helper\Data::getBaseUrl
-     *
-     * Also covers `getHostname'
+     * Test \Henhed\Piwik\Helper\Data::getPhpScriptUrl
      *
      * @param string $hostname
      * @param bool $isSecure
+     * @param string $phpScriptPath
      * @param string $returnValue
-     * @dataProvider baseUrlDataProvider
+     * @dataProvider phpScriptUrlDataProvider
      */
-    public function testGetBaseUrl($hostname, $isSecure, $returnValue)
-    {
-        $this->_prepareScopeConfigMock(null, $hostname);
+    public function testGetPhpScriptUrl($hostname, $isSecure, $phpScriptPath,
+        $returnValue
+    ) {
+        $this->_prepareScopeConfigMock(
+            null,
+            $hostname,
+            null, null, null,
+            $phpScriptPath
+        );
 
         // Test explicit `isSecure'
         $this->assertEquals(
             $returnValue,
-            $this->_helper->getBaseUrl(null, $isSecure)
+            $this->_helper->getPhpScriptUrl(null, $isSecure)
         );
 
         // Test implicit `isSecure'
@@ -192,7 +231,78 @@ class DataTest extends \PHPUnit_Framework_TestCase
             ->method('isSecure')
             ->will($this->returnValue($isSecure));
 
-        $this->assertEquals($returnValue, $this->_helper->getBaseUrl());
+        $this->assertEquals($returnValue, $this->_helper->getPhpScriptUrl());
+    }
+
+    /**
+     * Data provider for `testGetJsScriptUrl'
+     *
+     * @return array
+     */
+    public function jsScriptUrlDataProvider()
+    {
+        return [
+            [
+                'piwik.org',
+                false, // should prepend `http://'
+                null, // should fall back on `piwik.js'
+                null, // should fall back on regular hostname
+                // Expected result
+                'http://piwik.org/piwik.js'
+            ],
+            [
+                ' piwik.org/path/ ', // should be trimmed
+                true, // should prepend `https://'
+                'example.js', // should override `piwik.js'
+                null, // should fall back on hostname
+                // Expected result
+                'https://piwik.org/path/example.js'
+            ],
+            [
+                'piwik.org', // should be ignored
+                true, // should replace `http://' with `https://''
+                ' /to/tracker.js ', // should be trimmed
+                'http://cdn.example.com/path/', // should override hostname
+                // Expected result
+                'https://cdn.example.com/path/to/tracker.js'
+            ]
+        ];
+    }
+
+    /**
+     * Test \Henhed\Piwik\Helper\Data::getJsScriptUrl
+     *
+     * @param string $hostname
+     * @param bool $isSecure
+     * @param string $jsScriptPath
+     * @param string $cdnHostname
+     * @param string $returnValue
+     * @dataProvider jsScriptUrlDataProvider
+     */
+    public function testGetJsScriptUrl($hostname, $isSecure, $jsScriptPath,
+        $cdnHostname, $returnValue
+    ) {
+        $this->_prepareScopeConfigMock(
+            null,
+            $hostname,
+            null, null, null, null,
+            $jsScriptPath,
+            $cdnHostname
+        );
+
+        // Test explicit `isSecure'
+        $this->assertEquals(
+            $returnValue,
+            $this->_helper->getJsScriptUrl(null, $isSecure)
+        );
+
+        // Test implicit `isSecure'
+        $this->_requestMock
+            ->expects($this->once())
+            ->method('isSecure')
+            ->will($this->returnValue($isSecure));
+
+        $this->assertEquals($returnValue, $this->_helper->getJsScriptUrl());
     }
 
     /**
@@ -206,6 +316,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
             [true,  true,  'piwik.example.org', 1, true],
             [false, true,  'piwik.example.org', 2, false],
             [true,  true,  '',                  1, false],
+            [true,  true,  ' ',                 1, false],
             [false, true,  'example.org/piwik', 0, false],
             [true,  false, 'piwik.org',         1, false]
         ];
