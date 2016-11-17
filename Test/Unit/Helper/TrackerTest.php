@@ -155,10 +155,10 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
                 ->expects($this->any())
                 ->method('getData')
                 ->willReturnMap([
-                    ['sku',            null, $sku],
-                    ['name',           null, $name],
-                    ['price_incl_tax', null, $price],
-                    ['qty',            null, $qty]
+                    ['sku',                 null, $sku],
+                    ['name',                null, $name],
+                    ['base_price_incl_tax', null, $price],
+                    ['qty',                 null, $qty]
                 ]);
             $quoteItems[] = $item;
         }
