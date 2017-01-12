@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2016 Henrik Hedelund
+ *
+ * This file is part of Henhed_Piwik.
+ *
+ * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Henhed_Piwik is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <virtualType name="Henhed\Piwik\Model\Config\Source\CustomPageVariable"
+                 type="Henhed\Piwik\Model\Config\Source\CustomVariable">
+         <arguments>
+             <argument name="scope" xsi:type="const">Henhed\Piwik\CustomVariable\CustomVariableInterface::SCOPE_PAGE</argument>
+         </arguments>
+    </virtualType>
+
+    <virtualType name="Henhed\Piwik\Model\Config\Source\CustomVisitVariable"
+                 type="Henhed\Piwik\Model\Config\Source\CustomVariable">
+         <arguments>
+             <argument name="scope" xsi:type="const">Henhed\Piwik\CustomVariable\CustomVariableInterface::SCOPE_VISIT</argument>
+         </arguments>
+    </virtualType>
+
+</config>
