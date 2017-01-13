@@ -197,7 +197,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getSiteId($store = null)
     {
-        return (int) $this->scopeConfig->getValue(
+        return (string) $this->scopeConfig->getValue(
             self::XML_PATH_SITE_ID,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store

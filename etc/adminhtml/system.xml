@@ -76,7 +76,7 @@
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                    <frontend_class>required-entry validate-digits validate-zero-or-greater</frontend_class>
+                    <frontend_class>required-entry validate-alphanum</frontend_class>
                 </field>
                 <field id="link_enabled"
                        translate="label comment"

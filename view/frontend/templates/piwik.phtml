@@ -21,33 +21,35 @@
 ?>
 <?php /* @var $block \Henhed\Piwik\Block\Piwik */ ?>
 <script type="text/x-magento-init">
-<?php echo $block->jsonEncode([
-    '*' => [
-        'Henhed_Piwik/js/tracker' => $block->getJsOptions()
-    ]
-]); ?>
+    <?php echo $block->jsonEncode([
+        '*' => [
+            'Henhed_Piwik/js/tracker' => $block->getJsOptions()
+        ]
+    ]); ?>
 </script>
-<?php
-// The following script can be omitted in which case the
-// `Henhed_Piwik/js/tracker' component will inject the tracker script instead.
-// However that might cause the tracker script to miss the `DOMContentLoaded'
-// event which breaks the link tracking feature.
-?>
+
 <script type="text/javascript">
-(function (d) {
-    var g = d.createElement('script'),
-        s = d.getElementsByTagName('script')[0];
-    g.type = 'text/javascript';
-    g.async = true;
-    g.defer = true;
-    g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
-    s.parentNode.insertBefore(g, s);
-})(document);
+    require( ['Henhed_Piwik/js/tracker'], function () {
+        (function(){
+            _paq.push(['setTrackerUrl', '<?php echo $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
+            _paq.push(['setSiteId', '<?php echo $block->getSiteId(); ?>']);
+            _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+            _paq.push(["setDoNotTrack", true]);
+            _paq.push(['trackPageView']);
+
+            // if (!window.Piwik.getAsyncTrackerPromise().length) {
+            //     window.Piwik.addTracker();
+            // }
+
+            var d=document,
+                g = d.createElement('script'),
+                s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.async = true;
+            g.defer = true;
+            g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
+            s.parentNode.insertBefore(g,s);
+        });
+    });
 </script>
-<noscript>
-    <p>
-        <img src="<?php echo $block->getTrackingPixelUrl(); ?>"
-             style="border: 0;"
-             alt="" />
-    </p>
-</noscript>
+<noscript><span><img src="<?php echo $block->getTrackingPixelUrl(); ?>" style="border: 0; line-height: 0px" alt="" /></span></noscript>

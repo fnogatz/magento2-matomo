@@ -99,7 +99,7 @@ namespace Henhed\Piwik\Model;
  * @method Tracker setReferrerUrl(string $referrerUrl)
  * Override the detected Http-Referer
  *
- * @method Tracker setSiteId(int $siteId)
+ * @method Tracker setSiteId(string $siteId)
  * Specify the website ID
  *
  * @method Tracker setApiUrl(string $apiUrl)
