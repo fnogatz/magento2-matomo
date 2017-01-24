@@ -78,19 +78,14 @@ define([
      * Append Piwik tracker script URL to head
      *
      * @param {String} scriptUrl
-     * @return bool Wheter the script was injected
      */
     function injectScript(scriptUrl) {
-        if (piwik === null) {
-            $('<script>')
-                .attr('type', 'text/javascript')
-                .attr('async', true)
-                .attr('defer', true)
-                .attr('src', scriptUrl)
-                .appendTo('head');
-            return true;
-        }
-        return false; // Script is already included
+        $('<script>')
+            .attr('type', 'text/javascript')
+            .attr('async', true)
+            .attr('defer', true)
+            .attr('src', scriptUrl)
+            .appendTo('head');
     }
 
     /**
@@ -236,16 +231,20 @@ define([
      * @param {Object} options
      */
     function initialize(options) {
-        pushAction([
-            ['setSiteId', defaultSiteId = options.siteId],
-            ['setTrackerUrl', defaultTrackerUrl = options.trackerUrl]
-        ]);
-        pushAction(options.actions);
-        if (!injectScript(options.scriptUrl)) {
-            // If the tracker script was not injected we already have the Piwik
-            // object and can resolve promises immediately.
+        defaultSiteId = options.siteId;
+        defaultTrackerUrl = options.trackerUrl;
+        if (piwik === null) {
+            pushAction([
+                ['setSiteId', defaultSiteId],
+                ['setTrackerUrl', defaultTrackerUrl]
+            ]);
+            injectScript(options.scriptUrl);
+        } else {
+            // If we already have the Piwik object we can resolve any pending
+            // promises immediately.
             resolvePiwikPromises();
         }
+        pushAction(options.actions);
     }
 
     // Make sure the Piwik asynchronous tracker queue is defined
