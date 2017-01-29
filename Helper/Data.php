@@ -40,6 +40,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
     const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
     const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
+    const XML_PATH_UID_ENABLED = 'piwik/tracking/uid_enabled';
 
     /**
      * Check if Piwik is enabled
@@ -232,5 +233,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
+    }
+
+    /**
+     * Check if Piwik user ID tracking is enabled
+     *
+     * @param null|string|bool|int|Store $store
+     * @return bool
+     */
+    public function isUserIdTrackingEnabled($store = null)
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_UID_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ) && $this->isTrackingEnabled($store);
     }
 }
