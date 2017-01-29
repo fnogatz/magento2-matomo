@@ -182,13 +182,30 @@ define([
      * @param {Tracker|undefined} tracker
      */
     function pushAction(action, tracker) {
+
         if (!_.isArray(action) || _.isEmpty(action)) {
             return;
         } else if (_.isArray(_.first(action))) {
             _.each(action, function (subAction) {
                 pushAction(subAction, tracker);
             });
-        } else if (_.isObject(tracker)) {
+            return;
+        }
+
+        if (/^track/.test(_.first(action))) {
+            // Trigger event before tracking
+            var event = $.Event('piwik:beforeTrack');
+            $(exports).triggerHandler(event, [action, tracker]);
+            if (event.isDefaultPrevented()) {
+                // Skip tracking if event listener prevented default
+                return;
+            } else if (_.isArray(event.result)) {
+                // Replace track action if event listener returned an array
+                action = event.result;
+            }
+        }
+
+        if (_.isObject(tracker)) {
             var actionName = action.shift();
             if (_.isFunction(tracker[actionName])) {
                 tracker[actionName].apply(tracker, action);
