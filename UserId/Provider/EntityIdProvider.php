@@ -18,20 +18,28 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model\UserId;
+namespace Henhed\Piwik\UserId\Provider;
 
 /**
- * User ID provider interface
+ * Customer entity ID provider
  *
  */
-interface ProviderInterface
+class EntityIdProvider implements ProviderInterface
 {
 
     /**
-     * Returns Piwik user ID for given Magento customer ID
-     *
-     * @param int $customerId
-     * @return string
+     * {@inheritDoc}
      */
-    public function getUserId($customerId);
+    public function getUserId($customerId)
+    {
+        return (string) $customerId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return __('Customer Entity ID');
+    }
 }

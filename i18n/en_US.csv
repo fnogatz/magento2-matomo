@@ -12,6 +12,8 @@
 "Link Tracking Timer","Link Tracking Timer"
 "Delay for link tracking in milliseconds","Delay for link tracking in milliseconds"
 "Enable User ID Tracking","Enable User ID Tracking"
+"Customer Entity ID","Customer Entity ID"
+"Customer E-mail","Customer E-mail"
 "Send logged in customers ID to Piwik","Send logged in customers ID to Piwik"
 "Advanced Options","Advanced Options"
 "Javascript Path","Javascript Path"

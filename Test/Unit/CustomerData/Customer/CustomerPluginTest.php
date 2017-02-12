@@ -51,6 +51,13 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
     protected $_dataHelperMock;
 
     /**
+     * Piwik user ID provider pool mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_uidProviderPoolMock
+     */
+    protected $_uidProviderPoolMock;
+
+    /**
      * Piwik user ID provider mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_uidProviderMock
@@ -77,7 +84,11 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
         $this->_customerPlugin = $objectManager->getObject($className, $args);
         $this->_currentCustomerMock = $args['currentCustomer'];
         $this->_dataHelperMock = $args['dataHelper'];
-        $this->_uidProviderMock = $args['uidProvider'];
+        $this->_uidProviderPoolMock = $args['uidProviderPool'];
+        $this->_uidProviderMock = $this->getMock(
+            'Henhed\Piwik\UserId\Provider\ProviderInterface',
+            ['getUserId', 'getTitle'], [], '', false
+        );
         $this->_customerDataMock = $this->getMock(
             'Magento\Customer\CustomerData\Customer', [], [], '', false
         );
@@ -91,10 +102,11 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
     public function testafterGetSectionDataDataProvider()
     {
         return [
-            [false, 1,    'UID1'],
-            [true,  null, 'UID2'],
-            [true,  3,    ''],
-            [true,  4,    'UID4']
+            [false, 1,    'p',  'UID1'],
+            [true,  null, 'p',  'UID2'],
+            [true,  3,    'p',  ''],
+            [true,  4,    null, 'UID4'],
+            [true,  5,    'p',  'UID5']
         ];
     }
 
@@ -103,30 +115,50 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
      *
      * @param boolean $enabled
      * @param int $customerId
+     * @param string|null $provider
      * @param string $userId
      * @return void
      * @dataProvider testafterGetSectionDataDataProvider
      */
-    public function testafterGetSectionData($enabled, $customerId, $userId)
-    {
+    public function testafterGetSectionData(
+        $enabled, $customerId, $provider, $userId
+    ) {
         $expectedResult = [];
-        if ($enabled && $customerId && $userId) {
+        if ($enabled && $customerId && $provider && $userId) {
             $expectedResult['piwikUserId'] = $userId;
         }
 
-        // Enable tracking
         $this->_dataHelperMock
             ->expects($this->once())
-            ->method('isUserIdTrackingEnabled')
+            ->method('isTrackingEnabled')
             ->willReturn($enabled);
+
+        $this->_dataHelperMock
+            ->expects($enabled ? $this->once() : $this->never())
+            ->method('getUserIdProviderCode')
+            ->willReturn($provider);
 
         $this->_currentCustomerMock
             ->expects($enabled ? $this->once() : $this->never())
             ->method('getCustomerId')
             ->willReturn($customerId);
 
+        $this->_uidProviderPoolMock
+            ->expects(
+                ($enabled && $provider)
+                    ? $this->once()
+                    : $this->never()
+            )
+            ->method('getProviderByCode')
+            ->with($provider)
+            ->willReturn($this->_uidProviderMock);
+
         $this->_uidProviderMock
-            ->expects($enabled && $customerId ? $this->once() : $this->never())
+            ->expects(
+                ($enabled && $customerId && $provider)
+                    ? $this->once()
+                    : $this->never()
+            )
             ->method('getUserId')
             ->with($customerId)
             ->willReturn($userId);

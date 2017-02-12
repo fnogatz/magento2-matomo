@@ -18,20 +18,51 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model\UserId;
+namespace Henhed\Piwik\UserId\Provider;
+
+use Magento\Customer\Api\CustomerRepositoryInterface;
 
 /**
- * User ID provider
+ * Customer email provider
  *
  */
-class Provider implements ProviderInterface
+class EmailProvider implements ProviderInterface
 {
+
+    /**
+     * Customer repository
+     *
+     * @var CustomerRepositoryInterface $_customerRepository
+     */
+    protected $_customerRepository;
+
+    /**
+     * Constructor
+     *
+     * @param CustomerRepositoryInterface $customerRepository
+     */
+    public function __construct(CustomerRepositoryInterface $customerRepository)
+    {
+        $this->_customerRepository = $customerRepository;
+    }
 
     /**
      * {@inheritDoc}
      */
     public function getUserId($customerId)
     {
-        return (string) $customerId;
+        try {
+            return $this->_customerRepository->getById($customerId)->getEmail();
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return __('Customer E-mail');
     }
 }

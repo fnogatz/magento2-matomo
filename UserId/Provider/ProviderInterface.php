@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * Copyright 2016-2017 Henrik Hedelund
  *
@@ -18,17 +17,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
-    <type name="Henhed\Piwik\UserId\Provider\Pool">
-        <arguments>
-            <argument name="providers" xsi:type="array">
-                <item name="entity_id" xsi:type="object">Henhed\Piwik\UserId\Provider\EntityIdProvider</item>
-                <item name="email" xsi:type="object">Henhed\Piwik\UserId\Provider\EmailProvider</item>
-            </argument>
-        </arguments>
-    </type>
+namespace Henhed\Piwik\UserId\Provider;
 
-</config>
+/**
+ * User ID provider interface
+ *
+ */
+interface ProviderInterface
+{
+
+    /**
+     * Returns Piwik user ID for given Magento customer ID
+     *
+     * @param int $customerId
+     * @return string
+     */
+    public function getUserId($customerId);
+
+    /**
+     * Get User ID provider title
+     *
+     * @return string
+     */
+    public function getTitle();
+}

@@ -42,27 +42,52 @@ class CustomerPlugin
     protected $_dataHelper;
 
     /**
-     * User ID Provider
+     * User ID provider pool
      *
-     * @var \Henhed\Piwik\Model\UserId\ProviderInterface $_uidProvider
+     * @var \Henhed\Piwik\UserId\Provider\Pool $_uidProviderPool
      */
-    protected $_uidProvider;
+    protected $_uidProviderPool;
 
     /**
      * Constructor
      *
      * @param \Magento\Customer\Helper\Session\CurrentCustomer $currentCustomer
      * @param \Henhed\Piwik\Helper\Data $dataHelper
-     * @param \Henhed\Piwik\Model\UserId\ProviderInterface $uidProvider
+     * @param \Henhed\Piwik\UserId\Provider\Pool $uidProviderPool
      */
     public function __construct(
         \Magento\Customer\Helper\Session\CurrentCustomer $currentCustomer,
         \Henhed\Piwik\Helper\Data $dataHelper,
-        \Henhed\Piwik\Model\UserId\ProviderInterface $uidProvider
+        \Henhed\Piwik\UserId\Provider\Pool $uidProviderPool
     ) {
         $this->_currentCustomer = $currentCustomer;
         $this->_dataHelper = $dataHelper;
-        $this->_uidProvider = $uidProvider;
+        $this->_uidProviderPool = $uidProviderPool;
+    }
+
+    /**
+     * Get configured Piwik User ID provider or NULL
+     *
+     * @return \Henhed\Piwik\UserId\Provider\ProviderInterface|null
+     */
+    protected function _getUserIdProvider()
+    {
+        $code = $this->_dataHelper->getUserIdProviderCode();
+        return $code ? $this->_uidProviderPool->getProviderByCode($code) : null;
+    }
+
+    /**
+     * Get Piwik User ID for current customer
+     *
+     * @return string
+     */
+    protected function _getUserId()
+    {
+        $provider = $this->_getUserIdProvider();
+        $customerId = $this->_currentCustomer->getCustomerId();
+        return ($provider && $customerId)
+            ? (string) $provider->getUserId($customerId)
+            : '';
     }
 
     /**
@@ -76,10 +101,8 @@ class CustomerPlugin
         \Magento\Customer\CustomerData\Customer $subject,
         $result
     ) {
-        if ($this->_dataHelper->isUserIdTrackingEnabled()
-            && ($customerId = $this->_currentCustomer->getCustomerId())
-        ) {
-            $userId = (string) $this->_uidProvider->getUserId($customerId);
+        if ($this->_dataHelper->isTrackingEnabled()) {
+            $userId = $this->_getUserId();
             if ($userId !== '') {
                 $result['piwikUserId'] = $userId;
             }
