@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * Copyright 2016-2017 Henrik Hedelund
  *
@@ -18,20 +17,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
-    <type name="Magento\Checkout\CustomerData\Cart">
-        <plugin name="piwik"
-                type="Henhed\Piwik\CustomerData\Checkout\CartPlugin"
-                sortOrder="10" />
-    </type>
+namespace Henhed\Piwik\UserId\Provider;
 
-    <type name="Magento\Customer\CustomerData\Customer">
-        <plugin name="piwik"
-                type="Henhed\Piwik\CustomerData\Customer\CustomerPlugin"
-                sortOrder="10" />
-    </type>
+/**
+ * Customer entity ID provider
+ *
+ */
+class EntityIdProvider implements ProviderInterface
+{
 
-</config>
+    /**
+     * {@inheritDoc}
+     */
+    public function getUserId($customerId)
+    {
+        return (string) $customerId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return __('Customer Entity ID');
+    }
+}

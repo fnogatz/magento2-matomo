@@ -75,6 +75,20 @@ define([
     var storage = $.initNamespaceStorage('henhed-piwik').localStorage;
 
     /**
+     * Cart data access
+     *
+     * @type {Object}
+     */
+    var cartObservable = customerData.get('cart');
+
+    /**
+     * Customer data access
+     *
+     * @type {Object}
+     */
+    var customerObservable = customerData.get('customer');
+
+    /**
      * Append Piwik tracker script URL to head
      *
      * @param {String} scriptUrl
@@ -182,13 +196,30 @@ define([
      * @param {Tracker|undefined} tracker
      */
     function pushAction(action, tracker) {
+
         if (!_.isArray(action) || _.isEmpty(action)) {
             return;
         } else if (_.isArray(_.first(action))) {
             _.each(action, function (subAction) {
                 pushAction(subAction, tracker);
             });
-        } else if (_.isObject(tracker)) {
+            return;
+        }
+
+        if (/^track/.test(_.first(action))) {
+            // Trigger event before tracking
+            var event = $.Event('piwik:beforeTrack');
+            $(exports).triggerHandler(event, [action, tracker]);
+            if (event.isDefaultPrevented()) {
+                // Skip tracking if event listener prevented default
+                return;
+            } else if (_.isArray(event.result)) {
+                // Replace track action if event listener returned an array
+                action = event.result;
+            }
+        }
+
+        if (_.isObject(tracker)) {
             var actionName = action.shift();
             if (_.isFunction(tracker[actionName])) {
                 tracker[actionName].apply(tracker, action);
@@ -226,6 +257,23 @@ define([
     }
 
     /**
+     * Event listener for `piwik:beforeTrack'. Adds visitor data to tracker.
+     *
+     * @param {jQuery.Event} event
+     * @param {Array} action
+     * @param {Tracker|undefined} tracker
+     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
+     */
+    function addVisitorDataBeforeTrack(event, action, tracker) {
+
+        var customer = customerObservable();
+
+        if (_.has(customer, 'piwikUserId')) {
+            pushAction(['setUserId', customer.piwikUserId], tracker);
+        }
+    };
+
+    /**
      * Initialzie this component with given options
      *
      * @param {Object} options
@@ -252,7 +300,9 @@ define([
     // Listen for when the Piwik asynchronous tracker is ready
     exports.piwikAsyncInit = onPiwikLoaded;
     // Subscribe to cart updates
-    customerData.get('cart').subscribe(cartUpdated);
+    cartObservable.subscribe(cartUpdated);
+    // Listen for track actions to inject visitor data
+    $(exports).on('piwik:beforeTrack', addVisitorDataBeforeTrack);
 
     return {
         // Public component API

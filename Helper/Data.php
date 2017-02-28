@@ -40,6 +40,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
     const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
     const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
+    const XML_PATH_UID_PROVIDER = 'piwik/tracking/uid_provider';
 
     /**
      * Check if Piwik is enabled
@@ -229,6 +230,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return (int) $this->scopeConfig->getValue(
             self::XML_PATH_LINK_DELAY,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        );
+    }
+
+    /**
+     * Get provider code for Piwik user ID tracking
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getUserIdProviderCode($store = null)
+    {
+        return $this->scopeConfig->getValue(
+            self::XML_PATH_UID_PROVIDER,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );

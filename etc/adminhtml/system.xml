@@ -107,10 +107,24 @@
                     </depends>
                     <frontend_class>validate-digits validate-zero-or-greater</frontend_class>
                 </field>
+                <field id="uid_provider"
+                       translate="label comment"
+                       type="select"
+                       sortOrder="60"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable User ID Tracking</label>
+                    <source_model>Henhed\Piwik\Model\Config\Source\UserId\Provider</source_model>
+                    <comment>Send logged in customers ID to Piwik</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
                 <group id="advanced"
                        translate="label"
                        type="text"
-                       sortOrder="60"
+                       sortOrder="70"
                        showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
