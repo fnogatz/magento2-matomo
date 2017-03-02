@@ -19,14 +19,16 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <referenceContainer name="after.body.start">
-            <block class="Henhed\Piwik\Block\Piwik"
-                   name="piwik.tracker"
-                   as="piwik.tracker"
-                   template="piwik.phtml" />
-        </referenceContainer>
-    </body>
-</page>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Henhed\Piwik\UserId\Provider\Pool">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="entity_id" xsi:type="object">Henhed\Piwik\UserId\Provider\EntityIdProvider</item>
+                <item name="email" xsi:type="object">Henhed\Piwik\UserId\Provider\EmailProvider</item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

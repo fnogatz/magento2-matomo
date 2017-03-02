@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Henrik Hedelund
+ * Copyright 2016-2017 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -34,7 +34,10 @@
 // event which breaks the link tracking feature.
 ?>
 <script type="text/javascript">
-(function (d) {
+(function (w, d) {
+    w._paq = w._paq || [];
+    w._paq.push(['setTrackerUrl', '<?php echo $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
+    w._paq.push(['setSiteId', <?php echo (int) $block->getSiteId(); ?>]);
     var g = d.createElement('script'),
         s = d.getElementsByTagName('script')[0];
     g.type = 'text/javascript';
@@ -42,7 +45,7 @@
     g.defer = true;
     g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
     s.parentNode.insertBefore(g, s);
-})(document);
+})(window, document);
 </script>
 <noscript>
     <p>

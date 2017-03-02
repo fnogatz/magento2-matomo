@@ -18,70 +18,51 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model\Tracker;
+namespace Henhed\Piwik\UserId\Provider;
+
+use Magento\Customer\Api\CustomerRepositoryInterface;
 
 /**
- * Piwik tracker action
+ * Customer email provider
  *
  */
-class Action
+class EmailProvider implements ProviderInterface
 {
 
     /**
-     * Action name
+     * Customer repository
      *
-     * @var string $_name
+     * @var CustomerRepositoryInterface $_customerRepository
      */
-    protected $_name;
-
-    /**
-     * Action arguments
-     *
-     * @var array $_args
-     */
-    protected $_args;
+    protected $_customerRepository;
 
     /**
      * Constructor
      *
-     * @param string $name
-     * @param array $args
+     * @param CustomerRepositoryInterface $customerRepository
      */
-    public function __construct($name, array $args = [])
+    public function __construct(CustomerRepositoryInterface $customerRepository)
     {
-        $this->_name = $name;
-        $this->_args = $args;
+        $this->_customerRepository = $customerRepository;
     }
 
     /**
-     * Get action name
-     *
-     * @return string
+     * {@inheritDoc}
      */
-    public function getName()
+    public function getUserId($customerId)
     {
-        return $this->_name;
+        try {
+            return $this->_customerRepository->getById($customerId)->getEmail();
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
-     * Get action arguments
-     *
-     * @return array
+     * {@inheritDoc}
      */
-    public function getArgs()
+    public function getTitle()
     {
-        return $this->_args;
-    }
-
-    /**
-     * Get an array representation of this action
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        $array = $this->getArgs();
-        array_unshift($array, $this->getName());
-        return $array;
+        return __('Customer E-mail');
     }
 }

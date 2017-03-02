@@ -18,70 +18,46 @@
  * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model\Tracker;
+namespace Henhed\Piwik\Model\Config\Source\UserId;
 
 /**
- * Piwik tracker action
+ * User ID provider config source model
  *
  */
-class Action
+class Provider implements \Magento\Framework\Option\ArrayInterface
 {
 
     /**
-     * Action name
+     * User ID provider pool
      *
-     * @var string $_name
+     * @var \Henhed\Piwik\UserId\Provider\Pool $_pool
      */
-    protected $_name;
-
-    /**
-     * Action arguments
-     *
-     * @var array $_args
-     */
-    protected $_args;
+    protected $_pool;
 
     /**
      * Constructor
      *
-     * @param string $name
-     * @param array $args
+     * @param \Henhed\Piwik\UserId\Provider\Pool $pool
      */
-    public function __construct($name, array $args = [])
+    public function __construct(\Henhed\Piwik\UserId\Provider\Pool $pool)
     {
-        $this->_name = $name;
-        $this->_args = $args;
+        $this->_pool = $pool;
     }
 
     /**
-     * Get action name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->_name;
-    }
-
-    /**
-     * Get action arguments
+     * Return array of user ID providers as value-label pairs
      *
      * @return array
      */
-    public function getArgs()
+    public function toOptionArray()
     {
-        return $this->_args;
-    }
-
-    /**
-     * Get an array representation of this action
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        $array = $this->getArgs();
-        array_unshift($array, $this->getName());
-        return $array;
+        $options = [['value' => '', 'label' => __('No')]];
+        foreach ($this->_pool->getAllProviders() as $code => $provider) {
+            $options[] = [
+                'value' => $code,
+                'label' => sprintf('%s (%s)', __('Yes'), $provider->getTitle())
+            ];
+        }
+        return $options;
     }
 }

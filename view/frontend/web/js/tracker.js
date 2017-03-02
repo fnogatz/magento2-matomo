@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Henrik Hedelund
+ * Copyright 2016-2017 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -75,22 +75,31 @@ define([
     var storage = $.initNamespaceStorage('henhed-piwik').localStorage;
 
     /**
+     * Cart data access
+     *
+     * @type {Object}
+     */
+    var cartObservable = customerData.get('cart');
+
+    /**
+     * Customer data access
+     *
+     * @type {Object}
+     */
+    var customerObservable = customerData.get('customer');
+
+    /**
      * Append Piwik tracker script URL to head
      *
      * @param {String} scriptUrl
-     * @return bool Wheter the script was injected
      */
     function injectScript(scriptUrl) {
-        if (piwik === null) {
-            $('<script>')
-                .attr('type', 'text/javascript')
-                .attr('async', true)
-                .attr('defer', true)
-                .attr('src', scriptUrl)
-                .appendTo('head');
-            return true;
-        }
-        return false; // Script is already included
+        $('<script>')
+            .attr('type', 'text/javascript')
+            .attr('async', true)
+            .attr('defer', true)
+            .attr('src', scriptUrl)
+            .appendTo('head');
     }
 
     /**
@@ -187,13 +196,30 @@ define([
      * @param {Tracker|undefined} tracker
      */
     function pushAction(action, tracker) {
+
         if (!_.isArray(action) || _.isEmpty(action)) {
             return;
         } else if (_.isArray(_.first(action))) {
             _.each(action, function (subAction) {
                 pushAction(subAction, tracker);
             });
-        } else if (_.isObject(tracker)) {
+            return;
+        }
+
+        if (/^track/.test(_.first(action))) {
+            // Trigger event before tracking
+            var event = $.Event('piwik:beforeTrack');
+            $(exports).triggerHandler(event, [action, tracker]);
+            if (event.isDefaultPrevented()) {
+                // Skip tracking if event listener prevented default
+                return;
+            } else if (_.isArray(event.result)) {
+                // Replace track action if event listener returned an array
+                action = event.result;
+            }
+        }
+
+        if (_.isObject(tracker)) {
             var actionName = action.shift();
             if (_.isFunction(tracker[actionName])) {
                 tracker[actionName].apply(tracker, action);
@@ -231,21 +257,42 @@ define([
     }
 
     /**
+     * Event listener for `piwik:beforeTrack'. Adds visitor data to tracker.
+     *
+     * @param {jQuery.Event} event
+     * @param {Array} action
+     * @param {Tracker|undefined} tracker
+     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
+     */
+    function addVisitorDataBeforeTrack(event, action, tracker) {
+
+        var customer = customerObservable();
+
+        if (_.has(customer, 'piwikUserId')) {
+            pushAction(['setUserId', customer.piwikUserId], tracker);
+        }
+    };
+
+    /**
      * Initialzie this component with given options
      *
      * @param {Object} options
      */
     function initialize(options) {
-        pushAction([
-            ['setSiteId', defaultSiteId = options.siteId],
-            ['setTrackerUrl', defaultTrackerUrl = options.trackerUrl]
-        ]);
-        pushAction(options.actions);
-        if (!injectScript(options.scriptUrl)) {
-            // If the tracker script was not injected we already have the Piwik
-            // object and can resolve promises immediately.
+        defaultSiteId = options.siteId;
+        defaultTrackerUrl = options.trackerUrl;
+        if (piwik === null) {
+            pushAction([
+                ['setSiteId', defaultSiteId],
+                ['setTrackerUrl', defaultTrackerUrl]
+            ]);
+            injectScript(options.scriptUrl);
+        } else {
+            // If we already have the Piwik object we can resolve any pending
+            // promises immediately.
             resolvePiwikPromises();
         }
+        pushAction(options.actions);
     }
 
     // Make sure the Piwik asynchronous tracker queue is defined
@@ -253,7 +300,9 @@ define([
     // Listen for when the Piwik asynchronous tracker is ready
     exports.piwikAsyncInit = onPiwikLoaded;
     // Subscribe to cart updates
-    customerData.get('cart').subscribe(cartUpdated);
+    cartObservable.subscribe(cartUpdated);
+    // Listen for track actions to inject visitor data
+    $(exports).on('piwik:beforeTrack', addVisitorDataBeforeTrack);
 
     return {
         // Public component API
