@@ -51,21 +51,31 @@ class CheckoutSuccessObserver implements ObserverInterface
      */
     protected $_orderCollectionFactory;
 
+    protected $storeManager;
+    
+    protected $product;
+
     /**
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
      * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
         \Henhed\Piwik\Helper\Data $dataHelper,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_dataHelper = $dataHelper;
         $this->_orderCollectionFactory = $orderCollectionFactory;
+        $this->storeManager = $storeManager;
+        $this->product = $productFactory;
     }
 
     /**
@@ -74,101 +84,103 @@ class CheckoutSuccessObserver implements ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\CheckoutSuccessObserver
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
-    {
-        $orderIds = $observer->getEvent()->getOrderIds();
-        if (!$this->_dataHelper->isTrackingEnabled()
-            || empty($orderIds) || !is_array($orderIds)
-        ) {
-            return $this;
-        }
-
-        $collection = $this->_orderCollectionFactory->create();
-        $collection->addFieldToFilter('entity_id', ['in' => $orderIds]);
-
-        // Group order items by SKU since Piwik doesn't seem to handle multiple
-        // `addEcommerceItem' with the same SKU.
-        $piwikItems = [];
-        // Aggregate all placed orders into one since Piwik seems to only
-        // register one `trackEcommerceOrder' per request. (For multishipping)
-        $piwikOrder = [];
-
-        foreach ($collection as $order) {
-            /* @var $order \Magento\Sales\Model\Order */
-
-            foreach ($order->getAllVisibleItems() as $item) {
-                /* @var $item \Magento\Sales\Model\Order\Item */
-
-                $sku   = $item->getSku();
-                $name  = $item->getName();
-                $price = (float) $item->getBasePriceInclTax();
-                $qty   = (float) $item->getQtyOrdered();
-
-                if (!isset($piwikItems[$sku])) {
-                    $piwikItems[$sku] = [$sku, $name, $price * $qty, $qty];
-                } else {
-                    // Aggregate row total instead of unit price in case there
-                    // are different prices for the same SKU.
-                    $piwikItems[$sku][2] += $price * $qty;
-                    $piwikItems[$sku][3] += $qty;
-                }
-            }
-
-            $orderId    = $order->getIncrementId();
-            $grandTotal = (float) $order->getBaseGrandTotal();
-            $subTotal   = (float) $order->getBaseSubtotalInclTax();
-            $tax        = (float) $order->getBaseTaxAmount();
-            $shipping   = (float) $order->getBaseShippingInclTax();
-            $discount   = abs((float) $order->getBaseDiscountAmount());
-
-            if (empty($piwikOrder)) {
-                $piwikOrder = [
-                    $orderId, $grandTotal, $subTotal, $tax, $shipping, $discount
-                ];
-            } else {
-                $piwikOrder[0] .= ', ' . $orderId;
-                $piwikOrder[1] += $grandTotal;
-                $piwikOrder[2] += $subTotal;
-                $piwikOrder[3] += $tax;
-                $piwikOrder[4] += $shipping;
-                $piwikOrder[5] += $discount;
-            }
-        }
-
-        // Push `addEcommerceItem'
-        foreach ($piwikItems as $piwikItem) {
-
-            list($sku, $name, $rowTotal, $qty) = $piwikItem;
-
-            $this->_piwikTracker->addEcommerceItem(
-                $sku,
-                $name,
-                false,
-                ($qty > 0) // div-by-zero protection
-                    ? $rowTotal / $qty // restore to unit price
-                    : 0,
-                $qty
-            );
-        }
-
-        // Push `trackEcommerceOrder'
-        if (!empty($piwikOrder)) {
-
-            list($orderId, $grandTotal, $subTotal, $tax, $shipping, $discount)
-                = $piwikOrder;
-
-            $this->_piwikTracker->trackEcommerceOrder(
-                $orderId,
-                $grandTotal,
-                $subTotal,
-                $tax,
-                $shipping,
-                ($discount > 0)
-                    ? $discount
-                    : false
-            );
-        }
-
-        return $this;
-    }
+     public function execute(\Magento\Framework\Event\Observer $observer)
+     {
+         $store = $this->storeManager->getStore()->getCode();
+         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
+         $orderIds = $observer->getEvent()->getOrderIds();
+         if (!$this->_dataHelper->isTrackingEnabled()
+             || empty($orderIds) || !is_array($orderIds)
+         ) {
+             return $this;
+         }
+ 
+         $collection = $this->_orderCollectionFactory->create();
+         $collection->addFieldToFilter('entity_id', ['in' => $orderIds]);
+ 
+         // Group order items by SKU since Piwik doesn't seem to handle multiple
+         // `addEcommerceItem' with the same SKU.
+         $piwikItems = [];
+         // Aggregate all placed orders into one since Piwik seems to only
+         // register one `trackEcommerceOrder' per request. (For multishipping)
+         $piwikOrder = [];
+ 
+         foreach ($collection as $order) {
+             /* @var $order \Magento\Sales\Model\Order */
+ 
+             foreach ($order->getAllVisibleItems() as $item) {
+                 /* @var $item \Magento\Sales\Model\Order\Item */
+                 $product = $this->product->create()->load($item->getProductId());
+                 $sku   = $item->getSku();
+                 $name  = $product->getName();
+                 $price = (float) $item->getBasePriceInclTax();
+                 $qty   = (float) $item->getQtyOrdered();
+ 
+                 if (!isset($piwikItems[$sku])) {
+                     $piwikItems[$sku] = [$sku, $name, $price * $qty, $qty];
+                 } else {
+                     // Aggregate row total instead of unit price in case there
+                     // are different prices for the same SKU.
+                     $piwikItems[$sku][2] += $price * $qty;
+                     $piwikItems[$sku][3] += $qty;
+                 }
+             }
+ 
+             $orderId    = $order->getIncrementId();
+             $grandTotal = (float) $order->getBaseGrandTotal();
+             $subTotal   = (float) $order->getBaseSubtotalInclTax();
+             $tax        = (float) $order->getBaseTaxAmount();
+             $shipping   = (float) $order->getBaseShippingInclTax();
+             $discount   = abs((float) $order->getBaseDiscountAmount());
+ 
+             if (empty($piwikOrder)) {
+                 $piwikOrder = [
+                     $orderId, $grandTotal, $subTotal, $tax, $shipping, $discount
+                 ];
+             } else {
+                 $piwikOrder[0] .= ', ' . $orderId;
+                 $piwikOrder[1] += $grandTotal;
+                 $piwikOrder[2] += $subTotal;
+                 $piwikOrder[3] += $tax;
+                 $piwikOrder[4] += $shipping;
+                 $piwikOrder[5] += $discount;
+             }
+         }
+ 
+         // Push `addEcommerceItem'
+         foreach ($piwikItems as $piwikItem) {
+ 
+             list($sku, $name, $rowTotal, $qty) = $piwikItem;
+ 
+             $this->_piwikTracker->addEcommerceItem(
+                 $sku,
+                 $name,
+                 false,
+                 ($qty > 0) // div-by-zero protection
+                     ? $rowTotal / $qty // restore to unit price
+                     : 0,
+                 $qty
+             );
+         }
+ 
+         // Push `trackEcommerceOrder'
+         if (!empty($piwikOrder)) {
+ 
+             list($orderId, $grandTotal, $subTotal, $tax, $shipping, $discount)
+                 = $piwikOrder;
+ 
+             $this->_piwikTracker->trackEcommerceOrder(
+                 $orderId,
+                 $grandTotal,
+                 $subTotal,
+                 $tax,
+                 $shipping,
+                 ($discount > 0)
+                     ? $discount
+                     : false
+             );
+         }
+         $this->storeManager->setCurrentStore($store);
+         return $this;
+     }
 }

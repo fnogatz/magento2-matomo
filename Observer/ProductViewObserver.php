@@ -43,18 +43,28 @@ class ProductViewObserver implements ObserverInterface
      */
     protected $_dataHelper;
 
+    protected $storeManager;
+    
+    protected $product;
+
     /**
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
      * @param \Henhed\Piwik\Helper\Data $dataHelper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Catalog\Model\ProductFactory $productFactory
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
-        \Henhed\Piwik\Helper\Data $dataHelper
+        \Henhed\Piwik\Helper\Data $dataHelper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Model\ProductFactory $productFactory
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_dataHelper = $dataHelper;
+        $this->storeManager = $storeManager;
+        $this->product = $productFactory;
     }
 
     /**
@@ -63,25 +73,27 @@ class ProductViewObserver implements ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\ProductViewObserver
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
-    {
-        if (!$this->_dataHelper->isTrackingEnabled()) {
-            return $this;
-        }
-
-        $product = $observer->getEvent()->getProduct();
-        /* @var $product \Magento\Catalog\Model\Product */
-
-        $category = $product->getCategory();
-        $this->_piwikTracker->setEcommerceView(
-            $product->getSku(),
-            $product->getName(),
-            $category
-                ? $category->getName()
-                : false,
-            $product->getFinalPrice()
-        );
-
-        return $this;
-    }
+     public function execute(\Magento\Framework\Event\Observer $observer)
+     {
+         $store = $this->storeManager->getStore()->getCode();
+         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
+         if (!$this->_dataHelper->isTrackingEnabled()) {
+             return $this;
+         }
+         $product = $this->product->create()->load($observer->getEvent()->getProduct()->getId());
+ 
+         $category = $product->getCategoryCollection()->addAttributeToSelect('name')->getLastItem();
+ 
+         $this->_piwikTracker->setEcommerceView(
+             $product->getSku(),
+             $product->getName(),
+             $category
+                 ? $category->getName()
+                 : false,
+             $product->getFinalPrice()
+         );
+         $this->storeManager->setCurrentStore($store);
+         return $this;
+ 
+     }
 }

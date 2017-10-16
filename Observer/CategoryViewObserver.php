@@ -43,6 +43,10 @@ class CategoryViewObserver implements ObserverInterface
      */
     protected $_dataHelper;
 
+    protected $storeManager;
+    
+    protected $categoryFactory;
+
     /**
      * Constructor
      *
@@ -51,10 +55,14 @@ class CategoryViewObserver implements ObserverInterface
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
-        \Henhed\Piwik\Helper\Data $dataHelper
+        \Henhed\Piwik\Helper\Data $dataHelper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Model\CategoryFactory $categoryFactory
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_dataHelper = $dataHelper;
+        $this->storeManager = $storeManager;
+        $this->categoryFactory = $categoryFactory;
     }
 
     /**
@@ -63,21 +71,23 @@ class CategoryViewObserver implements ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\CategoryViewObserver
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
-    {
-        if (!$this->_dataHelper->isTrackingEnabled()) {
-            return $this;
-        }
-
-        $category = $observer->getEvent()->getCategory();
-        /* @var $category \Magento\Catalog\Model\Category */
-
-        $this->_piwikTracker->setEcommerceView(
-            false,
-            false,
-            $category->getName()
-        );
-
-        return $this;
-    }
+     public function execute(\Magento\Framework\Event\Observer $observer)
+     {
+         $store = $this->storeManager->getStore()->getCode();
+         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
+         if (!$this->_dataHelper->isTrackingEnabled()) {
+             return $this;
+         }
+         $category = $observer->getEvent()->getCategory();
+         $cate = $this->categoryFactory->create()->load($category->getId());
+         /* @var $category \Magento\Catalog\Model\Category */
+ 
+         $this->_piwikTracker->setEcommerceView(
+             false,
+             false,
+             $cate->getName()
+         );
+         $this->storeManager->setCurrentStore($store);
+         return $this;
+     }
 }
