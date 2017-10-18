@@ -86,15 +86,15 @@ class CheckoutSuccessObserver implements ObserverInterface
      */
      public function execute(\Magento\Framework\Event\Observer $observer)
      {
-         $store = $this->storeManager->getStore()->getCode();
-         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
+         
          $orderIds = $observer->getEvent()->getOrderIds();
          if (!$this->_dataHelper->isTrackingEnabled()
              || empty($orderIds) || !is_array($orderIds)
          ) {
              return $this;
          }
- 
+		 $store = $this->storeManager->getStore()->getCode();
+         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
          $collection = $this->_orderCollectionFactory->create();
          $collection->addFieldToFilter('entity_id', ['in' => $orderIds]);
  

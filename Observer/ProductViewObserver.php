@@ -75,11 +75,12 @@ class ProductViewObserver implements ObserverInterface
      */
      public function execute(\Magento\Framework\Event\Observer $observer)
      {
-         $store = $this->storeManager->getStore()->getCode();
-         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
+         
          if (!$this->_dataHelper->isTrackingEnabled()) {
              return $this;
          }
+         $store = $this->storeManager->getStore()->getCode();
+         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
          $product = $this->product->create()->load($observer->getEvent()->getProduct()->getId());
  
          $category = $product->getCategoryCollection()->addAttributeToSelect('name')->getLastItem();
