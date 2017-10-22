@@ -57,6 +57,12 @@ set -x
   magento/project-community-edition \
   "$BUILD_DIR" "$M2_VERSION"
 
+# Downgrade doctrine/instantiator for PHP < 7.1 support
+"$COMPOSER_BIN" require \
+  --working-dir="$BUILD_DIR" \
+  --ignore-platform-reqs \
+  doctrine/instantiator:v1.0.5
+
 # Copy module into Magento
 mkdir -p "$(dirname "$MODULE_DST_DIR")"
 cp -r "$MODULE_SRC_DIR" "$MODULE_DST_DIR"
