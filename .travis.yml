@@ -6,10 +6,6 @@ php:
 env:
   - M2_VERSION=2.1.9
   - M2_VERSION=2.0.16
-matrix:
-  include:
-    - php: 5.5
-      env: M2_VERSION=2.0.16
 cache:
   directories:
     - $HOME/.composer/cache
