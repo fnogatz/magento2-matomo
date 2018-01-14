@@ -27,7 +27,7 @@ use Magento\Store\Model\ScopeInterface;
  * Test for \Henhed\Piwik\Helper\Data
  *
  */
-class DataTest extends \PHPUnit_Framework_TestCase
+class DataTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -36,7 +36,6 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @var \Henhed\Piwik\Helper\Data $_helper
      */
     protected $_helper;
-
 
     /**
      * Scope config mock object
@@ -59,7 +58,7 @@ class DataTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = '\Henhed\Piwik\Helper\Data';
+        $className = \Henhed\Piwik\Helper\Data::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
         $this->_helper = $objectManager->getObject($className, $arguments);
@@ -81,12 +80,19 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @param string $jsScriptPath
      * @param string $cdnHostname
      * @param string $scope
-     * @param null|string|bool|int|Store $store
+     * @param null|string|bool|int|\Magento\Store\Model\Store $store
      */
-    protected function _prepareScopeConfigMock($enabled = null,
-        $hostname = null, $siteId = null, $linkEnabled = null,
-        $linkDelay = null, $phpScriptPath = null, $jsScriptPath = null,
-        $cdnHostname = null, $scope = ScopeInterface::SCOPE_STORE, $store = null
+    protected function _prepareScopeConfigMock(
+        $enabled = null,
+        $hostname = null,
+        $siteId = null,
+        $linkEnabled = null,
+        $linkDelay = null,
+        $phpScriptPath = null,
+        $jsScriptPath = null,
+        $cdnHostname = null,
+        $scope = ScopeInterface::SCOPE_STORE,
+        $store = null
     ) {
         $this->_scopeConfigMock
             ->expects($this->any())
@@ -161,7 +167,10 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @return void
      * @dataProvider isTrackingEnabledDataProvider
      */
-    public function testIsTrackingEnabled($enabled, $hostname, $siteId,
+    public function testIsTrackingEnabled(
+        $enabled,
+        $hostname,
+        $siteId,
         $returnValue
     ) {
         $this->_prepareScopeConfigMock($enabled, $hostname, $siteId);
@@ -209,13 +218,18 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @param string $returnValue
      * @dataProvider phpScriptUrlDataProvider
      */
-    public function testGetPhpScriptUrl($hostname, $isSecure, $phpScriptPath,
+    public function testGetPhpScriptUrl(
+        $hostname,
+        $isSecure,
+        $phpScriptPath,
         $returnValue
     ) {
         $this->_prepareScopeConfigMock(
             null,
             $hostname,
-            null, null, null,
+            null,
+            null,
+            null,
             $phpScriptPath
         );
 
@@ -279,13 +293,20 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @param string $returnValue
      * @dataProvider jsScriptUrlDataProvider
      */
-    public function testGetJsScriptUrl($hostname, $isSecure, $jsScriptPath,
-        $cdnHostname, $returnValue
+    public function testGetJsScriptUrl(
+        $hostname,
+        $isSecure,
+        $jsScriptPath,
+        $cdnHostname,
+        $returnValue
     ) {
         $this->_prepareScopeConfigMock(
             null,
             $hostname,
-            null, null, null, null,
+            null,
+            null,
+            null,
+            null,
             $jsScriptPath,
             $cdnHostname
         );
@@ -334,8 +355,12 @@ class DataTest extends \PHPUnit_Framework_TestCase
      * @param bool $returnValue
      * @dataProvider isLinkTrackingEnabledDataProvider
      */
-    public function testIsLinkTrackingEnabled($linkEnabled, $enabled,
-        $hostname, $siteId, $returnValue
+    public function testIsLinkTrackingEnabled(
+        $linkEnabled,
+        $enabled,
+        $hostname,
+        $siteId,
+        $returnValue
     ) {
         $this->_prepareScopeConfigMock(
             $enabled,

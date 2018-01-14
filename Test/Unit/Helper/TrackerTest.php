@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Helper\Tracker
  *
  */
-class TrackerTest extends \PHPUnit_Framework_TestCase
+class TrackerTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -54,15 +54,17 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
 
         // Create test subject
         $this->_helper = $objectManager->getObject(
-            '\Henhed\Piwik\Helper\Tracker'
+            \Henhed\Piwik\Helper\Tracker::class
         );
 
         // Create tracker instance
-        $class = '\Henhed\Piwik\Model\Tracker';
+        $class = \Henhed\Piwik\Model\Tracker::class;
         $arguments = $objectManager->getConstructArguments($class, [
-            'actionFactory' => $this->getMock(
+            'actionFactory' => $this->createPartialMock(
+                // @codingStandardsIgnoreStart
                 'Henhed\Piwik\Model\Tracker\ActionFactory',
-                ['create'], [], '', false
+                // @codingStandardsIgnoreEnd
+                ['create']
             )
         ]);
         $arguments['actionFactory']
@@ -149,8 +151,10 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
         $quoteItems = [];
         foreach ($items as $itemData) {
             list($sku, $name, $price, $qty) = $itemData;
-            $itemClass = 'Magento\Quote\Model\Quote\Item';
-            $item = $this->getMock($itemClass, ['getData'], [], '', false);
+            $item = $this->createPartialMock(
+                \Magento\Quote\Model\Quote\Item::class,
+                ['getData']
+            );
             $item
                 ->expects($this->any())
                 ->method('getData')
@@ -163,10 +167,9 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
             $quoteItems[] = $item;
         }
 
-        $quote = $this->getMock(
-            'Magento\Quote\Model\Quote',
-            ['getAllVisibleItems', 'getData'],
-            [], '', false
+        $quote = $this->createPartialMock(
+            \Magento\Quote\Model\Quote::class,
+            ['getAllVisibleItems', 'getData']
         );
         $quote
             ->expects($this->any())

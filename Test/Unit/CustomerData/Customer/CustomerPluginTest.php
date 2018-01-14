@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
  *
  */
-class CustomerPluginTest extends \PHPUnit_Framework_TestCase
+class CustomerPluginTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -78,19 +78,19 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\CustomerData\Customer\CustomerPlugin';
+        $className = \Henhed\Piwik\CustomerData\Customer\CustomerPlugin::class;
         $objectManager = new ObjectManager($this);
         $args = $objectManager->getConstructArguments($className);
         $this->_customerPlugin = $objectManager->getObject($className, $args);
         $this->_currentCustomerMock = $args['currentCustomer'];
         $this->_dataHelperMock = $args['dataHelper'];
         $this->_uidProviderPoolMock = $args['uidProviderPool'];
-        $this->_uidProviderMock = $this->getMock(
-            'Henhed\Piwik\UserId\Provider\ProviderInterface',
-            ['getUserId', 'getTitle'], [], '', false
+        $this->_uidProviderMock = $this->createPartialMock(
+            \Henhed\Piwik\UserId\Provider\ProviderInterface::class,
+            ['getUserId', 'getTitle']
         );
-        $this->_customerDataMock = $this->getMock(
-            'Magento\Customer\CustomerData\Customer', [], [], '', false
+        $this->_customerDataMock = $this->createMock(
+            \Magento\Customer\CustomerData\Customer::class
         );
     }
 
@@ -113,7 +113,7 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
     /**
      * Test `afterGetSectionData'
      *
-     * @param boolean $enabled
+     * @param bool $enabled
      * @param int $customerId
      * @param string|null $provider
      * @param string $userId
@@ -121,7 +121,10 @@ class CustomerPluginTest extends \PHPUnit_Framework_TestCase
      * @dataProvider testafterGetSectionDataDataProvider
      */
     public function testafterGetSectionData(
-        $enabled, $customerId, $provider, $userId
+        $enabled,
+        $customerId,
+        $provider,
+        $userId
     ) {
         $expectedResult = [];
         if ($enabled && $customerId && $provider && $userId) {

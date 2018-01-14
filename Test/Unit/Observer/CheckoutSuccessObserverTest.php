@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver
  *
  */
-class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
+class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -81,11 +81,13 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
         $objectMgr = new ObjectManager($this);
 
         // Create tracker
-        $trackerClass = 'Henhed\Piwik\Model\Tracker';
+        $trackerClass = \Henhed\Piwik\Model\Tracker::class;
         $trackerArgs = $objectMgr->getConstructArguments($trackerClass, [
-            'actionFactory' => $this->getMock(
+            'actionFactory' => $this->createPartialMock(
+                // @codingStandardsIgnoreStart
                 'Henhed\Piwik\Model\Tracker\ActionFactory',
-                ['create'], [], '', false
+                // @codingStandardsIgnoreEnd
+                ['create']
             )
         ]);
         $trackerArgs['actionFactory']
@@ -100,11 +102,13 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
         $this->_tracker = $objectMgr->getObject($trackerClass, $trackerArgs);
 
         // Create test subject
-        $className = 'Henhed\Piwik\Observer\CheckoutSuccessObserver';
+        $className = \Henhed\Piwik\Observer\CheckoutSuccessObserver::class;
         $arguments = $objectMgr->getConstructArguments($className, [
-            'orderCollectionFactory' => $this->getMock(
+            'orderCollectionFactory' => $this->createPartialMock(
+                // @codingStandardsIgnoreStart
                 'Magento\Sales\Model\ResourceModel\Order\CollectionFactory',
-                ['create'], [], '', false
+                // @codingStandardsIgnoreEnd
+                ['create']
             )
         ]);
         $arguments['piwikTracker'] = $this->_tracker;
@@ -112,19 +116,19 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
         $this->_dataHelperMock = $arguments['dataHelper'];
 
         // Create event observer mock objects
-        $this->_orderCollectionMock = $this->getMock(
-            'Magento\Sales\Model\ResourceModel\Order\Collection',
-            [], [], '', false
+        $this->_orderCollectionMock = $this->createMock(
+            \Magento\Sales\Model\ResourceModel\Order\Collection::class
         );
         $arguments['orderCollectionFactory']
             ->expects($this->any())
             ->method('create')
             ->willReturn($this->_orderCollectionMock);
-        $this->_eventMock = $this->getMock(
-            'Magento\Framework\Event', ['getOrderIds'], [], '', false
+        $this->_eventMock = $this->createPartialMock(
+            \Magento\Framework\Event::class,
+            ['getOrderIds']
         );
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
         $this->_eventObserverMock
             ->expects($this->any())
@@ -149,12 +153,9 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
             'getBasePriceInclTax' => $price,
             'getQtyOrdered'       => $qty
         ];
-        $itemMock = $this->getMock(
-            'Magento\Sales\Model\Order\Item',
-            array_keys($methodMap),
-            [],
-            '',
-            false
+        $itemMock = $this->createPartialMock(
+            \Magento\Sales\Model\Order\Item::class,
+            array_keys($methodMap)
         );
         foreach ($methodMap as $method => $returnValue) {
             $itemMock
@@ -177,8 +178,14 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
      * @param array $itemsData
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function _getOrderMock($incrementId, $grandTotal, $subTotal, $tax,
-        $shipping, $discount, $itemsData
+    protected function _getOrderMock(
+        $incrementId,
+        $grandTotal,
+        $subTotal,
+        $tax,
+        $shipping,
+        $discount,
+        $itemsData
     ) {
         $items = [];
         foreach ($itemsData as $itemData) {
@@ -194,12 +201,9 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
             'getBaseDiscountAmount'  => $discount,
             'getAllVisibleItems'     => $items
         ];
-        $orderMock = $this->getMock(
-            'Magento\Sales\Model\Order',
-            array_keys($methodMap),
-            [],
-            '',
-            false
+        $orderMock = $this->createPartialMock(
+            \Magento\Sales\Model\Order::class,
+            array_keys($methodMap)
         );
         foreach ($methodMap as $method => $returnValue) {
             $orderMock
@@ -286,9 +290,15 @@ class CheckoutSuccessObserverTest extends \PHPUnit_Framework_TestCase
             list($entityId, $incrementId, $grandTotal, $subTotal, $tax,
                  $shipping, $discount, $itemsData) = $orderData;
             $orderIds[] = $entityId;
-            $orders[] = $this->_getOrderMock($incrementId, $grandTotal,
-                                             $subTotal, $tax, $shipping,
-                                             $discount, $itemsData);
+            $orders[] = $this->_getOrderMock(
+                $incrementId,
+                $grandTotal,
+                $subTotal,
+                $tax,
+                $shipping,
+                $discount,
+                $itemsData
+            );
         }
 
         $this->_dataHelperMock

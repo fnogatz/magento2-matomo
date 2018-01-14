@@ -27,7 +27,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Model\Tracker
  *
  */
-class TrackerTest extends \PHPUnit_Framework_TestCase
+class TrackerTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -51,12 +51,14 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = '\Henhed\Piwik\Model\Tracker';
+        $className = \Henhed\Piwik\Model\Tracker::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className, [
-            'actionFactory' => $this->getMock(
+            'actionFactory' => $this->createPartialMock(
+                // @codingStandardsIgnoreStart
                 'Henhed\Piwik\Model\Tracker\ActionFactory',
-                ['create'], [], '', false
+                // @codingStandardsIgnoreEnd
+                ['create']
             )
         ]);
         $this->_tracker = $objectManager->getObject($className, $arguments);
@@ -101,7 +103,9 @@ class TrackerTest extends \PHPUnit_Framework_TestCase
             ])
             ->will($this->returnValue(new Tracker\Action($name, $args)));
 
-        call_user_func_array(array($this->_tracker, $name), $args);
+        // @codingStandardsIgnoreStart
+        call_user_func_array([$this->_tracker, $name], $args);
+        // @codingStandardsIgnoreEnd
 
         $this->assertEquals(
             [array_merge([$name], $args)],

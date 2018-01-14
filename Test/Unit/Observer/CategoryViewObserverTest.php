@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\CategoryViewObserver
  *
  */
-class CategoryViewObserverTest extends \PHPUnit_Framework_TestCase
+class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -78,23 +78,26 @@ class CategoryViewObserverTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\Observer\CategoryViewObserver';
+        $className = \Henhed\Piwik\Observer\CategoryViewObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
-        $this->_trackerMock = $this->getMock(
-            'Henhed\Piwik\Model\Tracker', ['setEcommerceView'], [], '', false
+        $this->_trackerMock = $this->createPartialMock(
+            \Henhed\Piwik\Model\Tracker::class,
+            ['setEcommerceView']
         );
         $arguments['piwikTracker'] = $this->_trackerMock;
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_dataHelperMock = $arguments['dataHelper'];
-        $this->_eventMock = $this->getMock(
-            'Magento\Framework\Event', ['getCategory'], [], '', false
+        $this->_eventMock = $this->createPartialMock(
+            \Magento\Framework\Event::class,
+            ['getCategory']
         );
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
-        $this->_categoryMock = $this->getMock(
-            'Magento\Catalog\Model\Category', ['getName'], [], '', false
+        $this->_categoryMock = $this->createPartialMock(
+            \Magento\Catalog\Model\Category::class,
+            ['getName']
         );
     }
 

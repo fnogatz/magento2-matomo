@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\CustomerData\Checkout\CartPlugin
  *
  */
-class CartPluginTest extends \PHPUnit_Framework_TestCase
+class CartPluginTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -78,18 +78,21 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\CustomerData\Checkout\CartPlugin';
+        $className = \Henhed\Piwik\CustomerData\Checkout\CartPlugin::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className, [
-            'trackerFactory' => $this->getMock(
+            'trackerFactory' => $this->createPartialMock(
+                // @codingStandardsIgnoreStart
                 'Henhed\Piwik\Model\TrackerFactory',
-                ['create'], [], '', false
+                // @codingStandardsIgnoreEnd
+                ['create']
             )
         ]);
         $this->_cartPlugin = $objectManager->getObject($className, $arguments);
 
-        $this->_quoteMock = $this->getMock(
-            'Magento\Quote\Model\Quote', ['getId'], [], '', false
+        $this->_quoteMock = $this->createPartialMock(
+            \Magento\Quote\Model\Quote::class,
+            ['getId']
         );
         $arguments['checkoutSession']
             ->expects($this->any())
@@ -97,8 +100,8 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->_quoteMock);
 
         $this->_dataHelperMock = $arguments['dataHelper'];
-        $this->_trackerMock = $this->getMock(
-            'Henhed\Piwik\Model\Tracker', [], [], '', false
+        $this->_trackerMock = $this->createMock(
+            \Henhed\Piwik\Model\Tracker::class
         );
         $arguments['trackerFactory']
             ->expects($this->any())
@@ -107,8 +110,8 @@ class CartPluginTest extends \PHPUnit_Framework_TestCase
 
         $this->_trackerHelperMock = $arguments['trackerHelper'];
 
-        $this->_cartMock = $this->getMock(
-            'Magento\Checkout\CustomerData\Cart', [], [], '', false
+        $this->_cartMock = $this->createMock(
+            \Magento\Checkout\CustomerData\Cart::class
         );
     }
 

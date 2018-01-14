@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\BeforeTrackPageViewObserver
  *
  */
-class BeforeTrackPageViewObserverTest extends \PHPUnit_Framework_TestCase
+class BeforeTrackPageViewObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -71,21 +71,21 @@ class BeforeTrackPageViewObserverTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\Observer\BeforeTrackPageViewObserver';
+        $className = \Henhed\Piwik\Observer\BeforeTrackPageViewObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_dataHelperMock = $arguments['dataHelper'];
-        $this->_trackerMock = $this->getMock(
-            'Henhed\Piwik\Model\Tracker',
-            ['enableLinkTracking', 'setLinkTrackingTimer'],
-            [], '', false
+        $this->_trackerMock = $this->createPartialMock(
+            \Henhed\Piwik\Model\Tracker::class,
+            ['enableLinkTracking', 'setLinkTrackingTimer']
         );
-        $this->_eventMock = $this->getMock(
-            'Magento\Framework\Event', ['getTracker'], [], '', false
+        $this->_eventMock = $this->createPartialMock(
+            \Magento\Framework\Event::class,
+            ['getTracker']
         );
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
     }
 
@@ -115,8 +115,11 @@ class BeforeTrackPageViewObserverTest extends \PHPUnit_Framework_TestCase
      * @return void
      * @dataProvider executeDataProvider
      */
-    public function testExecute($linkTrackingEnabled, $linkTrackingDelay,
-        $enableLinkTrackingMatcher, $setLinkTrackingTimerMatcher
+    public function testExecute(
+        $linkTrackingEnabled,
+        $linkTrackingDelay,
+        $enableLinkTrackingMatcher,
+        $setLinkTrackingTimerMatcher
     ) {
         // Prepare observer mock
         $this->_eventObserverMock
