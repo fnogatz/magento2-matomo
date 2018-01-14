@@ -47,6 +47,42 @@
     s.parentNode.insertBefore(g, s);
 })(window, document);
 </script>
+<?php
+// The following script is a workaround that prevents the checkout loader
+// overlay from spinning indefinitely in cases where a browser plugin such as
+// AdBlock stops the tracker JS component from loading. The loader indicator
+// relies on require's module registry to decide when to hide itself so here we
+// export a mocked version of the component if we get an `errback' from require.
+// @see vendor/magento/module-checkout/view/frontend/web/js/checkout-loader.js
+// @see lib/web/mage/requirejs/resolver.js
+?>
+<script type="text/javascript">
+(function (require, undefined) {
+    'use strict';
+    var moduleName = 'Henhed_Piwik/js/tracker';
+    (require !== undefined) && require([moduleName], undefined, function (e) {
+        if (e.requireType === 'scripterror'
+            && (e.requireModules && e.requireModules[0]) === moduleName
+        ) {
+            require.undef(moduleName);
+            define(moduleName, function () {
+                var noop = function () { /* NoOp */ };
+                var error = function () {
+                    throw new Error('Failed to load Piwik module');
+                };
+                var mock = {
+                    createTracker: error,
+                    getPiwik: error,
+                    getTracker: error,
+                    push: noop
+                };
+                mock[moduleName] = noop;
+                return mock;
+            });
+        }
+    });
+})(require);
+</script>
 <noscript>
     <p>
         <img src="<?php echo $block->getTrackingPixelUrl(); ?>"
