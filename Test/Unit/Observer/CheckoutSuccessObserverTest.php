@@ -39,9 +39,9 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     /**
      * Tracker instance
      *
-     * @var \Henhed\Piwik\Model\Tracker $_tracker
+     * @var \PHPUnit_Framework_MockObject_MockObject $_trackerMock
      */
-    protected $_tracker;
+    protected $_trackerMock;
 
     /**
      * Piwik data helper mock object
@@ -51,11 +51,25 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     protected $_dataHelperMock;
 
     /**
-     * Order collection mock object
+     * Piwik tracker helper mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_orderCollectionMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_trackerHelperMock
      */
-    protected $_orderCollectionMock;
+    protected $_trackerHelperMock;
+
+    /**
+     * Sales order repository mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_orderRepositoryMock
+     */
+    protected $_orderRepositoryMock;
+
+    /**
+     * Search criteria builder mock object
+     *
+     * @var \PHPUnit_Framework_MockObject_MockObject $_searchCriteriaBuilderMock
+     */
+    protected $_searchCriteriaBuilderMock;
 
     /**
      * Event observer mock object
@@ -80,49 +94,16 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     {
         $objectMgr = new ObjectManager($this);
 
-        // Create tracker
-        $trackerClass = \Henhed\Piwik\Model\Tracker::class;
-        $trackerArgs = $objectMgr->getConstructArguments($trackerClass, [
-            'actionFactory' => $this->createPartialMock(
-                // @codingStandardsIgnoreStart
-                'Henhed\Piwik\Model\Tracker\ActionFactory',
-                // @codingStandardsIgnoreEnd
-                ['create']
-            )
-        ]);
-        $trackerArgs['actionFactory']
-            ->expects($this->any())
-            ->method('create')
-            ->willReturnCallback(function ($data) {
-                return new \Henhed\Piwik\Model\Tracker\Action(
-                    $data['name'],
-                    $data['args']
-                );
-            });
-        $this->_tracker = $objectMgr->getObject($trackerClass, $trackerArgs);
-
         // Create test subject
         $className = \Henhed\Piwik\Observer\CheckoutSuccessObserver::class;
-        $arguments = $objectMgr->getConstructArguments($className, [
-            'orderCollectionFactory' => $this->createPartialMock(
-                // @codingStandardsIgnoreStart
-                'Magento\Sales\Model\ResourceModel\Order\CollectionFactory',
-                // @codingStandardsIgnoreEnd
-                ['create']
-            )
-        ]);
-        $arguments['piwikTracker'] = $this->_tracker;
+        $arguments = $objectMgr->getConstructArguments($className);
         $this->_testSubject = $objectMgr->getObject($className, $arguments);
+        $this->_trackerMock = $arguments['piwikTracker'];
         $this->_dataHelperMock = $arguments['dataHelper'];
+        $this->_trackerHelperMock = $arguments['trackerHelper'];
+        $this->_orderRepositoryMock = $arguments['orderRepository'];
+        $this->_searchCriteriaBuilderMock = $arguments['searchCriteriaBuilder'];
 
-        // Create event observer mock objects
-        $this->_orderCollectionMock = $this->createMock(
-            \Magento\Sales\Model\ResourceModel\Order\Collection::class
-        );
-        $arguments['orderCollectionFactory']
-            ->expects($this->any())
-            ->method('create')
-            ->willReturn($this->_orderCollectionMock);
         $this->_eventMock = $this->createPartialMock(
             \Magento\Framework\Event::class,
             ['getOrderIds']
@@ -137,169 +118,17 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create order item mock object
-     *
-     * @param string $sku
-     * @param string $name
-     * @param float $price
-     * @param float $qty
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function _getOrderItemMock($sku, $name, $price, $qty)
-    {
-        $methodMap = [
-            'getSku'              => $sku,
-            'getName'             => $name,
-            'getBasePriceInclTax' => $price,
-            'getQtyOrdered'       => $qty
-        ];
-        $itemMock = $this->createPartialMock(
-            \Magento\Sales\Model\Order\Item::class,
-            array_keys($methodMap)
-        );
-        foreach ($methodMap as $method => $returnValue) {
-            $itemMock
-                ->expects($this->any())
-                ->method($method)
-                ->willReturn($returnValue);
-        }
-        return $itemMock;
-    }
-
-    /**
-     * Create order mock object
-     *
-     * @param string $incrementId
-     * @param float $grandTotal
-     * @param float $subTotal
-     * @param float $tax
-     * @param float $shipping
-     * @param float $discount
-     * @param array $itemsData
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected function _getOrderMock(
-        $incrementId,
-        $grandTotal,
-        $subTotal,
-        $tax,
-        $shipping,
-        $discount,
-        $itemsData
-    ) {
-        $items = [];
-        foreach ($itemsData as $itemData) {
-            list($sku, $name, $price, $qty) = $itemData;
-            $items[] = $this->_getOrderItemMock($sku, $name, $price, $qty);
-        }
-        $methodMap = [
-            'getIncrementId'         => $incrementId,
-            'getBaseGrandTotal'      => $grandTotal,
-            'getBaseSubtotalInclTax' => $subTotal,
-            'getBaseTaxAmount'       => $tax,
-            'getBaseShippingInclTax' => $shipping,
-            'getBaseDiscountAmount'  => $discount,
-            'getAllVisibleItems'     => $items
-        ];
-        $orderMock = $this->createPartialMock(
-            \Magento\Sales\Model\Order::class,
-            array_keys($methodMap)
-        );
-        foreach ($methodMap as $method => $returnValue) {
-            $orderMock
-                ->expects($this->any())
-                ->method($method)
-                ->willReturn($returnValue);
-        }
-        return $orderMock;
-    }
-
-    /**
-     * Order collection data provider
-     *
-     * @return array
-     */
-    public function executeDataProvider()
-    {
-        return [
-            [
-                // Sample orders data
-                [
-                    [
-                        1, '100001', 123.45, 101, 10, 15, -5,
-                        [
-                            ['sku1', 'Name 1', 50, 2],
-                            ['sku2', 'Name 2', 50, 3]
-                        ]
-                    ],
-                    [
-                        '2', '100002', '234.56', '201', '15', '20', '-50',
-                        [
-                            ['sku2', 'Name 2 (2)', '60', '1'],
-                            ['sku3', 'Name 3',     '70', '2']
-                        ]
-                    ]
-                ],
-                // Expected tracker data
-                [
-                    // Same as `sku1' from `100001'
-                    ['addEcommerceItem', 'sku1', 'Name 1', false, 50.0, 2.0],
-
-                    // Aggregated data for `sku2' from `100001' *and* `100002'
-                    [
-                        'addEcommerceItem',
-                        'sku2',
-                        'Name 2', // Name from first occurance of `sku2'
-                        false,    // No category name
-                        52.5,     // Sum of price / sum of qty (50*3 + 60)/4
-                        4.0       // Sum of qty
-                    ],
-
-                    // Same as `sku3' from `100002'
-                    ['addEcommerceItem', 'sku3', 'Name 3', false, 70.0, 2.0],
-
-                    // Aggregated order data from `100001' and `100002'
-                    [
-                        'trackEcommerceOrder',
-                        '100001, 100002', // Concat increment IDs
-                        358.01,           // 123.45 + 234.56
-                        302.0,            // 101 + 201
-                        25.0,             // 10 + 15
-                        35.0,             // 15 + 20
-                        55.0              // abs(-5 + -50)
-                    ]
-                ]
-            ]
-        ];
-    }
-
-    /**
      * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute where
      * tracking is enabled.
      *
-     * @param array $ordersData
-     * @param array $expectedResult
      * @return void
-     * @dataProvider executeDataProvider
      */
-    public function testExecuteWithTrackingEnabled($ordersData, $expectedResult)
+    public function testExecuteWithTrackingEnabled()
     {
-        $orderIds = [];
-        $orders = [];
-        foreach ($ordersData as $orderData) {
-            list($entityId, $incrementId, $grandTotal, $subTotal, $tax,
-                 $shipping, $discount, $itemsData) = $orderData;
-            $orderIds[] = $entityId;
-            $orders[] = $this->_getOrderMock(
-                $incrementId,
-                $grandTotal,
-                $subTotal,
-                $tax,
-                $shipping,
-                $discount,
-                $itemsData
-            );
-        }
+        $orders = [
+            1 => new \stdClass(),
+            2 => new \stdClass()
+        ];
 
         $this->_dataHelperMock
             ->expects($this->once())
@@ -309,18 +138,44 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
         $this->_eventMock
             ->expects($this->atLeastOnce())
             ->method('getOrderIds')
-            ->willReturn($orderIds);
+            ->willReturn(array_keys($orders));
 
-        $this->_orderCollectionMock
-            ->expects($this->any())
-            ->method('getIterator')
-            ->willReturn(new \ArrayIterator($orders));
+        $this->_searchCriteriaBuilderMock
+            ->expects($this->once())
+            ->method('addFilter')
+            ->with('entity_id', array_keys($orders), 'in')
+            ->willReturn($this->_searchCriteriaBuilderMock);
+
+        $searchCriteriaMock = $this->createMock(
+            \Magento\Framework\Api\SearchCriteriaInterface::class
+        );
+
+        $this->_searchCriteriaBuilderMock
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn($searchCriteriaMock);
+
+        $searchResultMock = $this->createConfiguredMock(
+            \Magento\Sales\Api\Data\OrderSearchResultInterface::class,
+            ['getItems' => $orders]
+        );
+
+        $this->_orderRepositoryMock
+            ->expects($this->once())
+            ->method('getList')
+            ->with($searchCriteriaMock)
+            ->willReturn($searchResultMock);
+
+        $this->_trackerHelperMock
+            ->expects($this->once())
+            ->method('addOrders')
+            ->with($orders, $this->_trackerMock)
+            ->willReturn($this->_trackerHelperMock);
 
         $this->assertSame(
             $this->_testSubject,
             $this->_testSubject->execute($this->_eventObserverMock)
         );
-        $this->assertEquals($expectedResult, $this->_tracker->toArray());
     }
 
     /**
@@ -341,15 +196,25 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
             ->method('getOrderIds')
             ->willReturn([1]);
 
-        $this->_orderCollectionMock
+        $this->_searchCriteriaBuilderMock
             ->expects($this->never())
-            ->method('getIterator');
+            ->method('addFilter');
+
+        $this->_searchCriteriaBuilderMock
+            ->expects($this->never())
+            ->method('create');
+
+        $this->_orderRepositoryMock
+            ->expects($this->never())
+            ->method('getList');
+
+        $this->_trackerHelperMock
+            ->expects($this->never())
+            ->method('addOrders');
 
         $this->assertSame(
             $this->_testSubject,
             $this->_testSubject->execute($this->_eventObserverMock)
         );
-
-        $this->assertEquals([], $this->_tracker->toArray());
     }
 }

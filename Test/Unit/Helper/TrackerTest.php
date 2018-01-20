@@ -140,6 +140,100 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Order collection data provider
+     *
+     * @return array
+     */
+    public function addOrdersDataProvider()
+    {
+        return [
+            [
+                // Sample orders data
+                [
+                    [
+                        '100001', 123.45, 101, 10, 15, -5,
+                        [
+                            ['sku1', 'Name 1', 50, 2, null],
+                            ['sku2', 'Name 2', 50, 3, null]
+                        ]
+                    ],
+                    [
+                        '100002', '234.56', '201', '15', '20', '-50',
+                        [
+                            ['sku2', 'Name 2 (2)', '60', '1', null],
+                            ['sku3', 'Name 3',     '70', '2', null],
+                            ['sku4', 'Name 4',      '0', '1',    1]
+                        ]
+                    ]
+                ],
+                // Expected tracker data
+                [
+                    // Same as `sku1' from `100001'
+                    ['addEcommerceItem', 'sku1', 'Name 1', false, 50.0, 2.0],
+
+                    // Aggregated data for `sku2' from `100001' *and* `100002'
+                    [
+                        'addEcommerceItem',
+                        'sku2',
+                        'Name 2', // Name from first occurance of `sku2'
+                        false,    // No category name
+                        52.5,     // Sum of price / sum of qty (50*3 + 60)/4
+                        4.0       // Sum of qty
+                    ],
+
+                    // Same as `sku3' from `100002'
+                    ['addEcommerceItem', 'sku3', 'Name 3', false, 70.0, 2.0],
+
+                    // `sku4' should be skipped as it's a child item
+
+                    // Aggregated order data from `100001' and `100002'
+                    [
+                        'trackEcommerceOrder',
+                        '100001, 100002', // Concat increment IDs
+                        358.01,           // 123.45 + 234.56
+                        302.0,            // 101 + 201
+                        25.0,             // 10 + 15
+                        35.0,             // 15 + 20
+                        55.0              // abs(-5 + -50)
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Test for \Henhed\Piwik\Helper\Tracker::addOrders
+     *
+     * @param array $ordersData
+     * @param array $expectedResult
+     * @return void
+     * @dataProvider addOrdersDataProvider
+     */
+    public function testAddOrders($ordersData, $expectedResult)
+    {
+        $orders = [];
+        foreach ($ordersData as $orderData) {
+            list($incrementId, $grandTotal, $subTotal, $tax, $shipping,
+                 $discount, $itemsData) = $orderData;
+             $orders[] = $this->_getOrderMock(
+                 $incrementId,
+                 $grandTotal,
+                 $subTotal,
+                 $tax,
+                 $shipping,
+                 $discount,
+                 $itemsData
+             );
+        }
+
+        $this->assertSame(
+            $this->_helper,
+            $this->_helper->addOrders($orders, $this->_tracker)
+        );
+        $this->assertEquals($expectedResult, $this->_tracker->toArray());
+    }
+
+    /**
      * Create a mock quote object with given data
      *
      * @param array $items
@@ -182,5 +276,55 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($total);
 
         return $quote;
+    }
+
+    /**
+     * Create order mock object
+     *
+     * @param string $incrementId
+     * @param float $grandTotal
+     * @param float $subTotal
+     * @param float $tax
+     * @param float $shipping
+     * @param float $discount
+     * @param array $itemsData
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function _getOrderMock(
+        $incrementId,
+        $grandTotal,
+        $subTotal,
+        $tax,
+        $shipping,
+        $discount,
+        $itemsData
+    ) {
+        $items = [];
+        foreach ($itemsData as $itemData) {
+            list($sku, $name, $price, $qty, $parentId) = $itemData;
+            $items[] = $this->createConfiguredMock(
+                \Magento\Sales\Api\Data\OrderItemInterface::class,
+                [
+                    'getSku'              => $sku,
+                    'getName'             => $name,
+                    'getBasePriceInclTax' => $price,
+                    'getQtyOrdered'       => $qty,
+                    'getParentItemId'     => $parentId
+                ]
+            );
+        }
+        $orderMock = $this->createConfiguredMock(
+            \Magento\Sales\Api\Data\OrderInterface::class,
+            [
+                'getIncrementId'         => $incrementId,
+                'getBaseGrandTotal'      => $grandTotal,
+                'getBaseSubtotalInclTax' => $subTotal,
+                'getBaseTaxAmount'       => $tax,
+                'getBaseShippingInclTax' => $shipping,
+                'getBaseDiscountAmount'  => $discount,
+                'getItems'               => $items
+            ]
+        );
+        return $orderMock;
     }
 }
