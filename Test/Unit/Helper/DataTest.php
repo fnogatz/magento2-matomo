@@ -63,7 +63,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
         $arguments = $objectManager->getConstructArguments($className);
         $this->_helper = $objectManager->getObject($className, $arguments);
         $context = $arguments['context'];
-        /* @var $context \Magento\Framework\App\Helper\Context */
+        /** @var \Magento\Framework\App\Helper\Context $context */
         $this->_scopeConfigMock = $context->getScopeConfig();
         $this->_requestMock = $context->getRequest();
     }

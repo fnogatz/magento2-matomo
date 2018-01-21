@@ -28,7 +28,7 @@ use Magento\Sales\Api\Data\OrderItemInterface;
 /**
  * Piwik tracker helper
  *
- * @link http://piwik.org/docs/ecommerce-analytics/
+ * @see http://piwik.org/docs/ecommerce-analytics/
  */
 class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
 {

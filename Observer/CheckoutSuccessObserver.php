@@ -25,7 +25,7 @@ use Magento\Framework\Event\ObserverInterface;
 /**
  * Observer for `controller_action_predispatch_checkout_cart_index'
  *
- * @link http://piwik.org/docs/ecommerce-analytics/#tracking-ecommerce-orders-items-purchased-required
+ * @see http://piwik.org/docs/ecommerce-analytics/#tracking-ecommerce-orders-items-purchased-required
  */
 class CheckoutSuccessObserver implements ObserverInterface
 {

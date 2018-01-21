@@ -55,9 +55,7 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className, [
             'actionFactory' => $this->createPartialMock(
-                // @codingStandardsIgnoreStart
-                'Henhed\Piwik\Model\Tracker\ActionFactory',
-                // @codingStandardsIgnoreEnd
+                \Henhed\Piwik\Model\Tracker\ActionFactory::class,
                 ['create']
             )
         ]);

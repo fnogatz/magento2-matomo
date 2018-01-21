@@ -82,6 +82,7 @@ class CartViewObserver implements ObserverInterface
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\CartViewObserver
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -96,6 +96,7 @@ class CustomerPlugin
      * @param \Magento\Customer\CustomerData\Customer $subject
      * @param array $result
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetSectionData(
         \Magento\Customer\CustomerData\Customer $subject,

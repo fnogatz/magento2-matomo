@@ -81,6 +81,7 @@ class CartPlugin
      * @param \Magento\Checkout\CustomerData\Cart $subject
      * @param array $result
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetSectionData(
         \Magento\Checkout\CustomerData\Cart $subject,

@@ -68,7 +68,7 @@ A tracker instance will be passed along with the event object to your observer's
 public function execute(\Magento\Framework\Event\Observer $observer)
 {
     $tracker = $observer->getEvent()->getTracker();
-    /* @var $tracker \Henhed\Piwik\Model\Tracker */
+    /** @var \Henhed\Piwik\Model\Tracker $tracker */
     $tracker->setDocumentTitle('My Custom Title');
 }
 ```

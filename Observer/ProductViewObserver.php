@@ -70,7 +70,7 @@ class ProductViewObserver implements ObserverInterface
         }
 
         $product = $observer->getEvent()->getProduct();
-        /* @var $product \Magento\Catalog\Model\Product */
+        /** @var \Magento\Catalog\Model\Product $product */
 
         $category = $product->getCategory();
         $this->_piwikTracker->setEcommerceView(

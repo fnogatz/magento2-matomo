@@ -19,9 +19,9 @@
  */
 
 ?>
-<?php /* @var $block \Henhed\Piwik\Block\Piwik */ ?>
+<?php /** @var \Henhed\Piwik\Block\Piwik $block */ ?>
 <script type="text/x-magento-init">
-<?php echo $block->jsonEncode([
+<?= $block->jsonEncode([
     '*' => [
         'Henhed_Piwik/js/tracker' => $block->getJsOptions()
     ]
@@ -36,14 +36,14 @@
 <script type="text/javascript">
 (function (w, d) {
     w._paq = w._paq || [];
-    w._paq.push(['setTrackerUrl', '<?php echo $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
-    w._paq.push(['setSiteId', <?php echo (int) $block->getSiteId(); ?>]);
+    w._paq.push(['setTrackerUrl', '<?= $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
+    w._paq.push(['setSiteId', <?= (int) $block->getSiteId(); ?>]);
     var g = d.createElement('script'),
         s = d.getElementsByTagName('script')[0];
     g.type = 'text/javascript';
     g.async = true;
     g.defer = true;
-    g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
+    g.src = '<?= $block->escapeJsQuote($block->getScriptUrl()); ?>';
     s.parentNode.insertBefore(g, s);
 })(window, document);
 </script>
@@ -85,7 +85,7 @@
 </script>
 <noscript>
     <p>
-        <img src="<?php echo $block->getTrackingPixelUrl(); ?>"
+        <img src="<?= $block->getTrackingPixelUrl(); ?>"
              style="border: 0;"
              alt="" />
     </p>

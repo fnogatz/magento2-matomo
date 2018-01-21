@@ -156,11 +156,11 @@ class Piwik extends \Magento\Framework\View\Element\Template
      */
     public function getTrackingPixelUrl()
     {
-        $params = array(
+        $params = [
             'idsite' => $this->getSiteId(),
             'rec'    => 1,
             'url'    => $this->_urlBuilder->getCurrentUrl()
-        );
+        ];
         return $this->getTrackerUrl() . '?' . http_build_query($params);
     }
 

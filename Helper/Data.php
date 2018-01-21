@@ -98,7 +98,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected function _getBaseUrl($host, $secure = null)
     {
-        if (is_null($secure)) {
+        if ($secure === null) {
             $secure = $this->_getRequest()->isSecure();
         }
         if (false !== ($scheme = strpos($host, '://'))) {

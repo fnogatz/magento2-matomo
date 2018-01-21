@@ -249,7 +249,7 @@ namespace Henhed\Piwik\Model;
  * @method Tracker setSessionCookieTimeout(int $seconds)
  * The default is 30 minutes
  *
- * @link http://developer.piwik.org/api-reference/tracking-javascript
+ * @see http://developer.piwik.org/api-reference/tracking-javascript
  */
 class Tracker
 {

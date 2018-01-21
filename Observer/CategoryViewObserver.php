@@ -70,7 +70,7 @@ class CategoryViewObserver implements ObserverInterface
         }
 
         $category = $observer->getEvent()->getCategory();
-        /* @var $category \Magento\Catalog\Model\Category */
+        /** @var \Magento\Catalog\Model\Category $category */
 
         $this->_piwikTracker->setEcommerceView(
             false,
