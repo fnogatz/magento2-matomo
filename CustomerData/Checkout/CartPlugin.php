@@ -58,13 +58,13 @@ class CartPlugin
     /**
      * Constructor
      *
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Checkout\Model\Session\Proxy $checkoutSession
      * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
      * @param \Henhed\Piwik\Model\TrackerFactory $trackerFactory
      */
     public function __construct(
-        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Checkout\Model\Session\Proxy $checkoutSession,
         \Henhed\Piwik\Helper\Data $dataHelper,
         \Henhed\Piwik\Helper\Tracker $trackerHelper,
         \Henhed\Piwik\Model\TrackerFactory $trackerFactory

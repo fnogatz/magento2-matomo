@@ -80,11 +80,14 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     {
         $className = \Henhed\Piwik\CustomerData\Checkout\CartPlugin::class;
         $objectManager = new ObjectManager($this);
+        $sessionProxyClass = \Magento\Checkout\Model\Session\Proxy::class;
         $arguments = $objectManager->getConstructArguments($className, [
+            'checkoutSession' => $this->getMockBuilder($sessionProxyClass)
+                ->disableOriginalConstructor()
+                ->setMethods(['getQuote'])
+                ->getMock(),
             'trackerFactory' => $this->createPartialMock(
-                // @codingStandardsIgnoreStart
-                'Henhed\Piwik\Model\TrackerFactory',
-                // @codingStandardsIgnoreEnd
+                \Henhed\Piwik\Model\TrackerFactory::class,
                 ['create']
             )
         ]);

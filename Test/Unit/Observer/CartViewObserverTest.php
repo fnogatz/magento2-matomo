@@ -87,7 +87,13 @@ class CartViewObserverTest extends \PHPUnit\Framework\TestCase
     {
         $className = \Henhed\Piwik\Observer\CartViewObserver::class;
         $objectManager = new ObjectManager($this);
-        $arguments = $objectManager->getConstructArguments($className);
+        $sessionProxyClass = \Magento\Checkout\Model\Session\Proxy::class;
+        $arguments = $objectManager->getConstructArguments($className, [
+            'checkoutSession' => $this->getMockBuilder($sessionProxyClass)
+                ->disableOriginalConstructor()
+                ->setMethods(['getQuote'])
+                ->getMock()
+        ]);
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_trackerMock = $arguments['piwikTracker'];
         $this->_trackerHelperMock = $arguments['trackerHelper'];

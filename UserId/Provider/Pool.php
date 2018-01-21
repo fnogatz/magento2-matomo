@@ -38,20 +38,10 @@ class Pool
      * Constructor
      *
      * @param ProviderInterface[] $providers
-     * @throws \LogicException
      */
     public function __construct(array $providers = [])
     {
-        foreach ($providers as $code => $provider) {
-            if ($provider instanceof ProviderInterface) {
-                $this->_providers[$code] = $provider;
-            } else {
-                throw new \LogicException(sprintf(
-                    '%s must implement %s',
-                    get_class($provider), ProviderInterface::class
-                ));
-            }
-        }
+        $this->_providers = $providers;
     }
 
     /**
@@ -62,9 +52,12 @@ class Pool
      */
     public function getProviderByCode($code)
     {
-        return isset($this->_providers[$code])
-            ? $this->_providers[$code]
-            : null;
+        if (isset($this->_providers[$code])
+            && ($this->_providers[$code] instanceof ProviderInterface)
+        ) {
+            return $this->_providers[$code];
+        }
+        return null;
     }
 
     /**
@@ -74,6 +67,8 @@ class Pool
      */
     public function getAllProviders()
     {
-        return $this->_providers;
+        return array_filter($this->_providers, function ($provider) {
+            return $provider instanceof ProviderInterface;
+        });
     }
 }
