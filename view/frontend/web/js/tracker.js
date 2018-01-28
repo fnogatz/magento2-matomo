@@ -1,5 +1,5 @@
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -138,6 +138,7 @@ define([
      */
     function getPiwikPromise() {
         var deferred = $.Deferred();
+
         if (piwik === null || !defaultSiteId || !defaultTrackerUrl) {
             piwikPromises.push(deferred);
         } else if (piwik === false) {
@@ -156,9 +157,10 @@ define([
     function getAsyncTrackerPromise()
     {
         var deferred = $.Deferred();
+
         getPiwikPromise()
-            .done(function (piwik) {
-                deferred.resolve(piwik.getAsyncTracker());
+            .done(function (piwikObject) {
+                deferred.resolve(piwikObject.getAsyncTracker());
             })
             .fail(function () {
                 deferred.reject();
@@ -175,9 +177,10 @@ define([
      */
     function getTrackerPromise(trackerUrl, siteId) {
         var deferred = $.Deferred();
+
         getPiwikPromise()
-            .done(function (piwik) {
-                deferred.resolve(piwik.getTracker(
+            .done(function (piwikObject) {
+                deferred.resolve(piwikObject.getTracker(
                     trackerUrl || defaultTrackerUrl,
                     siteId || defaultSiteId
                 ));
@@ -197,6 +200,8 @@ define([
      */
     function pushAction(action, tracker) {
 
+        var event, actionName;
+
         if (!_.isArray(action) || _.isEmpty(action)) {
             return;
         } else if (_.isArray(_.first(action))) {
@@ -208,7 +213,7 @@ define([
 
         if (/^track/.test(_.first(action))) {
             // Trigger event before tracking
-            var event = $.Event('piwik:beforeTrack');
+            event = $.Event('piwik:beforeTrack');
             $(exports).triggerHandler(event, [action, tracker]);
             if (event.isDefaultPrevented()) {
                 // Skip tracking if event listener prevented default
@@ -220,7 +225,7 @@ define([
         }
 
         if (_.isObject(tracker)) {
-            var actionName = action.shift();
+            actionName = action.shift();
             if (_.isFunction(tracker[actionName])) {
                 tracker[actionName].apply(tracker, action);
             }
@@ -241,9 +246,8 @@ define([
         if (_.has(cart, 'data_id')) {
             if (storage.get('cart-data-id') === cart.data_id) {
                 return;
-            } else {
-                storage.set('cart-data-id', cart.data_id);
             }
+            storage.set('cart-data-id', cart.data_id);
         }
 
         if (_.has(cart, 'piwikActions')) {
@@ -257,21 +261,31 @@ define([
     }
 
     /**
+     * Callback for customer data subscriber
+     *
+     * @param {Object} customer
+     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
+     */
+    function customerUpdated(customer) {
+        if (_.has(customer, 'piwikUserId')) {
+            storage.set('user-id', customer.piwikUserId);
+        } else {
+            storage.remove('user-id');
+        }
+    }
+
+    /**
      * Event listener for `piwik:beforeTrack'. Adds visitor data to tracker.
      *
      * @param {jQuery.Event} event
      * @param {Array} action
      * @param {Tracker|undefined} tracker
-     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
      */
     function addVisitorDataBeforeTrack(event, action, tracker) {
-
-        var customer = customerObservable();
-
-        if (_.has(customer, 'piwikUserId')) {
-            pushAction(['setUserId', customer.piwikUserId], tracker);
+        if (storage.isSet('user-id')) {
+            pushAction(['setUserId', storage.get('user-id')], tracker);
         }
-    };
+    }
 
     /**
      * Initialzie this component with given options
@@ -301,6 +315,8 @@ define([
     exports.piwikAsyncInit = onPiwikLoaded;
     // Subscribe to cart updates
     cartObservable.subscribe(cartUpdated);
+    // Subscribe to customer updates
+    customerObservable.subscribe(customerUpdated);
     // Listen for track actions to inject visitor data
     $(exports).on('piwik:beforeTrack', addVisitorDataBeforeTrack);
 

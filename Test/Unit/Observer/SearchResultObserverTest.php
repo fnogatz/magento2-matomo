@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\SearchResultObserver
  *
  */
-class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
+class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -92,28 +92,28 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\Observer\SearchResultObserver';
+        $className = \Henhed\Piwik\Observer\SearchResultObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
 
-        $this->_trackerMock = $this->getMock(
-            'Henhed\Piwik\Model\Tracker', ['trackSiteSearch'], [], '', false
+        $this->_trackerMock = $this->createPartialMock(
+            \Henhed\Piwik\Model\Tracker::class,
+            ['trackSiteSearch']
         );
         $arguments['piwikTracker'] = $this->_trackerMock;
         $this->_dataHelperMock = $arguments['dataHelper'];
 
-        $this->_layoutMock = $this->getMock(
-            'Magento\Framework\View\Layout', [], [], '', false
+        $this->_layoutMock = $this->createMock(
+            \Magento\Framework\View\Layout::class
         );
         $arguments['view']
             ->expects($this->any())
             ->method('getLayout')
             ->willReturn($this->_layoutMock);
 
-        $this->_queryMock = $this->getMock(
-            'Magento\Search\Model\Query',
-            ['getQueryText', 'getNumResults'],
-            [], '', false
+        $this->_queryMock = $this->createPartialMock(
+            \Magento\Search\Model\Query::class,
+            ['getQueryText', 'getNumResults']
         );
         $arguments['queryFactory']
             ->expects($this->any())
@@ -121,14 +121,15 @@ class SearchResultObserverTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->_queryMock);
 
         $this->_observer = $objectManager->getObject($className, $arguments);
-        $this->_piwikBlockMock = $this->getMock(
-            'Henhed\Piwik\Block\Piwik', ['setSkipTrackPageView'], [], '', false
+        $this->_piwikBlockMock = $this->createPartialMock(
+            \Henhed\Piwik\Block\Piwik::class,
+            ['setSkipTrackPageView']
         );
-        $this->_searchResultBlockMock = $this->getMock(
-            'Magento\CatalogSearch\Block\Result', [], [], '', false
+        $this->_searchResultBlockMock = $this->createMock(
+            \Magento\CatalogSearch\Block\Result::class
         );
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
     }
 

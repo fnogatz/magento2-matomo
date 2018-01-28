@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -19,9 +19,9 @@
  */
 
 ?>
-<?php /* @var $block \Henhed\Piwik\Block\Piwik */ ?>
+<?php /** @var \Henhed\Piwik\Block\Piwik $block */ ?>
 <script type="text/x-magento-init">
-<?php echo $block->jsonEncode([
+<?= $block->jsonEncode([
     '*' => [
         'Henhed_Piwik/js/tracker' => $block->getJsOptions()
     ]
@@ -36,20 +36,56 @@
 <script type="text/javascript">
 (function (w, d) {
     w._paq = w._paq || [];
-    w._paq.push(['setTrackerUrl', '<?php echo $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
-    w._paq.push(['setSiteId', <?php echo (int) $block->getSiteId(); ?>]);
+    w._paq.push(['setTrackerUrl', '<?= $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
+    w._paq.push(['setSiteId', <?= (int) $block->getSiteId(); ?>]);
     var g = d.createElement('script'),
         s = d.getElementsByTagName('script')[0];
     g.type = 'text/javascript';
     g.async = true;
     g.defer = true;
-    g.src = '<?php echo $block->escapeJsQuote($block->getScriptUrl()); ?>';
+    g.src = '<?= $block->escapeJsQuote($block->getScriptUrl()); ?>';
     s.parentNode.insertBefore(g, s);
 })(window, document);
 </script>
+<?php
+// The following script is a workaround that prevents the checkout loader
+// overlay from spinning indefinitely in cases where a browser plugin such as
+// AdBlock stops the tracker JS component from loading. The loader indicator
+// relies on require's module registry to decide when to hide itself so here we
+// export a mocked version of the component if we get an `errback' from require.
+// @see vendor/magento/module-checkout/view/frontend/web/js/checkout-loader.js
+// @see lib/web/mage/requirejs/resolver.js
+?>
+<script type="text/javascript">
+(function (require, undefined) {
+    'use strict';
+    var moduleName = 'Henhed_Piwik/js/tracker';
+    (require !== undefined) && require([moduleName], undefined, function (e) {
+        if (e.requireType === 'scripterror'
+            && (e.requireModules && e.requireModules[0]) === moduleName
+        ) {
+            require.undef(moduleName);
+            define(moduleName, function () {
+                var noop = function () { /* NoOp */ };
+                var error = function () {
+                    throw new Error('Failed to load Piwik module');
+                };
+                var mock = {
+                    createTracker: error,
+                    getPiwik: error,
+                    getTracker: error,
+                    push: noop
+                };
+                mock[moduleName] = noop;
+                return mock;
+            });
+        }
+    });
+})(require);
+</script>
 <noscript>
     <p>
-        <img src="<?php echo $block->getTrackingPixelUrl(); ?>"
+        <img src="<?= $block->getTrackingPixelUrl(); ?>"
              style="border: 0;"
              alt="" />
     </p>

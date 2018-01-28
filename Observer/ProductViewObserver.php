@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -70,7 +70,7 @@ class ProductViewObserver implements ObserverInterface
         }
 
         $product = $observer->getEvent()->getProduct();
-        /* @var $product \Magento\Catalog\Model\Product */
+        /** @var \Magento\Catalog\Model\Product $product */
 
         $category = $product->getCategory();
         $this->_piwikTracker->setEcommerceView(

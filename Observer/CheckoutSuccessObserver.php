@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -25,7 +25,7 @@ use Magento\Framework\Event\ObserverInterface;
 /**
  * Observer for `controller_action_predispatch_checkout_cart_index'
  *
- * @link http://piwik.org/docs/ecommerce-analytics/#tracking-ecommerce-orders-items-purchased-required
+ * @see http://piwik.org/docs/ecommerce-analytics/#tracking-ecommerce-orders-items-purchased-required
  */
 class CheckoutSuccessObserver implements ObserverInterface
 {
@@ -33,7 +33,7 @@ class CheckoutSuccessObserver implements ObserverInterface
     /**
      * Piwik tracker instance
      *
-     * @var \Henhed\Piwik\Model\Tracker
+     * @var \Henhed\Piwik\Model\Tracker $_piwikTracker
      */
     protected $_piwikTracker;
 
@@ -45,27 +45,47 @@ class CheckoutSuccessObserver implements ObserverInterface
     protected $_dataHelper;
 
     /**
-     * Sales order collection factory
+     * Piwik tracker helper
      *
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $_orderCollectionFactory
+     * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
      */
-    protected $_orderCollectionFactory;
+    protected $_trackerHelper;
+
+    /**
+     * Sales order repository
+     *
+     * @var \Magento\Sales\Api\OrderRepositoryInterface $_orderRepository
+     */
+    protected $_orderRepository;
+
+    /**
+     * Search criteria builder
+     *
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder $_searchCriteriaBuilder
+     */
+    protected $_searchCriteriaBuilder;
 
     /**
      * Constructor
      *
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
      * @param \Henhed\Piwik\Helper\Data $dataHelper
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+     * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
+     * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
         \Henhed\Piwik\Helper\Data $dataHelper,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+        \Henhed\Piwik\Helper\Tracker $trackerHelper,
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_dataHelper = $dataHelper;
-        $this->_orderCollectionFactory = $orderCollectionFactory;
+        $this->_trackerHelper = $trackerHelper;
+        $this->_orderRepository = $orderRepository;
+        $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -83,91 +103,16 @@ class CheckoutSuccessObserver implements ObserverInterface
             return $this;
         }
 
-        $collection = $this->_orderCollectionFactory->create();
-        $collection->addFieldToFilter('entity_id', ['in' => $orderIds]);
+        $searchCriteria = $this->_searchCriteriaBuilder
+            ->addFilter('entity_id', $orderIds, 'in')
+            ->create();
 
-        // Group order items by SKU since Piwik doesn't seem to handle multiple
-        // `addEcommerceItem' with the same SKU.
-        $piwikItems = [];
-        // Aggregate all placed orders into one since Piwik seems to only
-        // register one `trackEcommerceOrder' per request. (For multishipping)
-        $piwikOrder = [];
+        $searchResult = $this->_orderRepository->getList($searchCriteria);
 
-        foreach ($collection as $order) {
-            /* @var $order \Magento\Sales\Model\Order */
-
-            foreach ($order->getAllVisibleItems() as $item) {
-                /* @var $item \Magento\Sales\Model\Order\Item */
-
-                $sku   = $item->getSku();
-                $name  = $item->getName();
-                $price = (float) $item->getBasePriceInclTax();
-                $qty   = (float) $item->getQtyOrdered();
-
-                if (!isset($piwikItems[$sku])) {
-                    $piwikItems[$sku] = [$sku, $name, $price * $qty, $qty];
-                } else {
-                    // Aggregate row total instead of unit price in case there
-                    // are different prices for the same SKU.
-                    $piwikItems[$sku][2] += $price * $qty;
-                    $piwikItems[$sku][3] += $qty;
-                }
-            }
-
-            $orderId    = $order->getIncrementId();
-            $grandTotal = (float) $order->getBaseGrandTotal();
-            $subTotal   = (float) $order->getBaseSubtotalInclTax();
-            $tax        = (float) $order->getBaseTaxAmount();
-            $shipping   = (float) $order->getBaseShippingInclTax();
-            $discount   = abs((float) $order->getBaseDiscountAmount());
-
-            if (empty($piwikOrder)) {
-                $piwikOrder = [
-                    $orderId, $grandTotal, $subTotal, $tax, $shipping, $discount
-                ];
-            } else {
-                $piwikOrder[0] .= ', ' . $orderId;
-                $piwikOrder[1] += $grandTotal;
-                $piwikOrder[2] += $subTotal;
-                $piwikOrder[3] += $tax;
-                $piwikOrder[4] += $shipping;
-                $piwikOrder[5] += $discount;
-            }
-        }
-
-        // Push `addEcommerceItem'
-        foreach ($piwikItems as $piwikItem) {
-
-            list($sku, $name, $rowTotal, $qty) = $piwikItem;
-
-            $this->_piwikTracker->addEcommerceItem(
-                $sku,
-                $name,
-                false,
-                ($qty > 0) // div-by-zero protection
-                    ? $rowTotal / $qty // restore to unit price
-                    : 0,
-                $qty
-            );
-        }
-
-        // Push `trackEcommerceOrder'
-        if (!empty($piwikOrder)) {
-
-            list($orderId, $grandTotal, $subTotal, $tax, $shipping, $discount)
-                = $piwikOrder;
-
-            $this->_piwikTracker->trackEcommerceOrder(
-                $orderId,
-                $grandTotal,
-                $subTotal,
-                $tax,
-                $shipping,
-                ($discount > 0)
-                    ? $discount
-                    : false
-            );
-        }
+        $this->_trackerHelper->addOrders(
+            $searchResult->getItems(),
+            $this->_piwikTracker
+        );
 
         return $this;
     }

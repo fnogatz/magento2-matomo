@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -96,6 +96,7 @@ class CustomerPlugin
      * @param \Magento\Customer\CustomerData\Customer $subject
      * @param array $result
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetSectionData(
         \Magento\Customer\CustomerData\Customer $subject,

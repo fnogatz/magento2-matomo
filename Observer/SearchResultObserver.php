@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -25,7 +25,7 @@ use Magento\Framework\Event\ObserverInterface;
 /**
  * Observer for `controller_action_layout_render_before_catalogsearch_result_index'
  *
- * @link http://developer.piwik.org/guides/tracking-javascript-guide#internal-search-tracking
+ * @see http://developer.piwik.org/guides/tracking-javascript-guide#internal-search-tracking
  */
 class SearchResultObserver implements ObserverInterface
 {
@@ -83,6 +83,7 @@ class SearchResultObserver implements ObserverInterface
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\SearchResultObserver
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -92,23 +93,23 @@ class SearchResultObserver implements ObserverInterface
 
         $query = $this->_queryFactory->get();
         $piwikBlock = $this->_view->getLayout()->getBlock('piwik.tracker');
-        /* @var $query \Magento\Search\Model\Query */
-        /* @var $piwikBlock \Henhed\Piwik\Block\Piwik */
+        /** @var \Magento\Search\Model\Query $query */
+        /** @var \Henhed\Piwik\Block\Piwik $piwikBlock */
 
         $keyword = $query->getQueryText();
         $resultsCount = $query->getNumResults();
 
-        if (is_null($resultsCount)) {
+        if ($resultsCount === null) {
             // If this is a new search query the result count hasn't been saved
             // yet so we have to fetch it from the search result block instead.
             $resultBock = $this->_view->getLayout()->getBlock('search.result');
-            /* @var $resultBock \Magento\CatalogSearch\Block\Result */
+            /** @var \Magento\CatalogSearch\Block\Result $resultBock */
             if ($resultBock) {
                 $resultsCount = $resultBock->getResultCount();
             }
         }
 
-        if (is_null($resultsCount)) {
+        if ($resultsCount === null) {
             $this->_piwikTracker->trackSiteSearch($keyword);
         } else {
             $this->_piwikTracker->trackSiteSearch(

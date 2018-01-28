@@ -42,6 +42,11 @@ Finally, enable the module with the Magento CLI tool.
 php bin/magento module:enable Henhed_Piwik --clear-static-content
 ```
 
+NOTE: If you're using a Magento version prior to 2.2 you'll need to stick to the
+1.x releases of Henhed_Piwik. For manual installation, check out the
+[Release archive][releases]. For installation using Composer, you can use the
+*tilde* or *caret* version constraint operators (e.g. `~1.3` or `^1.3.1`).
+
 
 Configuration
 -------------
@@ -68,7 +73,7 @@ A tracker instance will be passed along with the event object to your observer's
 public function execute(\Magento\Framework\Event\Observer $observer)
 {
     $tracker = $observer->getEvent()->getTracker();
-    /* @var $tracker \Henhed\Piwik\Model\Tracker */
+    /** @var \Henhed\Piwik\Model\Tracker $tracker */
     $tracker->setDocumentTitle('My Custom Title');
 }
 ```
@@ -131,3 +136,5 @@ Affero General Public License][agpl] for more details.
     "Free Web Analytics Software"
 [piwik-tracking-api]: http://developer.piwik.org/api-reference/tracking-javascript
     "JavaScript Tracking Client"
+[releases]: https://github.com/henkelund/magento2-henhed-piwik/releases
+    "Henhed_Piwik Releases"

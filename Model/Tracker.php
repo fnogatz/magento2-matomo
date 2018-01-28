@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -249,7 +249,7 @@ namespace Henhed\Piwik\Model;
  * @method Tracker setSessionCookieTimeout(int $seconds)
  * The default is 30 minutes
  *
- * @link http://developer.piwik.org/api-reference/tracking-javascript
+ * @see http://developer.piwik.org/api-reference/tracking-javascript
  */
 class Tracker
 {

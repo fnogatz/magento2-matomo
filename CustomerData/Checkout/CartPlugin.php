@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -58,13 +58,13 @@ class CartPlugin
     /**
      * Constructor
      *
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Checkout\Model\Session\Proxy $checkoutSession
      * @param \Henhed\Piwik\Helper\Data $dataHelper
      * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
      * @param \Henhed\Piwik\Model\TrackerFactory $trackerFactory
      */
     public function __construct(
-        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Checkout\Model\Session\Proxy $checkoutSession,
         \Henhed\Piwik\Helper\Data $dataHelper,
         \Henhed\Piwik\Helper\Tracker $trackerHelper,
         \Henhed\Piwik\Model\TrackerFactory $trackerFactory
@@ -81,6 +81,7 @@ class CartPlugin
      * @param \Magento\Checkout\CustomerData\Cart $subject
      * @param array $result
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterGetSectionData(
         \Magento\Checkout\CustomerData\Cart $subject,

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -55,7 +55,7 @@ class BeforeTrackPageViewObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $tracker = $observer->getEvent()->getTracker();
-        /* @var $tracker \Henhed\Piwik\Model\Tracker */
+        /** @var \Henhed\Piwik\Model\Tracker $tracker */
 
         $this->_pushLinkTracking($tracker);
 

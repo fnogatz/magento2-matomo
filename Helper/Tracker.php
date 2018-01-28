@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -22,11 +22,13 @@ namespace Henhed\Piwik\Helper;
 
 use Henhed\Piwik\Model\Tracker as TrackerModel;
 use Magento\Quote\Model\Quote;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 
 /**
  * Piwik tracker helper
  *
- * @link http://piwik.org/docs/ecommerce-analytics/
+ * @see http://piwik.org/docs/ecommerce-analytics/
  */
 class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -79,5 +81,116 @@ class Tracker extends \Magento\Framework\App\Helper\AbstractHelper
         }
         $this->addQuoteTotal($quote, $tracker);
         return $this;
+    }
+
+    /**
+     * Push order contents to given tracker
+     *
+     * @param \Magento\Sales\Api\Data\OrderInterface[]|\Traversable $orders
+     * @param \Henhed\Piwik\Model\Tracker $tracker
+     * @return \Henhed\Piwik\Helper\Tracker
+     */
+    public function addOrders($orders, TrackerModel $tracker)
+    {
+        $piwikItems = [];
+        $piwikOrder = [];
+
+        // Collect tracking data
+        foreach ($orders as $order) {
+            foreach ($order->getItems() as $item) {
+                if (!$item->getParentItemId()) {
+                    $this->_appendOrderItemData($item, $piwikItems);
+                }
+            }
+            $this->_appendOrderData($order, $piwikOrder);
+        }
+
+        // Push `addEcommerceItem'
+        foreach ($piwikItems as $piwikItem) {
+            list($sku, $name, $rowTotal, $qty) = $piwikItem;
+
+            $tracker->addEcommerceItem(
+                $sku,
+                $name,
+                false,
+                ($qty > 0) // div-by-zero protection
+                    ? $rowTotal / $qty // restore to unit price
+                    : 0,
+                $qty
+            );
+        }
+
+        // Push `trackEcommerceOrder'
+        if (!empty($piwikOrder)) {
+            list($orderId, $grandTotal, $subTotal, $tax, $shipping, $discount)
+                = $piwikOrder;
+
+            $tracker->trackEcommerceOrder(
+                $orderId,
+                $grandTotal,
+                $subTotal,
+                $tax,
+                $shipping,
+                ($discount > 0)
+                    ? $discount
+                    : false
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param OrderItemInterface $item
+     * @param array &$data
+     * @return void
+     */
+    protected function _appendOrderItemData(OrderItemInterface $item, &$data)
+    {
+        $sku   = $item->getSku();
+        $name  = $item->getName();
+        $price = (float) $item->getBasePriceInclTax();
+        $qty   = (float) $item->getQtyOrdered();
+
+        // Group order items by SKU since Piwik doesn't seem to handle multiple
+        // `addEcommerceItem' with the same SKU.
+        if (!isset($data[$sku])) {
+            $data[$sku] = [$sku, $name, $price * $qty, $qty];
+        } else {
+            // Aggregate row total instead of unit price in case there
+            // are different prices for the same SKU.
+            $data[$sku][2] += $price * $qty;
+            $data[$sku][3] += $qty;
+        }
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param array &$data
+     * @return void
+     */
+    protected function _appendOrderData(OrderInterface $order, &$data)
+    {
+        $orderId    = $order->getIncrementId();
+        $grandTotal = (float) $order->getBaseGrandTotal();
+        $subTotal   = (float) $order->getBaseSubtotalInclTax();
+        $tax        = (float) $order->getBaseTaxAmount();
+        $shipping   = (float) $order->getBaseShippingInclTax();
+        $discount   = abs((float) $order->getBaseDiscountAmount());
+
+        // Aggregate all placed orders into one since Piwik seems to only
+        // register one `trackEcommerceOrder' per request. (For multishipping)
+        if (empty($data)) {
+            $data = [
+                $orderId, $grandTotal, $subTotal, $tax, $shipping, $discount
+            ];
+        } else {
+            $data[0] .= ', ' . $orderId;
+            $data[1] += $grandTotal;
+            $data[2] += $subTotal;
+            $data[3] += $tax;
+            $data[4] += $shipping;
+            $data[5] += $discount;
+        }
     }
 }

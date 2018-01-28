@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\CartViewObserver
  *
  */
-class CartViewObserverTest extends \PHPUnit_Framework_TestCase
+class CartViewObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -46,14 +46,14 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
     /**
      * Tracker mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_eventObserverMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_trackerMock
      */
     protected $_trackerMock;
 
     /**
      * Tracker helper mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_eventObserverMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_trackerHelperMock
      */
     protected $_trackerHelperMock;
 
@@ -67,14 +67,14 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
     /**
      * Checkout session mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_eventObserverMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_checkoutSessionMock
      */
     protected $_checkoutSessionMock;
 
     /**
      * Quote mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_eventObserverMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_quoteMock
      */
     protected $_quoteMock;
 
@@ -85,19 +85,25 @@ class CartViewObserverTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\Observer\CartViewObserver';
+        $className = \Henhed\Piwik\Observer\CartViewObserver::class;
         $objectManager = new ObjectManager($this);
-        $arguments = $objectManager->getConstructArguments($className);
+        $sessionProxyClass = \Magento\Checkout\Model\Session\Proxy::class;
+        $arguments = $objectManager->getConstructArguments($className, [
+            'checkoutSession' => $this->getMockBuilder($sessionProxyClass)
+                ->disableOriginalConstructor()
+                ->setMethods(['getQuote'])
+                ->getMock()
+        ]);
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_trackerMock = $arguments['piwikTracker'];
         $this->_trackerHelperMock = $arguments['trackerHelper'];
         $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_checkoutSessionMock = $arguments['checkoutSession'];
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
-        $this->_quoteMock = $this->getMock(
-            'Magento\Quote\Model\Quote', [], [], '', false
+        $this->_quoteMock = $this->createMock(
+            \Magento\Quote\Model\Quote::class
         );
     }
 

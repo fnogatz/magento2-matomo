@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -63,13 +63,13 @@ class CartViewObserver implements ObserverInterface
      * @param \Henhed\Piwik\Model\Tracker $piwikTracker
      * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
      * @param \Henhed\Piwik\Helper\Data $dataHelper
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Checkout\Model\Session\Proxy $checkoutSession
      */
     public function __construct(
         \Henhed\Piwik\Model\Tracker $piwikTracker,
         \Henhed\Piwik\Helper\Tracker $trackerHelper,
         \Henhed\Piwik\Helper\Data $dataHelper,
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session\Proxy $checkoutSession
     ) {
         $this->_piwikTracker = $piwikTracker;
         $this->_trackerHelper = $trackerHelper;
@@ -82,6 +82,7 @@ class CartViewObserver implements ObserverInterface
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return \Henhed\Piwik\Observer\CartViewObserver
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

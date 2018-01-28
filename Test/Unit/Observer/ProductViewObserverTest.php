@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016-2017 Henrik Hedelund
+ * Copyright 2016-2018 Henrik Hedelund
  *
  * This file is part of Henhed_Piwik.
  *
@@ -26,7 +26,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
  * Test for \Henhed\Piwik\Observer\ProductViewObserver
  *
  */
-class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
+class ProductViewObserverTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -85,28 +85,30 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $className = 'Henhed\Piwik\Observer\ProductViewObserver';
+        $className = \Henhed\Piwik\Observer\ProductViewObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
-        $this->_trackerMock = $this->getMock(
-            'Henhed\Piwik\Model\Tracker', ['setEcommerceView'], [], '', false
+        $this->_trackerMock = $this->createPartialMock(
+            \Henhed\Piwik\Model\Tracker::class,
+            ['setEcommerceView']
         );
         $arguments['piwikTracker'] = $this->_trackerMock;
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_dataHelperMock = $arguments['dataHelper'];
-        $this->_eventMock = $this->getMock(
-            'Magento\Framework\Event', ['getProduct'], [], '', false
+        $this->_eventMock = $this->createPartialMock(
+            \Magento\Framework\Event::class,
+            ['getProduct']
         );
-        $this->_eventObserverMock = $this->getMock(
-            'Magento\Framework\Event\Observer', [], [], '', false
+        $this->_eventObserverMock = $this->createMock(
+            \Magento\Framework\Event\Observer::class
         );
-        $this->_productMock = $this->getMock(
-            'Magento\Catalog\Model\Product',
-            ['getCategory', 'getSku', 'getName', 'getFinalPrice'],
-            [], '', false
+        $this->_productMock = $this->createPartialMock(
+            \Magento\Catalog\Model\Product::class,
+            ['getCategory', 'getSku', 'getName', 'getFinalPrice']
         );
-        $this->_categoryMock = $this->getMock(
-            'Magento\Catalog\Model\Category', ['getName'], [], '', false
+        $this->_categoryMock = $this->createPartialMock(
+            \Magento\Catalog\Model\Category::class,
+            ['getName']
         );
     }
 
@@ -134,7 +136,10 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
      * @return void
      * @dataProvider executeDataProvider
      */
-    public function testExecuteWithTrackingEnabled($sku, $name, $price,
+    public function testExecuteWithTrackingEnabled(
+        $sku,
+        $name,
+        $price,
         $category = null
     ) {
         // Enable tracking
@@ -167,7 +172,7 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
         }
 
         // Prepare category mock if category name was provided
-        if (!is_null($category)) {
+        if ($category !== null) {
             $this->_productMock
                 ->expects($this->once())
                 ->method('getCategory')
@@ -186,7 +191,7 @@ class ProductViewObserverTest extends \PHPUnit_Framework_TestCase
                 $sku,
                 $name,
                 // Category should be FALSE if product has no category
-                is_null($category) ? false : $category,
+                ($category === null) ? false : $category,
                 (float) $price
             )
             ->willReturn($this->_trackerMock);
