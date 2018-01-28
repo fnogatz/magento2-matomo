@@ -261,19 +261,29 @@ define([
     }
 
     /**
+     * Callback for customer data subscriber
+     *
+     * @param {Object} customer
+     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
+     */
+    function customerUpdated(customer) {
+        if (_.has(customer, 'piwikUserId')) {
+            storage.set('user-id', customer.piwikUserId);
+        } else {
+            storage.remove('user-id');
+        }
+    }
+
+    /**
      * Event listener for `piwik:beforeTrack'. Adds visitor data to tracker.
      *
      * @param {jQuery.Event} event
      * @param {Array} action
      * @param {Tracker|undefined} tracker
-     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
      */
     function addVisitorDataBeforeTrack(event, action, tracker) {
-
-        var customer = customerObservable();
-
-        if (_.has(customer, 'piwikUserId')) {
-            pushAction(['setUserId', customer.piwikUserId], tracker);
+        if (storage.isSet('user-id')) {
+            pushAction(['setUserId', storage.get('user-id')], tracker);
         }
     }
 
@@ -305,6 +315,8 @@ define([
     exports.piwikAsyncInit = onPiwikLoaded;
     // Subscribe to cart updates
     cartObservable.subscribe(cartUpdated);
+    // Subscribe to customer updates
+    customerObservable.subscribe(customerUpdated);
     // Listen for track actions to inject visitor data
     $(exports).on('piwik:beforeTrack', addVisitorDataBeforeTrack);
 
