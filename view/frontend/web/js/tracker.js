@@ -288,7 +288,17 @@ define([
     }
 
     /**
-     * Initialzie this component with given options
+     * Checks that piwik.js is already on page
+     *
+     * @param {String} scriptUrl
+     * @returns {boolean}
+     */
+    function scriptExists(scriptUrl) {
+        return $('script[src="' + scriptUrl + '"]').length === 1;
+    }
+
+    /**
+     * Initialize this component with given options
      *
      * @param {Object} options
      */
@@ -296,11 +306,13 @@ define([
         defaultSiteId = options.siteId;
         defaultTrackerUrl = options.trackerUrl;
         if (piwik === null) {
-            pushAction([
-                ['setSiteId', defaultSiteId],
-                ['setTrackerUrl', defaultTrackerUrl]
-            ]);
-            injectScript(options.scriptUrl);
+            if (!scriptExists(options.scriptUrl)) {
+                pushAction([
+                    ['setSiteId', defaultSiteId],
+                    ['setTrackerUrl', defaultTrackerUrl]
+                ]);
+                injectScript(options.scriptUrl);
+            }
         } else {
             // If we already have the Piwik object we can resolve any pending
             // promises immediately.
