@@ -142,11 +142,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getJsScriptPath($store = null)
     {
-        return trim($this->scopeConfig->getValue(
+        return ltrim(trim($this->scopeConfig->getValue(
             self::XML_PATH_JS_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        ), ' /') ?: 'piwik.js';
+        )), '/') ?: 'piwik.js';
     }
 
     /**
@@ -170,11 +170,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getPhpScriptPath($store = null)
     {
-        return trim($this->scopeConfig->getValue(
+        return ltrim(trim($this->scopeConfig->getValue(
             self::XML_PATH_PHP_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        ), ' /') ?: 'piwik.php';
+        )), '/') ?: 'piwik.php';
     }
 
     /**
