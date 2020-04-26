@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/henkelund/magento2-henhed-piwik.svg?branch=master)](https://travis-ci.org/henkelund/magento2-henhed-piwik)
 
-Henhed_Piwik
+Henhed_Piwik Fork
 ============
 
 *Henhed_Piwik* is a [Piwik][piwik] web analytics module for the
@@ -9,6 +9,7 @@ free/libre analytics tool that can be self-hosted, giving you complete
 data ownership.  Henhed_Piwik lets you integrate Piwik with your
 Magento 2 store front.
 
+Added support for PHP7.3
 
 Installation
 ------------
@@ -27,13 +28,13 @@ Alternatively, you can clone the Henhed_Piwik Git repository into
 *app/code/Henhed/Piwik*.
 
 ```sh
-git clone https://github.com/henkelund/magento2-henhed-piwik.git app/code/Henhed/Piwik
+git clone https://github.com/antonio30111988/magento2-henhed-piwik.git app/code/Henhed/Piwik
 ```
 
 Or, if you prefer, install it using [Composer][composer].
 
 ```sh
-composer require henhed/module-piwik
+composer require antonio30111988/module-piwik
 ```
 
 Finally, enable the module with the Magento CLI tool.
