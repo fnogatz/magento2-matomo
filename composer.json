@@ -21,7 +21,7 @@
     "autoload": {
         "files": ["registration.php"],
         "psr-4": {
-            "Antonio30111988\\Piwik\\": ""
+            "Henhed\\Piwik\\": ""
         }
     }
 }
