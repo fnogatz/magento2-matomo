@@ -1,6 +1,6 @@
 {
-    "name": "antonio30111988/module-piwik",
-    "description": "Piwik analytics module for Magento 2. Fork of henkelund/magento2-henhed-piwik for php 7.3",
+    "name": "henhed/module-piwik",
+    "description": "Piwik analytics module for Magento 2",
     "type": "magento2-module",
     "license": [
         "AGPL-3.0+"
