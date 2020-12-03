@@ -4,12 +4,12 @@
 
 ## Installation
 
-To install Chessio_Matomo, download and extract the [master zip archive](https://github.com/fnogatz/magento2-matomo/archive/master.zip) and move the extracted folder to *app/code/Chessio/Matomo* in your Magento 2 installation directory.
+To install Chessio_Matomo, download and extract the [main zip archive](https://github.com/fnogatz/magento2-matomo/archive/main.zip) and move the extracted folder to *app/code/Chessio/Matomo* in your Magento 2 installation directory.
 
 ```sh
-unzip magento2-matomo-master.zip
+unzip magento2-matomo-main.zip
 mkdir app/code/Chessio
-mv magento2-matomo-master app/code/Chessio/Matomo
+mv magento2-matomo-main app/code/Chessio/Matomo
 ```
 
 Alternatively, you can clone the Chessio_Matomo Git repository into *app/code/Chessio_Matomo*.
@@ -78,4 +78,4 @@ var _paq = _paq || [];
 _paq.push(['setDocumentTitle', 'My Custom Title']);
 ```
 
-See the [Matomo Developer Docs](https://developer.matomo.org/api-reference/tracking-javascript) or the [\Chessio\Matomo\Model\Tracker](https://github.com/fnogatz/magento2-matomo/blob/master/Model/Tracker.php) source code for a list of all methods available in the Tracking API.
+See the [Matomo Developer Docs](https://developer.matomo.org/api-reference/tracking-javascript) or the [\Chessio\Matomo\Model\Tracker](https://github.com/fnogatz/magento2-matomo/blob/main/Model/Tracker.php) source code for a list of all methods available in the Tracking API.
