@@ -1,29 +1,30 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\CustomerData\Checkout;
+namespace Chessio\Matomo\Test\Unit\CustomerData\Checkout;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
- * Test for \Henhed\Piwik\CustomerData\Checkout\CartPlugin
+ * Test for \Chessio\Matomo\CustomerData\Checkout\CartPlugin
  *
  */
 class CartPluginTest extends \PHPUnit\Framework\TestCase
@@ -32,7 +33,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     /**
      * Customer data checkout cart plugin (test subject) instance
      *
-     * @var \Henhed\Piwik\CustomerData\Checkout\CartPlugin $_cartPlugin
+     * @var \Chessio\Matomo\CustomerData\Checkout\CartPlugin $_cartPlugin
      */
     protected $_cartPlugin;
 
@@ -51,7 +52,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     protected $_quoteMock;
 
     /**
-     * Piwik data helper mock object
+     * Matomo data helper mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
      */
@@ -78,7 +79,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp()
     {
-        $className = \Henhed\Piwik\CustomerData\Checkout\CartPlugin::class;
+        $className = \Chessio\Matomo\CustomerData\Checkout\CartPlugin::class;
         $objectManager = new ObjectManager($this);
         $sessionProxyClass = \Magento\Checkout\Model\Session\Proxy::class;
         $arguments = $objectManager->getConstructArguments($className, [
@@ -87,7 +88,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
                 ->setMethods(['getQuote'])
                 ->getMock(),
             'trackerFactory' => $this->createPartialMock(
-                \Henhed\Piwik\Model\TrackerFactory::class,
+                \Chessio\Matomo\Model\TrackerFactory::class,
                 ['create']
             )
         ]);
@@ -104,7 +105,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
 
         $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_trackerMock = $this->createMock(
-            \Henhed\Piwik\Model\Tracker::class
+            \Chessio\Matomo\Model\Tracker::class
         );
         $arguments['trackerFactory']
             ->expects($this->any())
@@ -119,14 +120,14 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test \Henhed\Piwik\CustomerData\Checkout\CartPlugin::afterGetSectionData
+     * Test \Chessio\Matomo\CustomerData\Checkout\CartPlugin::afterGetSectionData
      * with existing quote.
      *
      * @return void
      */
     public function testafterGetSectionData()
     {
-        $expectedResult = ['piwikActions' => ['someKey' => 'someValue']];
+        $expectedResult = ['matomoActions' => ['someKey' => 'someValue']];
 
         // Enable tracking
         $this->_dataHelperMock
@@ -151,7 +152,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
         $this->_trackerMock
             ->expects($this->once())
             ->method('toArray')
-            ->willReturn($expectedResult['piwikActions']);
+            ->willReturn($expectedResult['matomoActions']);
 
         // Assert that result of plugin equals expected result
         $this->assertEquals(
@@ -161,7 +162,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test \Henhed\Piwik\CustomerData\Checkout\CartPlugin::afterGetSectionData
+     * Test \Chessio\Matomo\CustomerData\Checkout\CartPlugin::afterGetSectionData
      * with empty quote.
      *
      * @return void
@@ -191,7 +192,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test \Henhed\Piwik\CustomerData\Checkout\CartPlugin::afterGetSectionData
+     * Test \Chessio\Matomo\CustomerData\Checkout\CartPlugin::afterGetSectionData
      * with tracking disabled.
      *
      * @return void

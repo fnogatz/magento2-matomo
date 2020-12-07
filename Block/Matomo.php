@@ -1,30 +1,31 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Block;
+namespace Chessio\Matomo\Block;
 
 /**
- * Piwik page block
+ * Matomo page block
  *
  */
-class Piwik extends \Magento\Framework\View\Element\Template
+class Matomo extends \Magento\Framework\View\Element\Template
 {
 
     /**
@@ -35,16 +36,16 @@ class Piwik extends \Magento\Framework\View\Element\Template
     protected $_jsonEncoder;
 
     /**
-     * Piwik tracker model
+     * Matomo tracker model
      *
-     * @var \Henhed\Piwik\Model\Tracker $_tracker
+     * @var \Chessio\Matomo\Model\Tracker $_tracker
      */
     protected $_tracker;
 
     /**
-     * Piwik data helper
+     * Matomo data helper
      *
-     * @var \Henhed\Piwik\Helper\Data
+     * @var \Chessio\Matomo\Helper\Data
      */
     protected $_dataHelper = null;
 
@@ -53,15 +54,15 @@ class Piwik extends \Magento\Framework\View\Element\Template
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
-     * @param \Henhed\Piwik\Model\Tracker $tracker
-     * @param \Henhed\Piwik\Helper\Data $dataHelper
+     * @param \Chessio\Matomo\Model\Tracker $tracker
+     * @param \Chessio\Matomo\Helper\Data $dataHelper
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
-        \Henhed\Piwik\Model\Tracker $tracker,
-        \Henhed\Piwik\Helper\Data $dataHelper,
+        \Chessio\Matomo\Model\Tracker $tracker,
+        \Chessio\Matomo\Helper\Data $dataHelper,
         array $data = []
     ) {
         $this->_jsonEncoder = $jsonEncoder;
@@ -71,9 +72,9 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get Piwik tracker actions
+     * Get Matomo tracker actions
      *
-     * @return \Henhed\Piwik\Model\Tracker
+     * @return \Chessio\Matomo\Model\Tracker
      */
     public function getTracker()
     {
@@ -90,7 +91,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
         $tracker = $this->getTracker();
 
         $this->_eventManager->dispatch(
-            'piwik_track_page_view_before',
+            'matomo_track_page_view_before',
             ['block' => $this, 'tracker' => $tracker]
         );
 
@@ -99,7 +100,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
         }
 
         $this->_eventManager->dispatch(
-            'piwik_track_page_view_after',
+            'matomo_track_page_view_after',
             ['block' => $this, 'tracker' => $tracker]
         );
     }
@@ -120,7 +121,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get Piwik JS URL
+     * Get Matomo JS URL
      *
      * @return string
      */
@@ -130,7 +131,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get Piwik tracker URL
+     * Get Matomo tracker URL
      *
      * @return string
      */
@@ -140,7 +141,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get Piwik site ID
+     * Get Matomo site ID
      *
      * @return int
      */
@@ -176,7 +177,7 @@ class Piwik extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Generate Piwik tracking script
+     * Generate Matomo tracking script
      *
      * @return string
      */

@@ -2,36 +2,37 @@
 <!--
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="piwik"
+        <section id="matomo"
                  translate="label"
                  type="text"
                  sortOrder="360"
                  showInDefault="1"
                  showInWebsite="1"
                  showInStore="1">
-            <label>Piwik API</label>
+            <label>Matomo API</label>
             <tab>sales</tab>
-            <resource>Henhed_Piwik::piwik</resource>
+            <resource>Chessio_Matomo::matomo</resource>
             <group id="tracking"
                    translate="label"
                    type="text"
@@ -58,7 +59,7 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Hostname</label>
-                    <comment>Piwik hostname, optionally including a path e.g. piwik.example.com or example.com/piwik</comment>
+                    <comment>Matomo hostname, optionally including a path e.g. matomo.example.com or example.com/matomo</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -72,7 +73,7 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Site ID</label>
-                    <comment>Listed under Settings/Website in your Piwik administration panel</comment>
+                    <comment>Listed under Settings/Website in your Matomo administration panel</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -115,8 +116,8 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Enable User ID Tracking</label>
-                    <source_model>Henhed\Piwik\Model\Config\Source\UserId\Provider</source_model>
-                    <comment>Send logged in customers ID to Piwik</comment>
+                    <source_model>Chessio\Matomo\Model\Config\Source\UserId\Provider</source_model>
+                    <comment>Send logged in customers ID to Matomo</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
@@ -140,8 +141,8 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>PHP Script Path</label>
-                        <config_path>piwik/tracking/php_script_path</config_path>
-                        <comment>Path to the Piwik tracker PHP script. Usually &quot;piwik.php&quot;.</comment>
+                        <config_path>matomo/tracking/php_script_path</config_path>
+                        <comment>Path to the Matomo tracker PHP script. Usually &quot;matomo.php&quot;.</comment>
                         <frontend_class>required-entry</frontend_class>
                     </field>
                     <field id="js_script_path"
@@ -152,8 +153,8 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>Javascript Path</label>
-                        <config_path>piwik/tracking/js_script_path</config_path>
-                        <comment>Path to the Piwik tracker Javascript. Usually &quot;piwik.js&quot;.</comment>
+                        <config_path>matomo/tracking/js_script_path</config_path>
+                        <comment>Path to the Matomo tracker Javascript. Usually &quot;matomo.js&quot;.</comment>
                         <frontend_class>required-entry</frontend_class>
                     </field>
                     <field id="cdn_hostname"
@@ -164,8 +165,8 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>CDN Hostname</label>
-                        <config_path>piwik/tracking/cdn_hostname</config_path>
-                        <comment>Hostname for serving the Piwik tracker Javascript. May be left empty in which case the regular hostname will be used.</comment>
+                        <config_path>matomo/tracking/cdn_hostname</config_path>
+                        <comment>Hostname for serving the Matomo tracker Javascript. May be left empty in which case the regular hostname will be used.</comment>
                     </field>
                 </group>
             </group>

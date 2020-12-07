@@ -1,20 +1,21 @@
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 define([
@@ -33,46 +34,46 @@ define([
     var exports = window;
 
     /**
-     * Default Piwik website ID
+     * Default Matomo website ID
      *
      * @type {number}
      */
     var defaultSiteId;
 
     /**
-     * Default Piwik tracker endpoint
+     * Default Matomo tracker endpoint
      *
      * @type {String}
      */
     var defaultTrackerUrl;
 
     /**
-     * Reference to global `piwikAsyncInit' in case we overwrite something
+     * Reference to global `matomoAsyncInit' in case we overwrite something
      *
      * @type {Function|undefined}
      */
-    var origPiwikAsyncInit = exports.piwikAsyncInit;
+    var origMatomoAsyncInit = exports.matomoAsyncInit;
 
     /**
-     * Piwik singleton/namespace
+     * Matomo singleton/namespace
      *
      * @type {Object}
      */
-    var piwik = exports.Piwik || null;
+    var matomo = exports.Matomo || null;
 
     /**
-     * Collection of piwik promises
+     * Collection of matomo promises
      *
      * @type {Array.<Deferred>}
      */
-    var piwikPromises = [];
+    var matomoPromises = [];
 
     /**
      * Client side cache/storage
      *
      * @type {Object}
      */
-    var storage = $.initNamespaceStorage('henhed-piwik').localStorage;
+    var storage = $.initNamespaceStorage('chessio-matomo').localStorage;
 
     /**
      * Cart data access
@@ -89,7 +90,7 @@ define([
     var customerObservable = customerData.get('customer');
 
     /**
-     * Append Piwik tracker script URL to head
+     * Append Matomo tracker script URL to head
      *
      * @param {String} scriptUrl
      */
@@ -103,54 +104,54 @@ define([
     }
 
     /**
-     * Resolve (or reject) requests for the Piwik singleton
+     * Resolve (or reject) requests for the Matomo singleton
      */
-    function resolvePiwikPromises()
+    function resolveMatomoPromises()
     {
-        if (piwik) {
-            _.each(piwikPromises, function (deferred) {
-                deferred.resolve(piwik);
+        if (matomo) {
+            _.each(matomoPromises, function (deferred) {
+                deferred.resolve(matomo);
             });
         } else {
-            _.each(piwikPromises, function (deferred) {
+            _.each(matomoPromises, function (deferred) {
                 deferred.reject();
             });
         }
     }
 
     /**
-     * Callback for when the injected Piwik script is ready
+     * Callback for when the injected Matomo script is ready
      */
-    function onPiwikLoaded() {
-        if (_.isFunction(origPiwikAsyncInit)) {
-            origPiwikAsyncInit();
+    function onMatomoLoaded() {
+        if (_.isFunction(origMatomoAsyncInit)) {
+            origMatomoAsyncInit();
         }
-        piwik = _.isObject(exports.Piwik) ? exports.Piwik : false;
+        matomo = _.isObject(exports.Matomo) ? exports.Matomo : false;
         if (defaultSiteId && defaultTrackerUrl) {
-            resolvePiwikPromises();
+            resolveMatomoPromises();
         }
     }
 
     /**
-     * Get Piwik singleton/namespace promise
+     * Get Matomo singleton/namespace promise
      *
      * @returns {Promise}
      */
-    function getPiwikPromise() {
+    function getMatomoPromise() {
         var deferred = $.Deferred();
 
-        if (piwik === null || !defaultSiteId || !defaultTrackerUrl) {
-            piwikPromises.push(deferred);
-        } else if (piwik === false) {
+        if (matomo === null || !defaultSiteId || !defaultTrackerUrl) {
+            matomoPromises.push(deferred);
+        } else if (matomo === false) {
             deferred.reject();
         } else {
-            deferred.resolve(piwik);
+            deferred.resolve(matomo);
         }
         return deferred.promise();
     }
 
     /**
-     * Get asynchronous Piwik tracker promise
+     * Get asynchronous Matomo tracker promise
      *
      * @returns {Promise}
      */
@@ -158,9 +159,9 @@ define([
     {
         var deferred = $.Deferred();
 
-        getPiwikPromise()
-            .done(function (piwikObject) {
-                deferred.resolve(piwikObject.getAsyncTracker());
+        getMatomoPromise()
+            .done(function (matomoObject) {
+                deferred.resolve(matomoObject.getAsyncTracker());
             })
             .fail(function () {
                 deferred.reject();
@@ -169,7 +170,7 @@ define([
     }
 
     /**
-     * Create a new Piwik tracker promise
+     * Create a new Matomo tracker promise
      *
      * @param {String|undefined} trackerUrl
      * @param {number|undefined} siteId
@@ -178,9 +179,9 @@ define([
     function getTrackerPromise(trackerUrl, siteId) {
         var deferred = $.Deferred();
 
-        getPiwikPromise()
-            .done(function (piwikObject) {
-                deferred.resolve(piwikObject.getTracker(
+        getMatomoPromise()
+            .done(function (matomoObject) {
+                deferred.resolve(matomoObject.getTracker(
                     trackerUrl || defaultTrackerUrl,
                     siteId || defaultSiteId
                 ));
@@ -213,7 +214,7 @@ define([
 
         if (/^track/.test(_.first(action))) {
             // Trigger event before tracking
-            event = $.Event('piwik:beforeTrack');
+            event = $.Event('matomo:beforeTrack');
             $(exports).triggerHandler(event, [action, tracker]);
             if (event.isDefaultPrevented()) {
                 // Skip tracking if event listener prevented default
@@ -238,7 +239,7 @@ define([
      * Callback for cart customer data subscriber
      *
      * @param {Object} cart
-     * @see \Henhed\Piwik\CustomerData\Checkout\CartPlugin
+     * @see \Chessio\Matomo\CustomerData\Checkout\CartPlugin
      */
     function cartUpdated(cart) {
 
@@ -250,12 +251,12 @@ define([
             storage.set('cart-data-id', cart.data_id);
         }
 
-        if (_.has(cart, 'piwikActions')) {
+        if (_.has(cart, 'matomoActions')) {
             // We need to create a new tracker instance for asynchronous
             // ecommerce updates since previous ecommerce items are stored
             // in the tracker.
             getTrackerPromise().done(function (tracker) {
-                pushAction(cart.piwikActions, tracker);
+                pushAction(cart.matomoActions, tracker);
             });
         }
     }
@@ -264,18 +265,18 @@ define([
      * Callback for customer data subscriber
      *
      * @param {Object} customer
-     * @see \Henhed\Piwik\CustomerData\Customer\CustomerPlugin
+     * @see \Chessio\Matomo\CustomerData\Customer\CustomerPlugin
      */
     function customerUpdated(customer) {
-        if (_.has(customer, 'piwikUserId')) {
-            storage.set('user-id', customer.piwikUserId);
+        if (_.has(customer, 'matomoUserId')) {
+            storage.set('user-id', customer.matomoUserId);
         } else {
             storage.remove('user-id');
         }
     }
 
     /**
-     * Event listener for `piwik:beforeTrack'. Adds visitor data to tracker.
+     * Event listener for `matomo:beforeTrack'. Adds visitor data to tracker.
      *
      * @param {jQuery.Event} event
      * @param {Array} action
@@ -288,7 +289,7 @@ define([
     }
 
     /**
-     * Checks that piwik.js is already on page
+     * Checks that matomo.js is already on page
      *
      * @param {String} scriptUrl
      * @returns {boolean}
@@ -305,7 +306,7 @@ define([
     function initialize(options) {
         defaultSiteId = options.siteId;
         defaultTrackerUrl = options.trackerUrl;
-        if (piwik === null) {
+        if (matomo === null) {
             if (!scriptExists(options.scriptUrl)) {
                 pushAction([
                     ['setSiteId', defaultSiteId],
@@ -314,32 +315,32 @@ define([
                 injectScript(options.scriptUrl);
             }
         } else {
-            // If we already have the Piwik object we can resolve any pending
+            // If we already have the Matomo object we can resolve any pending
             // promises immediately.
-            resolvePiwikPromises();
+            resolveMatomoPromises();
         }
         pushAction(options.actions);
     }
 
-    // Make sure the Piwik asynchronous tracker queue is defined
+    // Make sure the Matomo asynchronous tracker queue is defined
     exports._paq = exports._paq || [];
-    // Listen for when the Piwik asynchronous tracker is ready
-    exports.piwikAsyncInit = onPiwikLoaded;
+    // Listen for when the Matomo asynchronous tracker is ready
+    exports.matomoAsyncInit = onMatomoLoaded;
     // Subscribe to cart updates
     cartObservable.subscribe(cartUpdated);
     // Subscribe to customer updates
     customerObservable.subscribe(customerUpdated);
     // Listen for track actions to inject visitor data
-    $(exports).on('piwik:beforeTrack', addVisitorDataBeforeTrack);
+    $(exports).on('matomo:beforeTrack', addVisitorDataBeforeTrack);
 
     return {
         // Public component API
         createTracker: getTrackerPromise,
-        getPiwik: getPiwikPromise,
+        getMatomo: getMatomoPromise,
         getTracker: getAsyncTrackerPromise,
         push: pushAction,
-        // Entrypoint called with options from piwik.phtml
+        // Entrypoint called with options from matomo.phtml
         // @see /lib/web/mage/apply/main.js:init
-        'Henhed_Piwik/js/tracker': initialize
+        'Chessio_Matomo/js/tracker': initialize
     };
 });

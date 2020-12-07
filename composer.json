@@ -1,6 +1,6 @@
 {
-    "name": "henhed/module-piwik",
-    "description": "Piwik analytics module for Magento 2",
+    "name": "chessio/module-matomo",
+    "description": "Matomo Analytics module for Magento 2",
     "type": "magento2-module",
     "license": [
         "AGPL-3.0+"
@@ -21,7 +21,7 @@
     "autoload": {
         "files": ["registration.php"],
         "psr-4": {
-            "Henhed\\Piwik\\": ""
+            "Chessio\\Matomo\\": ""
         }
     }
 }

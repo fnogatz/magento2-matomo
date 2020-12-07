@@ -1,29 +1,30 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\Observer;
+namespace Chessio\Matomo\Test\Unit\Observer;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
- * Test for \Henhed\Piwik\Observer\SearchResultObserver
+ * Test for \Chessio\Matomo\Observer\SearchResultObserver
  *
  */
 class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
@@ -32,19 +33,19 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
     /**
      * Search result observer (test subject) instance
      *
-     * @var \Henhed\Piwik\Observer\SearchResultObserver $_observer
+     * @var \Chessio\Matomo\Observer\SearchResultObserver $_observer
      */
     protected $_observer;
 
     /**
-     * Piwik tracker mock object
+     * Matomo tracker mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_trackerMock
      */
     protected $_trackerMock;
 
     /**
-     * Piwik data helper mock object
+     * Matomo data helper mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
      */
@@ -65,11 +66,11 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
     protected $_queryMock;
 
     /**
-     * Piwik block mock object
+     * Matomo block mock object
      *
-     * @var \PHPUnit_Framework_MockObject_MockObject $_piwikBlockMock
+     * @var \PHPUnit_Framework_MockObject_MockObject $_matomoBlockMock
      */
-    protected $_piwikBlockMock;
+    protected $_matomoBlockMock;
 
     /**
      * Search result block mock object
@@ -92,15 +93,15 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp()
     {
-        $className = \Henhed\Piwik\Observer\SearchResultObserver::class;
+        $className = \Chessio\Matomo\Observer\SearchResultObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
 
         $this->_trackerMock = $this->createPartialMock(
-            \Henhed\Piwik\Model\Tracker::class,
+            \Chessio\Matomo\Model\Tracker::class,
             ['trackSiteSearch']
         );
-        $arguments['piwikTracker'] = $this->_trackerMock;
+        $arguments['matomoTracker'] = $this->_trackerMock;
         $this->_dataHelperMock = $arguments['dataHelper'];
 
         $this->_layoutMock = $this->createMock(
@@ -121,8 +122,8 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->_queryMock);
 
         $this->_observer = $objectManager->getObject($className, $arguments);
-        $this->_piwikBlockMock = $this->createPartialMock(
-            \Henhed\Piwik\Block\Piwik::class,
+        $this->_matomoBlockMock = $this->createPartialMock(
+            \Chessio\Matomo\Block\Matomo::class,
             ['setSkipTrackPageView']
         );
         $this->_searchResultBlockMock = $this->createMock(
@@ -158,7 +159,7 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
      */
     protected function _prepareLayoutMock($blocks = [])
     {
-        $blockMap = [['piwik.tracker', $this->_piwikBlockMock]];
+        $blockMap = [['matomo.tracker', $this->_matomoBlockMock]];
         foreach ($blocks as $name => $block) {
             $blockMap[] = [$name, $block];
         }
@@ -166,15 +167,15 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
             ->expects($this->any())
             ->method('getBlock')
             ->willReturnMap($blockMap);
-        $this->_piwikBlockMock
+        $this->_matomoBlockMock
             ->expects($this->once())
             ->method('setSkipTrackPageView')
             ->with(true)
-            ->willReturn($this->_piwikBlockMock);
+            ->willReturn($this->_matomoBlockMock);
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\SearchResultObserver::execute where
+     * Test for \Chessio\Matomo\Observer\SearchResultObserver::execute where
      * the query object does not have a result count.
      *
      * @return void
@@ -216,7 +217,7 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\SearchResultObserver::execute where
+     * Test for \Chessio\Matomo\Observer\SearchResultObserver::execute where
      * the query object does not have a result count and there is no search
      * result block available.
      *
@@ -250,7 +251,7 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\SearchResultObserver::execute where
+     * Test for \Chessio\Matomo\Observer\SearchResultObserver::execute where
      * the query object has a result count.
      *
      * @return void
@@ -292,7 +293,7 @@ class SearchResultObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\SearchResultObserver::execute where
+     * Test for \Chessio\Matomo\Observer\SearchResultObserver::execute where
      * tracking is disabled.
      *
      * @return void

@@ -41,7 +41,7 @@ To start tracking, set *Enable Tracking* to *Yes*, enter the *Hostname* of your 
 
 If you need to send some custom information to your Matomo server, Chessio_Matomo lets you do so using event observers.
 
-To set custom data on each page, use the `piwik_track_page_view_before` event. A tracker instance will be passed along with the event object to your observer's `execute` method.
+To set custom data on each page, use the `matomo_track_page_view_before` event. A tracker instance will be passed along with the event object to your observer's `execute` method.
 
 ```php
 public function execute(\Magento\Framework\Event\Observer $observer)

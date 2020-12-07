@@ -1,27 +1,28 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Model;
+namespace Chessio\Matomo\Model;
 
 /**
- * Piwik tracker model
+ * Matomo tracker model
  *
  * @method Tracker trackEvent(string $category, string $action,
  *                            string $name = null, int $value = null)
@@ -79,7 +80,7 @@ namespace Henhed\Piwik\Model;
  * context menu or middle click.
  *
  * @method Tracker enableHeartBeatTimer(int $delayInSeconds)
- * Install a Heart beat timer that will regularly send requests to Piwik (every
+ * Install a Heart beat timer that will regularly send requests to Matomo (every
  * delayInSeconds seconds) in order to better measure the time spent on the
  * page. These requests will be sent only when the user is actively viewing the
  * page (when the tab is active and in focus). These requests will not track
@@ -103,16 +104,16 @@ namespace Henhed\Piwik\Model;
  * Specify the website ID
  *
  * @method Tracker setApiUrl(string $apiUrl)
- * Specify the Piwik HTTP API URL endpoint. Points to the root directory of
- * piwik, e.g. http://piwik.example.org/ or https://example.org/piwik/. This
+ * Specify the Matomo HTTP API URL endpoint. Points to the root directory of
+ * matomo, e.g. http://matomo.example.org/ or https://example.org/matomo/. This
  * function is only useful when the 'Overlay' report is not working. By default
  * you do not need to use this function.
  *
  * @method Tracker setTrackerUrl(string $trackerUrl)
- * Specify the Piwik server URL.
+ * Specify the Matomo server URL.
  *
  * @method Tracker setDownloadClasses(string|array $downloadClasses)
- * Set classes to be treated as downloads (in addition to piwik_download)
+ * Set classes to be treated as downloads (in addition to matomo_download)
  *
  * @method Tracker setDownloadExtensions(string|array $downloadExtensions)
  * Set list of file extensions to be recognized as downloads. Example: 'doc' or
@@ -127,10 +128,10 @@ namespace Henhed\Piwik\Model;
  * extensions. Example: 'doc' or ['doc', 'xls']
  *
  * @method Tracker setIgnoreClasses(string|array $ignoreClasses)
- * Set classes to be ignored if present in link (in addition to piwik_ignore)
+ * Set classes to be ignored if present in link (in addition to matomo_ignore)
  *
  * @method Tracker setLinkClasses(string|array $linkClasses)
- * Set classes to be treated as outlinks (in addition to piwik_link)
+ * Set classes to be treated as outlinks (in addition to matomo_link)
  *
  * @method Tracker setLinkTrackingTimer(int $linkTrackingTimer)
  * Set delay for link tracking in milliseconds.
@@ -139,19 +140,19 @@ namespace Henhed\Piwik\Model;
  * Set to true to not record the hash tag (anchor) portion of URLs
  *
  * @method Tracker setGenerationTimeMs(int $generationTime)
- * By default Piwik uses the browser DOM Timing API to accurately determine the
+ * By default Matomo uses the browser DOM Timing API to accurately determine the
  * time it takes to generate and download the page. You may overwrite the value
  * by specifying a milliseconds value here.
  *
  * @method Tracker appendToTrackingUrl(string $appendToUrl)
- * Appends a custom string to the end of the HTTP request to piwik.php?
+ * Appends a custom string to the end of the HTTP request to matomo.php?
  *
  * @method Tracker setDoNotTrack(bool $flag)
  * Set to true to not track users who opt out of tracking using Mozilla's
  * (proposed) Do Not Track setting.
  *
  * @method Tracker disableCookies()
- * Disables all first party cookies. Existing Piwik cookies for this websites
+ * Disables all first party cookies. Existing Matomo cookies for this websites
  * will be deleted on the next page view.
  *
  * @method Tracker deleteCookies()
@@ -190,10 +191,10 @@ namespace Henhed\Piwik\Model;
  *
  * @method Tracker setCustomDimension(int $customDimensionId,
  *                                    string $customDimensionValue)
- * Set a custom dimension. (requires Piwik 2.15.1 + Custom Dimensions plugin)
+ * Set a custom dimension. (requires Matomo 2.15.1 + Custom Dimensions plugin)
  *
  * @method Tracker deleteCustomDimension(int customDimensionId)
- * Delete a custom dimension. (requires Piwik 2.15.1 + Custom Dimensions plugin)
+ * Delete a custom dimension. (requires Matomo 2.15.1 + Custom Dimensions plugin)
  *
  * @method Tracker setCampaignNameKey(string $name)
  * Set campaign name parameter(s).
@@ -249,7 +250,7 @@ namespace Henhed\Piwik\Model;
  * @method Tracker setSessionCookieTimeout(int $seconds)
  * The default is 30 minutes
  *
- * @see http://developer.piwik.org/api-reference/tracking-javascript
+ * @see http://developer.matomo.org/api-reference/tracking-javascript
  */
 class Tracker
 {
@@ -257,24 +258,24 @@ class Tracker
     /**
      * Action items
      *
-     * @var \Henhed\Piwik\Model\Tracker\Action[] $_actions
+     * @var \Chessio\Matomo\Model\Tracker\Action[] $_actions
      */
     protected $_actions = [];
 
     /**
      * Tracker action factory instance
      *
-     * @var \Henhed\Piwik\Model\Tracker\ActionFactory $_actionFactory
+     * @var \Chessio\Matomo\Model\Tracker\ActionFactory $_actionFactory
      */
     protected $_actionFactory;
 
     /**
      * Constructor
      *
-     * @param \Henhed\Piwik\Model\Tracker\ActionFactory $actionFactory
+     * @param \Chessio\Matomo\Model\Tracker\ActionFactory $actionFactory
      */
     public function __construct(
-        \Henhed\Piwik\Model\Tracker\ActionFactory $actionFactory
+        \Chessio\Matomo\Model\Tracker\ActionFactory $actionFactory
     ) {
         $this->_actionFactory = $actionFactory;
     }
@@ -282,8 +283,8 @@ class Tracker
     /**
      * Push an action to this tracker
      *
-     * @param \Henhed\Piwik\Model\Tracker\Action $action
-     * @return \Henhed\Piwik\Model\Tracker
+     * @param \Chessio\Matomo\Model\Tracker\Action $action
+     * @return \Chessio\Matomo\Model\Tracker
      */
     public function push(Tracker\Action $action)
     {
@@ -294,7 +295,7 @@ class Tracker
     /**
      * Get all actions in this tracker
      *
-     * @return \Henhed\Piwik\Model\Tracker\Action[]
+     * @return \Chessio\Matomo\Model\Tracker\Action[]
      */
     public function getActions()
     {
@@ -320,7 +321,7 @@ class Tracker
      *
      * @param string $name
      * @param array $arguments
-     * @return \Henhed\Piwik\Model\Tracker
+     * @return \Chessio\Matomo\Model\Tracker
      */
     public function __call($name, $arguments)
     {

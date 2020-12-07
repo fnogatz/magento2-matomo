@@ -1,53 +1,54 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Observer;
+namespace Chessio\Matomo\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 
 /**
  * Observer for `controller_action_predispatch_checkout_cart_index'
  *
- * @see http://piwik.org/docs/ecommerce-analytics/#tracking-ecommerce-orders-items-purchased-required
+ * @see https://matomo.org/docs/ecommerce-analytics/
  */
 class CheckoutSuccessObserver implements ObserverInterface
 {
 
     /**
-     * Piwik tracker instance
+     * Matomo tracker instance
      *
-     * @var \Henhed\Piwik\Model\Tracker $_piwikTracker
+     * @var \Chessio\Matomo\Model\Tracker $_matomoTracker
      */
-    protected $_piwikTracker;
+    protected $_matomoTracker;
 
     /**
-     * Piwik data helper
+     * Matomo data helper
      *
-     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     * @var \Chessio\Matomo\Helper\Data $_dataHelper
      */
     protected $_dataHelper;
 
     /**
-     * Piwik tracker helper
+     * Matomo tracker helper
      *
-     * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
+     * @var \Chessio\Matomo\Helper\Tracker $_trackerHelper
      */
     protected $_trackerHelper;
 
@@ -68,20 +69,20 @@ class CheckoutSuccessObserver implements ObserverInterface
     /**
      * Constructor
      *
-     * @param \Henhed\Piwik\Model\Tracker $piwikTracker
-     * @param \Henhed\Piwik\Helper\Data $dataHelper
-     * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
+     * @param \Chessio\Matomo\Model\Tracker $matomoTracker
+     * @param \Chessio\Matomo\Helper\Data $dataHelper
+     * @param \Chessio\Matomo\Helper\Tracker $trackerHelper
      * @param \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        \Henhed\Piwik\Model\Tracker $piwikTracker,
-        \Henhed\Piwik\Helper\Data $dataHelper,
-        \Henhed\Piwik\Helper\Tracker $trackerHelper,
+        \Chessio\Matomo\Model\Tracker $matomoTracker,
+        \Chessio\Matomo\Helper\Data $dataHelper,
+        \Chessio\Matomo\Helper\Tracker $trackerHelper,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->_piwikTracker = $piwikTracker;
+        $this->_matomoTracker = $matomoTracker;
         $this->_dataHelper = $dataHelper;
         $this->_trackerHelper = $trackerHelper;
         $this->_orderRepository = $orderRepository;
@@ -92,7 +93,7 @@ class CheckoutSuccessObserver implements ObserverInterface
      * Push trackEcommerceOrder to tracker on checkout success page
      *
      * @param \Magento\Framework\Event\Observer $observer
-     * @return \Henhed\Piwik\Observer\CheckoutSuccessObserver
+     * @return \Chessio\Matomo\Observer\CheckoutSuccessObserver
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -111,7 +112,7 @@ class CheckoutSuccessObserver implements ObserverInterface
 
         $this->_trackerHelper->addOrders(
             $searchResult->getItems(),
-            $this->_piwikTracker
+            $this->_matomoTracker
         );
 
         return $this;

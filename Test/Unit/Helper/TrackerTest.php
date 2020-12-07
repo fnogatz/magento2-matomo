@@ -1,45 +1,46 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\Helper;
+namespace Chessio\Matomo\Test\Unit\Helper;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
- * Test for \Henhed\Piwik\Helper\Tracker
+ * Test for \Chessio\Matomo\Helper\Tracker
  *
  */
 class TrackerTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
-     * Piwik tracker helper (test subject) instance
+     * Matomo tracker helper (test subject) instance
      *
-     * @var \Henhed\Piwik\Helper\Tracker $_helper
+     * @var \Chessio\Matomo\Helper\Tracker $_helper
      */
     protected $_helper;
 
     /**
      * Tracker instance
      *
-     * @var \Henhed\Piwik\Model\Tracker $_tracker
+     * @var \Chessio\Matomo\Model\Tracker $_tracker
      */
     protected $_tracker;
 
@@ -54,14 +55,14 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
 
         // Create test subject
         $this->_helper = $objectManager->getObject(
-            \Henhed\Piwik\Helper\Tracker::class
+            \Chessio\Matomo\Helper\Tracker::class
         );
 
         // Create tracker instance
-        $class = \Henhed\Piwik\Model\Tracker::class;
+        $class = \Chessio\Matomo\Model\Tracker::class;
         $arguments = $objectManager->getConstructArguments($class, [
             'actionFactory' => $this->createPartialMock(
-                \Henhed\Piwik\Model\Tracker\ActionFactory::class,
+                \Chessio\Matomo\Model\Tracker\ActionFactory::class,
                 ['create']
             )
         ]);
@@ -69,7 +70,7 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
             ->expects($this->any())
             ->method('create')
             ->willReturnCallback(function ($data) {
-                return new \Henhed\Piwik\Model\Tracker\Action(
+                return new \Chessio\Matomo\Model\Tracker\Action(
                     $data['name'],
                     $data['args']
                 );
@@ -104,7 +105,7 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Helper\Tracker::addQuote
+     * Test for \Chessio\Matomo\Helper\Tracker::addQuote
      *
      * Also covers `addQuoteItem' and `addQuoteTotal'
      *
@@ -200,7 +201,7 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Helper\Tracker::addOrders
+     * Test for \Chessio\Matomo\Helper\Tracker::addOrders
      *
      * @param array $ordersData
      * @param array $expectedResult

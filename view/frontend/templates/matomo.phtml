@@ -1,35 +1,36 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 ?>
-<?php /** @var \Henhed\Piwik\Block\Piwik $block */ ?>
+<?php /** @var \Chessio\Matomo\Block\Matomo $block */ ?>
 <script type="text/x-magento-init">
 <?= $block->jsonEncode([
     '*' => [
-        'Henhed_Piwik/js/tracker' => $block->getJsOptions()
+        'Chessio_Matomo/js/tracker' => $block->getJsOptions()
     ]
 ]); ?>
 </script>
 <?php
 // The following script can be omitted in which case the
-// `Henhed_Piwik/js/tracker' component will inject the tracker script instead.
+// `Chessio_Matomo/js/tracker' component will inject the tracker script instead.
 // However that might cause the tracker script to miss the `DOMContentLoaded'
 // event which breaks the link tracking feature.
 ?>
@@ -59,7 +60,7 @@
 <script type="text/javascript">
 (function (require, undefined) {
     'use strict';
-    var moduleName = 'Henhed_Piwik/js/tracker';
+    var moduleName = 'Chessio_Matomo/js/tracker';
     (require !== undefined) && require([moduleName], undefined, function (e) {
         if (e.requireType === 'scripterror'
             && (e.requireModules && e.requireModules[0]) === moduleName
@@ -68,11 +69,11 @@
             define(moduleName, function () {
                 var noop = function () { /* NoOp */ };
                 var error = function () {
-                    throw new Error('Failed to load Piwik module');
+                    throw new Error('Failed to load Matomo module');
                 };
                 var mock = {
                     createTracker: error,
-                    getPiwik: error,
+                    getMatomo: error,
                     getTracker: error,
                     push: noop
                 };

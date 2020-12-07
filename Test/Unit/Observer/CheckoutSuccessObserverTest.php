@@ -1,29 +1,30 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\Observer;
+namespace Chessio\Matomo\Test\Unit\Observer;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
- * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver
+ * Test for \Chessio\Matomo\Observer\CheckoutSuccessObserver
  *
  */
 class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
@@ -32,7 +33,7 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     /**
      * Checkout success observer (test subject) instance
      *
-     * @var \Henhed\Piwik\Observer\CheckoutSuccessObserver $_testSubject
+     * @var \Chessio\Matomo\Observer\CheckoutSuccessObserver $_testSubject
      */
     protected $_testSubject;
 
@@ -44,14 +45,14 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     protected $_trackerMock;
 
     /**
-     * Piwik data helper mock object
+     * Matomo data helper mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
      */
     protected $_dataHelperMock;
 
     /**
-     * Piwik tracker helper mock object
+     * Matomo tracker helper mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_trackerHelperMock
      */
@@ -95,10 +96,10 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
         $objectMgr = new ObjectManager($this);
 
         // Create test subject
-        $className = \Henhed\Piwik\Observer\CheckoutSuccessObserver::class;
+        $className = \Chessio\Matomo\Observer\CheckoutSuccessObserver::class;
         $arguments = $objectMgr->getConstructArguments($className);
         $this->_testSubject = $objectMgr->getObject($className, $arguments);
-        $this->_trackerMock = $arguments['piwikTracker'];
+        $this->_trackerMock = $arguments['matomoTracker'];
         $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_trackerHelperMock = $arguments['trackerHelper'];
         $this->_orderRepositoryMock = $arguments['orderRepository'];
@@ -118,7 +119,7 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute where
+     * Test for \Chessio\Matomo\Observer\CheckoutSuccessObserver::execute where
      * tracking is enabled.
      *
      * @return void
@@ -179,7 +180,7 @@ class CheckoutSuccessObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CheckoutSuccessObserver::execute where
+     * Test for \Chessio\Matomo\Observer\CheckoutSuccessObserver::execute where
      * tracking is disabled.
      *
      * @return void

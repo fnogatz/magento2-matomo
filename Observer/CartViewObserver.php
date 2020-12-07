@@ -1,24 +1,25 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Observer;
+namespace Chessio\Matomo\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 
@@ -30,23 +31,23 @@ class CartViewObserver implements ObserverInterface
 {
 
     /**
-     * Piwik tracker instance
+     * Matomo tracker instance
      *
-     * @var \Henhed\Piwik\Model\Tracker
+     * @var \Chessio\Matomo\Model\Tracker
      */
-    protected $_piwikTracker;
+    protected $_matomoTracker;
 
     /**
      * Tracker helper
      *
-     * @var \Henhed\Piwik\Helper\Tracker $_trackerHelper
+     * @var \Chessio\Matomo\Helper\Tracker $_trackerHelper
      */
     protected $_trackerHelper;
 
     /**
-     * Piwik data helper
+     * Matomo data helper
      *
-     * @var \Henhed\Piwik\Helper\Data $_dataHelper
+     * @var \Chessio\Matomo\Helper\Data $_dataHelper
      */
     protected $_dataHelper;
 
@@ -60,18 +61,18 @@ class CartViewObserver implements ObserverInterface
     /**
      * Constructor
      *
-     * @param \Henhed\Piwik\Model\Tracker $piwikTracker
-     * @param \Henhed\Piwik\Helper\Tracker $trackerHelper
-     * @param \Henhed\Piwik\Helper\Data $dataHelper
+     * @param \Chessio\Matomo\Model\Tracker $matomoTracker
+     * @param \Chessio\Matomo\Helper\Tracker $trackerHelper
+     * @param \Chessio\Matomo\Helper\Data $dataHelper
      * @param \Magento\Checkout\Model\Session\Proxy $checkoutSession
      */
     public function __construct(
-        \Henhed\Piwik\Model\Tracker $piwikTracker,
-        \Henhed\Piwik\Helper\Tracker $trackerHelper,
-        \Henhed\Piwik\Helper\Data $dataHelper,
+        \Chessio\Matomo\Model\Tracker $matomoTracker,
+        \Chessio\Matomo\Helper\Tracker $trackerHelper,
+        \Chessio\Matomo\Helper\Data $dataHelper,
         \Magento\Checkout\Model\Session\Proxy $checkoutSession
     ) {
-        $this->_piwikTracker = $piwikTracker;
+        $this->_matomoTracker = $matomoTracker;
         $this->_trackerHelper = $trackerHelper;
         $this->_dataHelper = $dataHelper;
         $this->_checkoutSession = $checkoutSession;
@@ -81,7 +82,7 @@ class CartViewObserver implements ObserverInterface
      * Push trackEcommerceCartUpdate to tracker on cart view page
      *
      * @param \Magento\Framework\Event\Observer $observer
-     * @return \Henhed\Piwik\Observer\CartViewObserver
+     * @return \Chessio\Matomo\Observer\CartViewObserver
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -89,7 +90,7 @@ class CartViewObserver implements ObserverInterface
         if ($this->_dataHelper->isTrackingEnabled()) {
             $this->_trackerHelper->addQuote(
                 $this->_checkoutSession->getQuote(),
-                $this->_piwikTracker
+                $this->_matomoTracker
             );
         }
         return $this;

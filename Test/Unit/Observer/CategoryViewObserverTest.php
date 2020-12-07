@@ -1,29 +1,30 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\Observer;
+namespace Chessio\Matomo\Test\Unit\Observer;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
 /**
- * Test for \Henhed\Piwik\Observer\CategoryViewObserver
+ * Test for \Chessio\Matomo\Observer\CategoryViewObserver
  *
  */
 class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
@@ -32,19 +33,19 @@ class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
     /**
      * Category view observer (test subject) instance
      *
-     * @var \Henhed\Piwik\Observer\CategoryViewObserver $_observer
+     * @var \Chessio\Matomo\Observer\CategoryViewObserver $_observer
      */
     protected $_observer;
 
     /**
-     * Piwik tracker mock object
+     * Matomo tracker mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_trackerMock
      */
     protected $_trackerMock;
 
     /**
-     * Piwik data helper mock object
+     * Matomo data helper mock object
      *
      * @var \PHPUnit_Framework_MockObject_MockObject $_dataHelperMock
      */
@@ -78,14 +79,14 @@ class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp()
     {
-        $className = \Henhed\Piwik\Observer\CategoryViewObserver::class;
+        $className = \Chessio\Matomo\Observer\CategoryViewObserver::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
         $this->_trackerMock = $this->createPartialMock(
-            \Henhed\Piwik\Model\Tracker::class,
+            \Chessio\Matomo\Model\Tracker::class,
             ['setEcommerceView']
         );
-        $arguments['piwikTracker'] = $this->_trackerMock;
+        $arguments['matomoTracker'] = $this->_trackerMock;
         $this->_observer = $objectManager->getObject($className, $arguments);
         $this->_dataHelperMock = $arguments['dataHelper'];
         $this->_eventMock = $this->createPartialMock(
@@ -102,7 +103,7 @@ class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CategoryViewObserver::execute when Piwik
+     * Test for \Chessio\Matomo\Observer\CategoryViewObserver::execute when Matomo
      * tracking is enabled.
      *
      * @return void
@@ -144,7 +145,7 @@ class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test for \Henhed\Piwik\Observer\CategoryViewObserver::execute when Piwik
+     * Test for \Chessio\Matomo\Observer\CategoryViewObserver::execute when Matomo
      * tracking is disabled.
      *
      * @return void
