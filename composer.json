@@ -6,7 +6,7 @@
         "AGPL-3.0+"
     ],
     "require": {
-        "php": "~7.0.0|~7.1.0|~7.2.0|~7.3.0",
+        "php": "~7.0.0|~7.1.0|~7.2.0|~7.3.0|~7.4.0",
         "magento/framework": "~101.0|~102.0",
         "magento/module-catalog": "~102.0|~103.0",
         "magento/module-catalog-search": "~100.0|~101.0",
