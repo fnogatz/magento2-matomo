@@ -23,7 +23,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <matomo>
+        <piwik>
             <tracking>
                 <enabled>0</enabled>
                 <hostname></hostname>
@@ -35,6 +35,6 @@
                 <js_script_path>matomo.js</js_script_path>
                 <cdn_hostname></cdn_hostname>
             </tracking>
-        </matomo>
+        </piwik>
     </default>
 </config>
