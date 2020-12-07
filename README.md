@@ -18,7 +18,7 @@ Alternatively, you can clone the Chessio_Matomo Git repository into *app/code/Ch
 git clone https://github.com/fnogatz/magento2-matomo.git app/code/Chessio/Matomo
 ```
 
-Or, if you prefer, install it using [Composer][composer].
+Or, if you prefer, install it using [Composer](https://getcomposer.org/).
 
 ```sh
 composer require chessio/module-matomo
