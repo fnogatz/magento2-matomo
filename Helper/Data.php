@@ -39,6 +39,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CDN_HOSTNAME = 'piwik/tracking/cdn_hostname';
     const XML_PATH_JS_SCRIPT_PATH = 'piwik/tracking/js_script_path';
     const XML_PATH_PHP_SCRIPT_PATH = 'piwik/tracking/php_script_path';
+    const XML_PATH_CONTAINER_ENABLED = 'piwik/tracking/container_enabled';
+    const XML_PATH_CONTAINER_SCRIPT_PATH = 'piwik/tracking/container_script_path';
     const XML_PATH_SITE_ID = 'piwik/tracking/site_id';
     const XML_PATH_LINK_ENABLED = 'piwik/tracking/link_enabled';
     const XML_PATH_LINK_DELAY = 'piwik/tracking/link_delay';
@@ -149,6 +151,48 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         )), '/') ?: 'matomo.js';
+    }
+
+    /**
+     * Retrieve Matomo Tag Manager JS container Url
+     *
+     * @param null|string|bool|int|Store $store
+     * @return string
+     */
+    public function getContainerUrl($store = null, $secure = null)
+    {
+        return $this->getBaseUrl($store, $secure) . 'js/' .
+            . $this->getContainerPath($store);
+    }
+
+    /**
+     * Retrieve Matomo Tag Manager JS container path
+     *
+     * @param null|string|bool|int|Store $store
+     * @return ?string
+     */
+    public function getContainerPath($store = null)
+    {
+        return ltrim(trim($this->scopeConfig->getValue(
+            self::XML_PATH_CONTAINER_SCRIPT_PATH,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        )), '/') ?: null;
+    }
+
+    /**
+     * Retrieve Matomo Tag Manager JS container path
+     *
+     * @param null|string|bool|int|Store $store
+     * @return bool
+     */
+    public function getIsContainerEnabled($store = null)
+    {
+        return boolval($this->scopeConfig->getValue(
+            self::XML_PATH_CONTAINER_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
+        ) ?: false);
     }
 
     /**

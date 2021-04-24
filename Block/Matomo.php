@@ -121,6 +121,15 @@ class Matomo extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get Matomo Tag Manager Container URl
+     * @return string
+     */
+    public function getContainerUrl()
+    {
+        return $this->_dataHelper->getContainerUrl();
+    }
+
+    /**
      * Get Matomo JS URL
      *
      * @return string

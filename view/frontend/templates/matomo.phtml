@@ -34,6 +34,11 @@
 // However that might cause the tracker script to miss the `DOMContentLoaded'
 // event which breaks the link tracking feature.
 ?>
+
+<?php
+
+if (false):
+?>
 <script type="text/javascript">
 (function (w, d) {
     w._paq = w._paq || [];
@@ -48,6 +53,21 @@
     s.parentNode.insertBefore(g, s);
 })(window, document);
 </script>
+<?php
+endif;
+?>
+<!-- Matomo Tag Manager -->
+<script type="text/javascript">
+    var _mtm = window._mtm = window._mtm || [];
+    _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+    g.type = 'text/javascript';
+    g.async = true;
+    g.src = '<?= $block->escapeJsQuote($block->getContainerUrl()); ?>';
+    s.parentNode.insertBefore(g, s);
+</script>
+<!-- End Matomo Tag Manager -->
+
 <?php
 // The following script is a workaround that prevents the checkout loader
 // overlay from spinning indefinitely in cases where a browser plugin such as

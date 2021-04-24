@@ -231,7 +231,12 @@ define([
                 tracker[actionName].apply(tracker, action);
             }
         } else {
-            exports._paq.push(action);
+            if (typeof exports._mtm !== 'undefined') {
+                console.log(action);
+                exports._mtm.push(action);
+            } else {
+                exports._paq.push(action);
+            }
         }
     }
 
