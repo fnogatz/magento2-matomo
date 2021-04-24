@@ -1,5 +1,6 @@
 {
     "name": "henhed/module-piwik",
+    "abandoned": "chessio/module-matomo",
     "description": "Piwik analytics module for Magento 2",
     "type": "magento2-module",
     "license": [
