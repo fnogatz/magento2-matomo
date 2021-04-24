@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 ?>
 <?php /** @var \Chessio\Matomo\Block\Matomo $block */ ?>
 <script type="text/x-magento-init">
@@ -36,9 +35,9 @@
 ?>
 
 <?php
-
-if (false):
+    if (!$block->isContainerEnabled()):
 ?>
+<!-- Matomo Analytics -->
 <script type="text/javascript">
 (function (w, d) {
     w._paq = w._paq || [];
@@ -53,8 +52,9 @@ if (false):
     s.parentNode.insertBefore(g, s);
 })(window, document);
 </script>
+<!-- End Matomo Analytics -->
 <?php
-endif;
+else:
 ?>
 <!-- Matomo Tag Manager -->
 <script type="text/javascript">
@@ -67,7 +67,9 @@ endif;
     s.parentNode.insertBefore(g, s);
 </script>
 <!-- End Matomo Tag Manager -->
-
+<?php
+    endif;
+?>
 <?php
 // The following script is a workaround that prevents the checkout loader
 // overlay from spinning indefinitely in cases where a browser plugin such as
@@ -104,6 +106,10 @@ endif;
     });
 })(require);
 </script>
+
+<?php
+if (!$block->isContainerEnabled()):
+?>
 <noscript>
     <p>
         <img src="<?= $block->getTrackingPixelUrl(); ?>"
@@ -111,3 +117,6 @@ endif;
              alt="" />
     </p>
 </noscript>
+<?php
+endif;
+?>

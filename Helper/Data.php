@@ -161,7 +161,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getContainerUrl($store = null, $secure = null)
     {
-        return $this->getBaseUrl($store, $secure) . 'js/' .
+        return $this->getBaseUrl($store, $secure)
             . $this->getContainerPath($store);
     }
 
@@ -186,7 +186,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param null|string|bool|int|Store $store
      * @return bool
      */
-    public function getIsContainerEnabled($store = null)
+    public function isContainerEnabled($store = null)
     {
         return boolval($this->scopeConfig->getValue(
             self::XML_PATH_CONTAINER_ENABLED,

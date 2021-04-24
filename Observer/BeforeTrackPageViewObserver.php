@@ -71,6 +71,10 @@ class BeforeTrackPageViewObserver implements ObserverInterface
      */
     protected function _pushLinkTracking(\Chessio\Matomo\Model\Tracker $tracker)
     {
+        if ($this->_dataHelper->isContainerEnabled()) {
+            return $this;
+        }
+
         if ($this->_dataHelper->isLinkTrackingEnabled()) {
             $tracker->enableLinkTracking(true);
             $delay = $this->_dataHelper->getLinkTrackingDelay();
