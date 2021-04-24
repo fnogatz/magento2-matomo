@@ -3,7 +3,7 @@
 Henhed_Piwik
 ============
 
-**NOTE** This package as been abandoned in favor of [chessio/module-matomo](https://github.com/fnogatz/magento2-matomo)
+**NOTE** This package has been abandoned in favor of [chessio/module-matomo](https://github.com/fnogatz/magento2-matomo)
 
 *Henhed_Piwik* is a [Piwik][piwik] web analytics module for the
 [Magento 2][magento] eCommerce platform.  Piwik is an extensible
