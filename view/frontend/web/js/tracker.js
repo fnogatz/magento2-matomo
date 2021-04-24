@@ -239,7 +239,12 @@ define([
             }
         } else {
             if (isContainerEnabled) {
-                exports._mtm.push(action);
+                actionName = action.shift();
+                var data = {
+                    'event': actionName,
+                }
+                data['parameters'] = action;
+                exports._mtm.push(data);
             } else {
                 exports._paq.push(action);
             }
