@@ -29,5 +29,11 @@
                    as="matomo.tracker"
                    template="matomo.phtml" />
         </referenceContainer>
+        <referenceBlock name="head.additional">
+            <block class="Chessio\Matomo\Block\Matomo"
+                   name="matomo.tag_manager"
+                   as="matomo.tag_manager"
+                   template="tag_manager.phtml" />
+        </referenceBlock>
     </body>
 </page>

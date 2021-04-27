@@ -20,7 +20,7 @@
  */
 ?>
 <?php /** @var \Chessio\Matomo\Block\Matomo $block */
-if ($block->isContainerEnabled()) {
+if (!$block->isContainerEnabled()) {
     return;
 }
 ?>
@@ -37,24 +37,17 @@ if ($block->isContainerEnabled()) {
 // However that might cause the tracker script to miss the `DOMContentLoaded'
 // event which breaks the link tracking feature.
 ?>
-
-<!-- Matomo Analytics -->
+<!-- Matomo Tag Manager -->
 <script type="text/javascript">
-(function (w, d) {
-    w._paq = w._paq || [];
-    w._paq.push(['setTrackerUrl', '<?= $block->escapeJsQuote($block->getTrackerUrl()); ?>']);
-    w._paq.push(['setSiteId', <?= (int) $block->getSiteId(); ?>]);
-    var g = d.createElement('script'),
-        s = d.getElementsByTagName('script')[0];
+    var _mtm = window._mtm = window._mtm || [];
+    _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
     g.type = 'text/javascript';
     g.async = true;
-    g.defer = true;
-    g.src = '<?= $block->escapeJsQuote($block->getScriptUrl()); ?>';
+    g.src = '<?= $block->escapeJsQuote($block->getContainerUrl()); ?>';
     s.parentNode.insertBefore(g, s);
-})(window, document);
 </script>
-<!-- End Matomo Analytics -->
-
+<!-- End Matomo Tag Manager -->
 <?php
 // The following script is a workaround that prevents the checkout loader
 // overlay from spinning indefinitely in cases where a browser plugin such as
@@ -91,11 +84,3 @@ if ($block->isContainerEnabled()) {
     });
 })(require);
 </script>
-
-<noscript>
-    <p>
-        <img src="<?= $block->getTrackingPixelUrl(); ?>"
-             style="border: 0;"
-             alt="" />
-    </p>
-</noscript>
