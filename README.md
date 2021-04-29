@@ -1,6 +1,8 @@
 # Matomo Integration for Magento 2
 
-*Chessio_Matomo* is a [Matomo](https://matomo.org/) web analytics module for the [Magento 2](https://magento.com/) eCommerce platform. Matomo is an extensible free/libre analytics tool that can be self-hosted, giving you complete data ownership. Chessio_Matomo lets you integrate Matomo with your Magento 2 store front. It is a fork of [*Henhed_Piwik*](https://github.com/henkelund/magento2-henhed-piwik).
+*Chessio_Matomo* is a [Matomo](https://matomo.org/) web analytics module for the [Magento 2](https://magento.com/) eCommerce platform. Matomo is an extensible free/libre analytics tool that can be self-hosted, giving you complete data ownership. Chessio_Matomo lets you integrate Matomo with your Magento 2 store front.
+
+This module is the successor of [*Henhed_Piwik*](https://packagist.org/packages/henhed/module-piwik) and thus continues with its semantic versioning, beginning with version `v2.1.0` . If you're using a Magento version prior to 2.2, you'll need to stick to the 1.x releases of the original Henhed_Piwik. For manual installation, check out the [Releases archive](https://github.com/fnogatz/magento2-matomo/releases). For installation using [Composer](https://getcomposer.org/), you can use the *tilde* or *caret* version constraint operators (e.g. `~1.3` or `^1.3.1`).
 
 ## Installation
 
@@ -29,8 +31,6 @@ Finally, enable the module with the Magento CLI tool.
 ```sh
 php bin/magento module:enable Chessio_Matomo --clear-static-content
 ```
-
-NOTE: If you're using a Magento version prior to 2.2 you'll need to stick to the 1.x releases of the original [Henhed_Piwik](https://github.com/henkelund/magento2-henhed-piwik#installation).
 
 ## Configuration
 
