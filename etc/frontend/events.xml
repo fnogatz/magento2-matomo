@@ -2,51 +2,52 @@
 <!--
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="piwik_track_page_view_before">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\BeforeTrackPageViewObserver" />
+    <event name="matomo_track_page_view_before">
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\BeforeTrackPageViewObserver" />
     </event>
     <event name="catalog_controller_product_view">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\ProductViewObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\ProductViewObserver" />
     </event>
     <event name="catalog_controller_category_init_after">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\CategoryViewObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\CategoryViewObserver" />
     </event>
     <event name="controller_action_predispatch_checkout_cart_index">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\CartViewObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\CartViewObserver" />
     </event>
     <event name="checkout_onepage_controller_success_action">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\CheckoutSuccessObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\CheckoutSuccessObserver" />
     </event>
     <event name="multishipping_checkout_controller_success_action">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\CheckoutSuccessObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\CheckoutSuccessObserver" />
     </event>
     <event name="controller_action_layout_render_before_catalogsearch_result_index">
-        <observer name="piwik_observer"
-                  instance="Henhed\Piwik\Observer\SearchResultObserver" />
+        <observer name="matomo_observer"
+                  instance="Chessio\Matomo\Observer\SearchResultObserver" />
     </event>
 </config>

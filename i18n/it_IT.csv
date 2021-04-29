@@ -1,12 +1,12 @@
-"Piwik API","Piwik API"
+"Matomo API","Matomo API"
 "Tracking API","Tracking API"
 "Enable Tracking","Abilita Tracking"
 Yes,Si
 No,No
 Hostname,Hostname
-"Piwik hostname, optionally including a path e.g. piwik.example.com or example.com/piwik","Piwik hostname, opzionalmente include un percorso es. piwik.example.com o example.com/piwik"
+"Matomo hostname, optionally including a path e.g. matomo.example.com or example.com/matomo","Matomo hostname, opzionalmente include un percorso es. matomo.example.com o example.com/matomo"
 "Site ID","ID Sito"
-"Listed under Settings/Website in your Piwik administration panel","Elencati in Impostazioni/Sito nel tuo pannello di amministrazione Piwik"
+"Listed under Settings/Website in your Matomo administration panel","Elencati in Impostazioni/Sito nel tuo pannello di amministrazione Matomo"
 "Enable Link Tracking","Abilita Link Tracking"
 "Enable tracking of outlinks and downloads","Abilita tracking di outlinks e downloads"
 "Link Tracking Timer","Link Tracking Timer"

@@ -1,39 +1,40 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Test\Unit\Helper;
+namespace Chessio\Matomo\Test\Unit\Helper;
 
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Store\Model\ScopeInterface;
 
 /**
- * Test for \Henhed\Piwik\Helper\Data
+ * Test for \Chessio\Matomo\Helper\Data
  *
  */
 class DataTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
-     * Piwik data helper (test subject) instance
+     * Matomo data helper (test subject) instance
      *
-     * @var \Henhed\Piwik\Helper\Data $_helper
+     * @var \Chessio\Matomo\Helper\Data $_helper
      */
     protected $_helper;
 
@@ -58,7 +59,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp()
     {
-        $className = \Henhed\Piwik\Helper\Data::class;
+        $className = \Chessio\Matomo\Helper\Data::class;
         $objectManager = new ObjectManager($this);
         $arguments = $objectManager->getConstructArguments($className);
         $this->_helper = $objectManager->getObject($className, $arguments);
@@ -99,11 +100,11 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->method('isSetFlag')
             ->will($this->returnValueMap([
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_ENABLED,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_ENABLED,
                     $scope, $store, $enabled
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_LINK_ENABLED,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_LINK_ENABLED,
                     $scope, $store, $linkEnabled
                 ]
             ]));
@@ -113,27 +114,27 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->method('getValue')
             ->will($this->returnValueMap([
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_HOSTNAME,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_HOSTNAME,
                     $scope, $store, $hostname
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_SITE_ID,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_SITE_ID,
                     $scope, $store, $siteId
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_LINK_DELAY,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_LINK_DELAY,
                     $scope, $store, $linkDelay
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_PHP_SCRIPT_PATH,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_PHP_SCRIPT_PATH,
                     $scope, $store, $phpScriptPath
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_JS_SCRIPT_PATH,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_JS_SCRIPT_PATH,
                     $scope, $store, $jsScriptPath
                 ],
                 [
-                    \Henhed\Piwik\Helper\Data::XML_PATH_CDN_HOSTNAME,
+                    \Chessio\Matomo\Helper\Data::XML_PATH_CDN_HOSTNAME,
                     $scope, $store, $cdnHostname
                 ]
             ]));
@@ -147,16 +148,16 @@ class DataTest extends \PHPUnit\Framework\TestCase
     public function isTrackingEnabledDataProvider()
     {
         return [
-            [true,  'piwik.example.org', 1, true],
+            [true,  'matomo.example.org', 1, true],
             [true,  '',                  1, false],
             [true,  ' ',                 1, false],
-            [true,  'example.org/piwik', 0, false],
-            [false, 'piwik.org',         1, false]
+            [true,  'example.org/matomo', 0, false],
+            [false, 'matomo.org',         1, false]
         ];
     }
 
     /**
-     * Test \Henhed\Piwik\Helper\Data::isTrackingEnabled
+     * Test \Chessio\Matomo\Helper\Data::isTrackingEnabled
      *
      * Also covers `getHostname' and `getSiteId'
      *
@@ -186,31 +187,31 @@ class DataTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                'piwik.org',
+                'matomo.org',
                 false, // should prepend `http://'
-                null, // should fall back on `piwik.php'
+                null, // should fall back on `matomo.php'
                 // Expected result
-                'http://piwik.org/piwik.php'
+                'http://matomo.org/matomo.php'
             ],
             [
-                'example.com/piwik',
+                'example.com/matomo',
                 true, // should prepend `https://'
-                'tracker.php', // should override `piwik.php'
+                'tracker.php', // should override `matomo.php'
                 // Expected result
-                'https://example.com/piwik/tracker.php'
+                'https://example.com/matomo/tracker.php'
             ],
             [
                 ' https://example.com/ ', // should be trimmed
                 false, // should replace `https://' with `http://'
-                ' /piwik/tracker.php ', // should be trimmed
+                ' /matomo/tracker.php ', // should be trimmed
                 // Expected result
-                'http://example.com/piwik/tracker.php'
+                'http://example.com/matomo/tracker.php'
             ]
         ];
     }
 
     /**
-     * Test \Henhed\Piwik\Helper\Data::getPhpScriptUrl
+     * Test \Chessio\Matomo\Helper\Data::getPhpScriptUrl
      *
      * @param string $hostname
      * @param bool $isSecure
@@ -257,23 +258,23 @@ class DataTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [
-                'piwik.org',
+                'matomo.org',
                 false, // should prepend `http://'
-                null, // should fall back on `piwik.js'
+                null, // should fall back on `matomo.js'
                 null, // should fall back on regular hostname
                 // Expected result
-                'http://piwik.org/piwik.js'
+                'http://matomo.org/matomo.js'
             ],
             [
-                ' piwik.org/path/ ', // should be trimmed
+                ' matomo.org/path/ ', // should be trimmed
                 true, // should prepend `https://'
-                'example.js', // should override `piwik.js'
+                'example.js', // should override `matomo.js'
                 null, // should fall back on hostname
                 // Expected result
-                'https://piwik.org/path/example.js'
+                'https://matomo.org/path/example.js'
             ],
             [
-                'piwik.org', // should be ignored
+                'matomo.org', // should be ignored
                 true, // should replace `http://' with `https://''
                 ' /to/tracker.js ', // should be trimmed
                 'http://cdn.example.com/path/', // should override hostname
@@ -284,7 +285,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test \Henhed\Piwik\Helper\Data::getJsScriptUrl
+     * Test \Chessio\Matomo\Helper\Data::getJsScriptUrl
      *
      * @param string $hostname
      * @param bool $isSecure
@@ -334,17 +335,17 @@ class DataTest extends \PHPUnit\Framework\TestCase
     public function isLinkTrackingEnabledDataProvider()
     {
         return [
-            [true,  true,  'piwik.example.org', 1, true],
-            [false, true,  'piwik.example.org', 2, false],
+            [true,  true,  'matomo.example.org', 1, true],
+            [false, true,  'matomo.example.org', 2, false],
             [true,  true,  '',                  1, false],
             [true,  true,  ' ',                 1, false],
-            [false, true,  'example.org/piwik', 0, false],
-            [true,  false, 'piwik.org',         1, false]
+            [false, true,  'example.org/matomo', 0, false],
+            [true,  false, 'matomo.org',         1, false]
         ];
     }
 
     /**
-     * Test \Henhed\Piwik\Helper\Data::isLinkTrackingEnabled
+     * Test \Chessio\Matomo\Helper\Data::isLinkTrackingEnabled
      *
      * Also covers `isTrackingEnabled'
      *

@@ -1,29 +1,30 @@
 <?php
 /**
  * Copyright 2016-2018 Henrik Hedelund
+ * Copyright 2020      Falco Nogatz
  *
- * This file is part of Henhed_Piwik.
+ * This file is part of Chessio_Matomo.
  *
- * Henhed_Piwik is free software: you can redistribute it and/or modify
+ * Chessio_Matomo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Henhed_Piwik is distributed in the hope that it will be useful,
+ * Chessio_Matomo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with Henhed_Piwik.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Chessio_Matomo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Henhed\Piwik\Helper;
+namespace Chessio\Matomo\Helper;
 
 use Magento\Store\Model\Store;
 
 /**
- * Piwik data helper
+ * Matomo data helper
  *
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
@@ -31,6 +32,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * System config XML paths
+     * Prefix "piwik/" left for compatibility with Henhed_Piwik
      */
     const XML_PATH_ENABLED = 'piwik/tracking/enabled';
     const XML_PATH_HOSTNAME = 'piwik/tracking/hostname';
@@ -43,7 +45,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_UID_PROVIDER = 'piwik/tracking/uid_provider';
 
     /**
-     * Check if Piwik is enabled
+     * Check if Matomo is enabled
      *
      * @param null|string|bool|int|Store $store
      * @return bool
@@ -60,7 +62,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik hostname
+     * Retrieve Matomo hostname
      *
      * @param null|string|bool|int|Store $store
      * @return string
@@ -75,7 +77,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik CDN hostname
+     * Retrieve Matomo CDN hostname
      *
      * @param null|string|bool|int|Store $store
      * @return string
@@ -108,7 +110,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik base URL
+     * Retrieve Matomo base URL
      *
      * @param null|string|bool|int|Store $store
      * @param null|bool $secure
@@ -120,7 +122,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik CDN URL
+     * Retrieve Matomo CDN URL
      *
      * @param null|string|bool|int|Store $store
      * @param null|bool $secure
@@ -135,7 +137,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik tracker JS script path
+     * Retrieve Matomo tracker JS script path
      *
      * @param null|string|bool|int|Store $store
      * @return string
@@ -146,11 +148,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_JS_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        )), '/') ?: 'piwik.js';
+        )), '/') ?: 'matomo.js';
     }
 
     /**
-     * Retrieve Piwik tracker JS script URL
+     * Retrieve Matomo tracker JS script URL
      *
      * @param null|string|bool|int|Store $store
      * @param null|bool $secure
@@ -163,7 +165,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik tracker PHP script path
+     * Retrieve Matomo tracker PHP script path
      *
      * @param null|string|bool|int|Store $store
      * @return string
@@ -174,11 +176,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_PHP_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        )), '/') ?: 'piwik.php';
+        )), '/') ?: 'matomo.php';
     }
 
     /**
-     * Retrieve Piwik tracker PHP script URL
+     * Retrieve Matomo tracker PHP script URL
      *
      * @param null|string|bool|int|Store $store
      * @param null|bool $secure
@@ -191,7 +193,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik site ID
+     * Retrieve Matomo site ID
      *
      * @param null|string|bool|int|Store $store
      * @return int
@@ -206,7 +208,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check if Piwik link tracking is enabled
+     * Check if Matomo link tracking is enabled
      *
      * @param null|string|bool|int|Store $store
      * @return bool
@@ -221,7 +223,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Retrieve Piwik link tracking delay in milliseconds
+     * Retrieve Matomo link tracking delay in milliseconds
      *
      * @param null|string|bool|int|Store $store
      * @return int
@@ -236,7 +238,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get provider code for Piwik user ID tracking
+     * Get provider code for Matomo user ID tracking
      *
      * @param null|string|bool|int|Store $store
      * @return string
