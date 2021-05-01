@@ -20,8 +20,7 @@ for envkey in \
   MODULE_SRC_DIR \
   M2_VERSION \
   M2_REPO_USERNAME \
-  M2_REPO_PASSWORD \
-  GITHUB_OAUTH_TOKEN
+  M2_REPO_PASSWORD
 do
   if [ -z "$(eval echo \$$envkey)" ]
   then
@@ -44,8 +43,6 @@ fi
 # Set composer authentication params
 "$COMPOSER_BIN" config --global \
   "http-basic.repo.magento.com" "$M2_REPO_USERNAME" "$M2_REPO_PASSWORD"
-"$COMPOSER_BIN" config --global \
-  "github-oauth.github.com" "$GITHUB_OAUTH_TOKEN"
 
 set -x
 
@@ -56,12 +53,6 @@ set -x
   --repository-url=https://repo.magento.com/ \
   magento/project-community-edition \
   "$BUILD_DIR" "$M2_VERSION"
-
-# Downgrade doctrine/instantiator for PHP < 7.1 support
-"$COMPOSER_BIN" require \
-  --working-dir="$BUILD_DIR" \
-  --ignore-platform-reqs \
-  doctrine/instantiator:v1.0.5
 
 # Copy module into Magento
 mkdir -p "$(dirname "$MODULE_DST_DIR")"
