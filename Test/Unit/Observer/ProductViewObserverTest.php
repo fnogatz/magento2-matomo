@@ -84,7 +84,7 @@ class ProductViewObserverTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Observer\ProductViewObserver::class;
         $objectManager = new ObjectManager($this);
