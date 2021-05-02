@@ -84,7 +84,7 @@ class CartViewObserverTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Observer\CartViewObserver::class;
         $objectManager = new ObjectManager($this);

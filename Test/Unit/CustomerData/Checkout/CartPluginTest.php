@@ -77,7 +77,7 @@ class CartPluginTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\CustomerData\Checkout\CartPlugin::class;
         $objectManager = new ObjectManager($this);

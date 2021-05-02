@@ -50,7 +50,7 @@ class TrackerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Model\Tracker::class;
         $objectManager = new ObjectManager($this);
