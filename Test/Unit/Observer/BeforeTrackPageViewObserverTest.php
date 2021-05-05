@@ -70,7 +70,7 @@ class BeforeTrackPageViewObserverTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Observer\BeforeTrackPageViewObserver::class;
         $objectManager = new ObjectManager($this);

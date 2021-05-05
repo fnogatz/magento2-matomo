@@ -1,17 +1,17 @@
 language: php
 php:
-  - 7.2
-  - 7.1
+  - 7.4
+  - 7.3
 env:
-  - M2_VERSION=2.3.2
-  - M2_VERSION=2.3.1
-  - M2_VERSION=2.3.0
-matrix:
+  - M2_VERSION=2.4.2
+  - M2_VERSION=2.4.1
+  - M2_VERSION=2.4.0
+jobs:
   include:
-    - php: 7.1
-      env: M2_VERSION=2.2.9
-    - php: 7.0
-      env: M2_VERSION=2.2.9
+    - php: 7.3
+      env: M2_VERSION=2.3.6-p1
+    - php: 7.3
+      env: M2_VERSION=2.3.5
 cache:
   directories:
     - $HOME/.composer/cache

@@ -77,7 +77,7 @@ class CategoryViewObserverTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Observer\CategoryViewObserver::class;
         $objectManager = new ObjectManager($this);

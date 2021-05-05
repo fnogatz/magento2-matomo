@@ -57,7 +57,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $className = \Chessio\Matomo\Helper\Data::class;
         $objectManager = new ObjectManager($this);
