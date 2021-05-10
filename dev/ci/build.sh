@@ -18,9 +18,7 @@ fi
 for envkey in \
   MODULE_NAME \
   MODULE_SRC_DIR \
-  M2_VERSION \
-  M2_REPO_USERNAME \
-  M2_REPO_PASSWORD
+  M2_VERSION
 do
   if [ -z "$(eval echo \$$envkey)" ]
   then
@@ -40,17 +38,13 @@ then
   MODULE_DST_DIR="$BUILD_DIR/app/code/$(echo $MODULE_NAME | sed 's/_/\//')"
 fi
 
-# Set composer authentication params
-"$COMPOSER_BIN" config --global \
-  "http-basic.repo.magento.com" "$M2_REPO_USERNAME" "$M2_REPO_PASSWORD"
-
 set -x
 
 # Fetch Magento 2 source
 "$COMPOSER_BIN" create-project \
   --quiet \
   --ignore-platform-reqs \
-  --repository-url=https://repo.magento.com/ \
+  --repository-url=https://repo-magento-mirror.fooman.co.nz/ \
   magento/project-community-edition \
   "$BUILD_DIR" "$M2_VERSION"
 
