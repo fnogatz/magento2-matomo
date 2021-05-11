@@ -42,9 +42,10 @@ set -x
 
 # Fetch Magento 2 source
 "$COMPOSER_BIN" create-project \
+  --repository=https://repo-magento-mirror.fooman.co.nz/ \
+  --add-repository \
   --quiet \
   --ignore-platform-reqs \
-  --repository-url=https://repo-magento-mirror.fooman.co.nz/ \
   magento/project-community-edition \
   "$BUILD_DIR" "$M2_VERSION"
 
