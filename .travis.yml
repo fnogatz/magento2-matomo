@@ -21,12 +21,6 @@ jobs:
       env: M2_VERSION=2.4.0-p1 COMPOSER_CHANNEL=1
     - php: 7.3
       env: M2_VERSION=2.3.6-p1 COMPOSER_CHANNEL=1
-    - php: 7.3
-      env: M2_VERSION=2.3.5-p2 COMPOSER_CHANNEL=1
-    - php: 7.3
-      env: M2_VERSION=2.3.4-p2 COMPOSER_CHANNEL=1
-    - php: 7.3
-      env: M2_VERSION=2.3.3-p1 COMPOSER_CHANNEL=1
 
 before_install:
   - composer --verbose self-update --$COMPOSER_CHANNEL
