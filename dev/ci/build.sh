@@ -53,8 +53,7 @@ set -x
 cd "$BUILD_DIR"
 "$COMPOSER_BIN" config --unset repo.0
 "$COMPOSER_BIN" config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
-"$COMPOSER_BIN" update --no-dev
-"$COMPOSER_BIN" update
+COMPOSER_MEMORY_LIMIT=-1 "$COMPOSER_BIN" update
 
 # Copy module into Magento
 mkdir -p "$(dirname "$MODULE_DST_DIR")"
