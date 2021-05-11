@@ -1,37 +1,39 @@
 language: php
+
+env:
+  global:
+    - COMPOSER_MEMORY_LIMIT=-1
+    - COMPOSER_CHANNEL=stable
+
 jobs:
   include:
     - php: 7.4
       env: M2_VERSION=2.4.2
     - php: 7.4
-      env: M2_VERSION=2.4.1-p1
-      before_script: composer self-update --1
+      env: M2_VERSION=2.4.1-p1 COMPOSER_CHANNEL=1
     - php: 7.4
-      env: M2_VERSION=2.4.0-p1
-      before_script: composer self-update --1
+      env: M2_VERSION=2.4.0-p1 COMPOSER_CHANNEL=1
     - php: 7.3
       env: M2_VERSION=2.4.2
-      before_script: composer self-update --1
     - php: 7.3
-      env: M2_VERSION=2.4.1-p1
-      before_script: composer self-update --1
+      env: M2_VERSION=2.4.1-p1 COMPOSER_CHANNEL=1
     - php: 7.3
-      env: M2_VERSION=2.4.0-p1
-      before_script: composer self-update --1
+      env: M2_VERSION=2.4.0-p1 COMPOSER_CHANNEL=1
     - php: 7.3
-      env: M2_VERSION=2.3.6-p1
-      before_script: composer self-update --1
+      env: M2_VERSION=2.3.6-p1 COMPOSER_CHANNEL=1
     - php: 7.3
-      env: M2_VERSION=2.3.5
-      before_script: composer self-update --1
+      env: M2_VERSION=2.3.5 COMPOSER_CHANNEL=1
     - php: 7.3
-      env: M2_VERSION=2.3.4
-      before_script: composer self-update --1
+      env: M2_VERSION=2.3.4 COMPOSER_CHANNEL=1
     - php: 7.3
-      env: M2_VERSION=2.3.3
-      before_script: composer self-update --1
+      env: M2_VERSION=2.3.3 COMPOSER_CHANNEL=1
+
+before_install:
+  - composer --verbose self-update --$COMPOSER_CHANNEL
+
 cache:
   directories:
     - $HOME/.composer/cache
+
 script:
   - dev/ci/build.sh
