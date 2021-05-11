@@ -46,8 +46,14 @@ set -x
   --add-repository \
   --quiet \
   --ignore-platform-reqs \
+  --no-install \
   magento/project-community-edition \
   "$BUILD_DIR" "$M2_VERSION"
+
+cd "$BUILD_DIR"
+"$COMPOSER_BIN" config --unset repo.0
+"$COMPOSER_BIN" config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
+"$COMPOSER_BIN" install
 
 # Copy module into Magento
 mkdir -p "$(dirname "$MODULE_DST_DIR")"
