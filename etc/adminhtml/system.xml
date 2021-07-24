@@ -23,6 +23,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <!-- Prefix "piwik/" left for compatibility with Henhed_Piwik -->
         <section id="piwik"
                  translate="label"
                  type="text"
@@ -141,7 +142,7 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>PHP Script Path</label>
-                        <config_path>matomo/tracking/php_script_path</config_path>
+                        <config_path>piwik/tracking/php_script_path</config_path>
                         <comment>Path to the Matomo tracker PHP script. Usually &quot;matomo.php&quot;.</comment>
                         <frontend_class>required-entry</frontend_class>
                     </field>
@@ -153,7 +154,7 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>Javascript Path</label>
-                        <config_path>matomo/tracking/js_script_path</config_path>
+                        <config_path>piwik/tracking/js_script_path</config_path>
                         <comment>Path to the Matomo tracker Javascript. Usually &quot;matomo.js&quot;.</comment>
                         <frontend_class>required-entry</frontend_class>
                     </field>
@@ -165,7 +166,7 @@
                            showInWebsite="1"
                            showInStore="1">
                         <label>CDN Hostname</label>
-                        <config_path>matomo/tracking/cdn_hostname</config_path>
+                        <config_path>piwik/tracking/cdn_hostname</config_path>
                         <comment>Hostname for serving the Matomo tracker Javascript. May be left empty in which case the regular hostname will be used.</comment>
                     </field>
                 </group>
