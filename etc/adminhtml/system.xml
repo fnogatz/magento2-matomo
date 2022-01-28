@@ -74,11 +74,11 @@
                        showInWebsite="1"
                        showInStore="1">
                     <label>Site ID</label>
-                    <comment>Listed under Settings/Website in your Matomo administration panel</comment>
+                    <comment>Listed under Settings/Website in your Matomo administration panel. Or use the protected TrackID from JavaScript Tracking Code (ex. M5rJzx9nzk) from Matomo</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
-                    <frontend_class>required-entry validate-digits validate-zero-or-greater</frontend_class>
+                    <frontend_class>required-entry validate-alphanum validate-no-empty</frontend_class>
                 </field>
                 <field id="link_enabled"
                        translate="label comment"
