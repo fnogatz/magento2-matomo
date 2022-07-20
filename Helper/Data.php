@@ -73,7 +73,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_HOSTNAME,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        ));
+        ) ?? "");
     }
 
     /**
@@ -88,7 +88,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_CDN_HOSTNAME,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        ));
+        ) ?? "");
     }
 
     /**
@@ -148,7 +148,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_JS_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        )), '/') ?: 'matomo.js';
+        ) ?? ""), '/') ?: 'matomo.js';
     }
 
     /**
@@ -176,7 +176,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_PHP_SCRIPT_PATH,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
-        )), '/') ?: 'matomo.php';
+        ) ?? ""), '/') ?: 'matomo.php';
     }
 
     /**
