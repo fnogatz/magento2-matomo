@@ -53,6 +53,9 @@ set -x
 cd "$BUILD_DIR"
 "$COMPOSER_BIN" config --unset repo.0
 "$COMPOSER_BIN" config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
+"$COMPOSER_BIN" config allow-plugins.magento/* true
+"$COMPOSER_BIN" config allow-plugins.laminas/laminas-dependency-plugin true
+"$COMPOSER_BIN" config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 "$COMPOSER_BIN" update
 
 # Copy module into Magento
