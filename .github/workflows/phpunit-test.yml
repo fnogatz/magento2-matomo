@@ -22,7 +22,7 @@ jobs:
       - name: Set PHP Version
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ inputs.php_version }}
+          php-version: ${{ matrix.php_version }}
 
       - name: Run PHPUnit Test
         run: |
