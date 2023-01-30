@@ -25,10 +25,13 @@ jobs:
             php-version: '7.4'
           - magento-version: '2.4.1-p1'
             php-version: '7.4'
+            composer-version: '1'
           - magento-version: '2.4.0-p1'
             php-version: '7.3'
+            composer-version: '1'
           - magento-version: '2.3.6-p1'
             php-version: '7.3'
+            composer-version: '1'
 
     steps:
       - name: Checkout Code
@@ -38,6 +41,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+
+      - name: Set composer Version
+        if: ${{ matrix.composer-version == '1' }}
+        run: |
+          composer --verbose self-update --${{ matrix.composer-version }}
 
       - name: Run PHPUnit Test
         run: |
