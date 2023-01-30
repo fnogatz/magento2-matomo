@@ -1,0 +1,29 @@
+name: PHPUnit Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - magento-version: '2.4.2'
+            php-version: '7.4'
+
+    steps:
+      - name: Set PHP Version
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ inputs.php_version }}
+
+      - name: Run PHPUnit Test
+        run: |
+          ./dev/ci/build.sh
