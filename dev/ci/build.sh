@@ -56,7 +56,7 @@ cd "$BUILD_DIR"
 "$COMPOSER_BIN" config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
 
 COMPOSER_MAJOR_VERSION="$(cut -d '.' -f 1 <<< "$COMPOSER_VERSION")"
-if [ "$COMPOSER_MAJOR_VERSION" == "2"]
+if [ "$COMPOSER_MAJOR_VERSION" == "2" ]
 then
   "$COMPOSER_BIN" config allow-plugins.magento/* true
   "$COMPOSER_BIN" config allow-plugins.laminas/laminas-dependency-plugin true
