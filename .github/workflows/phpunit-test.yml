@@ -15,8 +15,20 @@ jobs:
     strategy:
       matrix:
         include:
-          - magento-version: '2.4.2'
+          - magento-version: '2.4.5-p1'
+            php-version: '8.1'
+          - magento-version: '2.4.4-p2'
+            php-version: '8.1'
+          - magento-version: '2.4.3-p3'
             php-version: '7.4'
+          - magento-version: '2.4.2-p2'
+            php-version: '7.4'
+          - magento-version: '2.4.1-p1'
+            php-version: '7.4'
+          - magento-version: '2.4.0-p1'
+            php-version: '7.3'
+          - magento-version: '2.3.6-p1'
+            php-version: '7.3'
 
     steps:
       - name: Checkout Code
