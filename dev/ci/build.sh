@@ -32,6 +32,7 @@ set -e
 # Set up environment
 PHP_BIN="$(which php)"
 COMPOSER_BIN="$(which composer)"
+COMPOSER_VERSION="$(composer --version | cut -d " " -f3)"
 BUILD_DIR="$(mktemp -d /tmp/$MODULE_NAME.XXXXXX)"
 if [ -z "$MODULE_DST_DIR" ]
 then
@@ -53,9 +54,15 @@ set -x
 cd "$BUILD_DIR"
 "$COMPOSER_BIN" config --unset repo.0
 "$COMPOSER_BIN" config repositories.foomanmirror composer https://repo-magento-mirror.fooman.co.nz/
-"$COMPOSER_BIN" config allow-plugins.magento/* true
-"$COMPOSER_BIN" config allow-plugins.laminas/laminas-dependency-plugin true
-"$COMPOSER_BIN" config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+
+COMPOSER_MAJOR_VERSION="$(cut -d '.' -f 1 <<< "$COMPOSER_VERSION")"
+if [ "$COMPOSER_MAJOR_VERSION" == "2"]
+then
+  "$COMPOSER_BIN" config allow-plugins.magento/* true
+  "$COMPOSER_BIN" config allow-plugins.laminas/laminas-dependency-plugin true
+  "$COMPOSER_BIN" config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+fi
+
 "$COMPOSER_BIN" update
 
 # Copy module into Magento
