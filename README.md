@@ -37,6 +37,11 @@ php bin/magento module:enable Chessio_Matomo --clear-static-content
 Once installed, configuration options can be found in the Magento 2 administration panel under *Stores/Configuration/Sales/Matomo API*.
 To start tracking, set *Enable Tracking* to *Yes*, enter the *Hostname* of your Matomo installation and click *Save Config*. If you have multiple websites in the same Matomo installation, make sure the *Site ID* configured in Magento is correct.
 
+### Using Matomo Tag Manager
+
+You can use the Matomo Tag Manager instead of Matomo directly. Set the configuration *Enable Matomo Tag Manager Container* to yes and set the *Container Script Path*.
+For details on how to configure the Matomo Tag Manager, to track ecommerce events, see doc/tag-manager.md
+
 ## Customization
 
 If you need to send some custom information to your Matomo server, Chessio_Matomo lets you do so using event observers.

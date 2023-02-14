@@ -112,12 +112,37 @@ class Matomo extends \Magento\Framework\View\Element\Template
      */
     public function getJsOptions()
     {
-        return [
-            'scriptUrl'  => $this->getScriptUrl(),
-            'trackerUrl' => $this->getTrackerUrl(),
-            'siteId'     => $this->getSiteId(),
-            'actions'    => $this->getTracker()->toArray()
-        ];
+        if ($this->isContainerEnabled()) {
+            $result = [];
+        } else {
+            $result = [
+                'scriptUrl'  => $this->getScriptUrl(),
+                'trackerUrl' => $this->getTrackerUrl(),
+                'siteId'     => $this->getSiteId(),
+            ];
+        }
+        $result['isContainerEnabled'] = $this->_dataHelper->isContainerEnabled();
+        $result['actions'] = $this->getTracker()->toArray();
+
+        return $result;
+    }
+
+    /**
+     * Check if Matomo Tag Manager Container is enabled
+     * @return string
+     */
+    public function isContainerEnabled()
+    {
+        return $this->_dataHelper->isContainerEnabled();
+    }
+
+    /**
+     * Get Matomo Tag Manager Container URL
+     * @return string
+     */
+    public function getContainerUrl()
+    {
+        return $this->_dataHelper->getContainerUrl();
     }
 
     /**

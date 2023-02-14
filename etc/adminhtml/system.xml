@@ -66,6 +66,30 @@
                     </depends>
                     <frontend_class>required-entry</frontend_class>
                 </field>
+                <field id="container_enabled"
+                       translate="label"
+                       type="select"
+                       sortOrder="25"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable Matomo Tag Manager Container</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="container_script_path"
+                       translate="label comment"
+                       type="text"
+                       sortOrder="27"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Container Script Path, relative to the hostname</label>
+                    <comment>Example: js/container_abcDEFgh.js</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="container_enabled">1</field>
+                    </depends>
+                </field>
                 <field id="site_id"
                        translate="label comment"
                        type="text"
@@ -77,6 +101,7 @@
                     <comment>Listed under Settings/Website in your Matomo administration panel</comment>
                     <depends>
                         <field id="enabled">1</field>
+                        <field id="container_enabled">0</field>
                     </depends>
                     <frontend_class>required-entry validate-digits validate-zero-or-greater</frontend_class>
                 </field>
@@ -92,6 +117,7 @@
                     <comment>Enable tracking of outlinks and downloads</comment>
                     <depends>
                         <field id="enabled">1</field>
+                        <field id="container_enabled">0</field>
                     </depends>
                 </field>
                 <field id="link_delay"
@@ -106,6 +132,7 @@
                     <depends>
                         <field id="enabled">1</field>
                         <field id="link_enabled">1</field>
+                        <field id="container_enabled">0</field>
                     </depends>
                     <frontend_class>validate-digits validate-zero-or-greater</frontend_class>
                 </field>

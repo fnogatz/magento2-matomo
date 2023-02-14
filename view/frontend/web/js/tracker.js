@@ -48,6 +48,13 @@ define([
     var defaultTrackerUrl;
 
     /**
+     * Use Tag Manager container instead of direct tracker?
+     *
+     * @type {bool}
+     */
+    var isContainerEnabled;
+
+    /**
      * Reference to global `matomoAsyncInit' in case we overwrite something
      *
      * @type {Function|undefined}
@@ -231,7 +238,16 @@ define([
                 tracker[actionName].apply(tracker, action);
             }
         } else {
-            exports._paq.push(action);
+            if (isContainerEnabled) {
+                actionName = action.shift();
+                var data = {
+                    'event': actionName,
+                }
+                data['parameters'] = action;
+                exports._mtm.push(data);
+            } else {
+                exports._paq.push(action);
+            }
         }
     }
 
@@ -304,26 +320,36 @@ define([
      * @param {Object} options
      */
     function initialize(options) {
-        defaultSiteId = options.siteId;
-        defaultTrackerUrl = options.trackerUrl;
-        if (matomo === null) {
-            if (!scriptExists(options.scriptUrl)) {
-                pushAction([
-                    ['setSiteId', defaultSiteId],
-                    ['setTrackerUrl', defaultTrackerUrl]
-                ]);
-                injectScript(options.scriptUrl);
+        isContainerEnabled = options.isContainerEnabled;
+
+        if (!isContainerEnabled) {
+            defaultSiteId = options.siteId;
+            defaultTrackerUrl = options.trackerUrl;
+
+            if (matomo === null) {
+                if (!scriptExists(options.scriptUrl)) {
+                    pushAction([
+                        ['setSiteId', defaultSiteId],
+                        ['setTrackerUrl', defaultTrackerUrl]
+                    ]);
+                    injectScript(options.scriptUrl);
+                }
+            } else {
+                // If we already have the Matomo object we can resolve any pending
+                // promises immediately.
+                resolveMatomoPromises();
             }
-        } else {
-            // If we already have the Matomo object we can resolve any pending
-            // promises immediately.
-            resolveMatomoPromises();
         }
         pushAction(options.actions);
     }
 
     // Make sure the Matomo asynchronous tracker queue is defined
-    exports._paq = exports._paq || [];
+    if (isContainerEnabled) {
+        exports._mtm = exports._mtm || [];
+    } else {
+        exports._paq = exports._paq || [];
+    }
+
     // Listen for when the Matomo asynchronous tracker is ready
     exports.matomoAsyncInit = onMatomoLoaded;
     // Subscribe to cart updates

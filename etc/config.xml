@@ -34,6 +34,8 @@
                 <uid_provider></uid_provider>
                 <php_script_path>matomo.php</php_script_path>
                 <js_script_path>matomo.js</js_script_path>
+                <container_enabled>0</container_enabled>
+                <container_script_path></container_script_path>
                 <cdn_hostname></cdn_hostname>
             </tracking>
         </piwik>
