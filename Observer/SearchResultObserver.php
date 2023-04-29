@@ -24,7 +24,7 @@ namespace Chessio\Matomo\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
 /**
- * Observer for `controller_action_layout_render_before_catalogsearch_result_index'
+ * Observer for `catalog_product_collection_load_after'
  *
  * @see http://developer.matomo.org/guides/tracking-javascript-guide#internal-search-tracking
  */
@@ -60,6 +60,11 @@ class SearchResultObserver implements ObserverInterface
     protected $_view;
 
     /**
+     * @var \Magento\Framework\App\Request\Http $request
+     */
+    private $request;
+
+    /**
      * Constructor
      *
      * @param \Chessio\Matomo\Model\Tracker $matomoTracker
@@ -71,12 +76,14 @@ class SearchResultObserver implements ObserverInterface
         \Chessio\Matomo\Model\Tracker $matomoTracker,
         \Chessio\Matomo\Helper\Data $dataHelper,
         \Magento\Search\Model\QueryFactory $queryFactory,
-        \Magento\Framework\App\ViewInterface $view
+        \Magento\Framework\App\ViewInterface $view,
+        \Magento\Framework\App\Request\Http $request
     ) {
         $this->_matomoTracker = $matomoTracker;
         $this->_dataHelper = $dataHelper;
         $this->_queryFactory = $queryFactory;
         $this->_view = $view;
+        $this->request = $request;
     }
 
     /**
@@ -88,6 +95,11 @@ class SearchResultObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        // Skip executes in case the current page isn't the search result page
+        if ($this->request->getFullActionName() !== 'catalogsearch_result_index') {
+            return $this;
+        }
+
         if (!$this->_dataHelper->isTrackingEnabled()) {
             return $this;
         }

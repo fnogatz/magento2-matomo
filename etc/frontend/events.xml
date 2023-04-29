@@ -46,7 +46,7 @@
         <observer name="matomo_observer"
                   instance="Chessio\Matomo\Observer\CheckoutSuccessObserver" />
     </event>
-    <event name="controller_action_layout_render_before_catalogsearch_result_index">
+    <event name="catalog_product_collection_load_after">
         <observer name="matomo_observer"
                   instance="Chessio\Matomo\Observer\SearchResultObserver" />
     </event>
